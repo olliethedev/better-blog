@@ -1,0 +1,74 @@
+{
+    "name": "better-blog",
+    "homepage": "https://better-blog.com",
+    "version": "0.0.1",
+    "description": "Better Blog",
+    "scripts": {
+        "build": "tsup --clean --dts",
+        "dev": "tsc-watch",
+        "prepublishOnly": "rm -rf dist && turbo build"
+    },
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            },
+            "require": {
+                "types": "./dist/index.d.cts",
+                "default": "./dist/index.cjs"
+            }
+        },
+        "./server": {
+            "import": {
+                "types": "./dist/server.d.ts",
+                "default": "./dist/server.js"
+            },
+            "require": {
+                "types": "./dist/server.d.cts",
+                "default": "./dist/server.cjs"
+            }
+        }
+    },
+    "files": [
+        "src",
+        "dist"
+    ],
+    "keywords": [
+        "typescript",
+        "react",
+        "blog",
+        "shadcn",
+        "nextjs"
+    ],
+    "author": "olliethedev",
+    "license": "MIT",
+    "devDependencies": {
+        "@biomejs/biome": "1.9.4",
+        "@types/node": "^24.1.0",
+        "@types/react": "^19.1.8",
+        "@types/react-dom": "^19.1.6",
+        "esbuild-plugin-preserve-directives": "^0.0.11",
+        "tsc-watch": "^7.1.1",
+        "tsup": "^8.5.0",
+        "tsx": "^4.20.3",
+        "turbo": "^2.5.5",
+        "typescript": "^5.8.3"
+    },
+    "peerDependencies": {
+        "react": ">=18.0.0",
+        "react-dom": ">=18.0.0",
+        "zod": ">=3.24.0"
+    },
+    "pnpm": {
+        "overrides": {},
+        "onlyBuiltDependencies": [
+            "@biomejs/biome",
+            "esbuild"
+        ]
+    },
+    "packageManager": "pnpm@10.12.1"
+}
