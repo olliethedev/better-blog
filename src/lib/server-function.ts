@@ -1,3 +1,3 @@
 export const serverFunction = () => {
-    return "Hello, world!";
+    return "Hello, world!!";
 };
