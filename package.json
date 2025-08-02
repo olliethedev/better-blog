@@ -5,8 +5,11 @@
     "description": "Better Blog",
     "scripts": {
         "build": "tsup --clean --dts",
-        "dev": "tsup --watch --onSuccess \"yalc push\"",
-        "prepublishOnly": "rm -rf dist && turbo build"
+        "dev": "tsup --watch --onSuccess \"yalc publish --push\"",
+        "prepublishOnly": "rm -rf dist && turbo build",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage"
     },
     "type": "module",
     "main": "./dist/index.cjs",
@@ -22,14 +25,24 @@
                 "default": "./dist/index.cjs"
             }
         },
-        "./server": {
+        "./nextjs": {
             "import": {
-                "types": "./dist/server.d.ts",
-                "default": "./dist/server.js"
+                "types": "./dist/nextjs.d.ts",
+                "default": "./dist/nextjs.js"
             },
             "require": {
-                "types": "./dist/server.d.cts",
-                "default": "./dist/server.cjs"
+                "types": "./dist/nextjs.d.cts",
+                "default": "./dist/nextjs.cjs"
+            }
+        },
+        "./react-router": {
+            "import": {
+                "types": "./dist/react-router.d.ts",
+                "default": "./dist/react-router.js"
+            },
+            "require": {
+                "types": "./dist/react-router.d.cts",
+                "default": "./dist/react-router.cjs"
             }
         }
     },
@@ -48,10 +61,17 @@
     "license": "MIT",
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
+        "@testing-library/jest-dom": "^6.6.4",
+        "@testing-library/react": "^16.3.0",
+        "@testing-library/user-event": "^14.6.1",
+        "@types/jest": "^30.0.0",
         "@types/node": "^24.1.0",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
         "esbuild-plugin-preserve-directives": "^0.0.11",
+        "jest": "^30.0.5",
+        "jest-environment-jsdom": "^30.0.5",
+        "ts-jest": "^29.4.0",
         "tsc-watch": "^7.1.1",
         "tsup": "^8.5.0",
         "tsx": "^4.20.3",
@@ -59,8 +79,30 @@
         "typescript": "^5.8.3"
     },
     "peerDependencies": {
+        "@hookform/resolvers": ">=5.0.0",
+        "@radix-ui/react-avatar": ">=1.1.0",
+        "@radix-ui/react-checkbox": ">=1.1.0",
+        "@radix-ui/react-context": ">=1.1.0",
+        "@radix-ui/react-dialog": ">=1.1.0",
+        "@radix-ui/react-dropdown-menu": ">=2.1.0",
+        "@radix-ui/react-label": ">=2.1.0",
+        "@radix-ui/react-primitive": ">=2.0.0",
+        "@radix-ui/react-select": ">=2.2.0",
+        "@radix-ui/react-separator": ">=1.1.0",
+        "@radix-ui/react-slot": ">=1.1.0",
+        "@radix-ui/react-tabs": ">=1.1.0",
+        "@radix-ui/react-use-callback-ref": ">=1.1.0",
+        "@radix-ui/react-use-layout-effect": ">=1.1.0",
+        "@tanstack/react-query": ">=5.66.0",
+        "class-variance-authority": ">=0.7.0",
+        "clsx": ">=2.1.0",
+        "lucide-react": ">=0.469.0",
         "react": ">=18.0.0",
         "react-dom": ">=18.0.0",
+        "react-hook-form": ">=7.55.0",
+        "sonner": ">=1.7.0",
+        "tailwind-merge": ">=2.6.0",
+        "tailwindcss": ">=3.0.0",
         "zod": ">=3.24.0"
     },
     "pnpm": {

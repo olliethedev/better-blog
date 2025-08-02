@@ -11,7 +11,16 @@
         "incremental": false,
         "lib": ["dom", "dom.iterable", "esnext"],
         "module": "esnext",
-        "moduleResolution": "bundler"
+        "moduleResolution": "bundler",
+        "target": "es2018",
+        "baseUrl": "src",
+        "paths": {
+            "@/*": ["./*"]
+        },
+        "allowSyntheticDefaultImports": true,
+        "noResolve": false
     },
-    "include": ["src"]
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"],
+    "typeRoots": ["./src/types", "./node_modules/@types"]
 }
