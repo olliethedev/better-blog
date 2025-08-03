@@ -6,6 +6,7 @@ export default defineConfig((env) => {
         entry: {
             index: "./src/index.ts",
             nextjs: "./src/nextjs.ts", 
+            "providers": "./src/providers.tsx",
             "react-router": "./src/react-router.ts",
         },
         format: ["esm", "cjs"],
@@ -14,7 +15,7 @@ export default defineConfig((env) => {
         skipNodeModulesBundle: true,
         treeshake: false,
         metafile: true,
-        dts: false,
+        dts: true,
         external: [
             "react",
             "react-dom", 

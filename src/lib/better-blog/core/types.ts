@@ -18,6 +18,7 @@ export type Post = {
   excerpt: string;
   image?: string;
   published: boolean;
+  publishedAt?: Date;
   tags: Tag[];
   createdAt: Date;
   updatedAt: Date;
