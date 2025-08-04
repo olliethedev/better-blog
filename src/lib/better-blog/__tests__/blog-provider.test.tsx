@@ -2,7 +2,8 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BlogProvider } from '../providers/blog-provider';
-import { useBlogContext } from '../core/blog-context';
+import { useBlogContext, BlogContextProvider } from '../core/blog-context';
+import { ComponentsProvider } from '../../../components/better-blog/components-context';
 import { createMockConfig, mockPosts } from '../../../test/mocks/data';
 import type { RouteMatch } from '../core/types';
 import type { ComponentsContextValue } from '../../../components/better-blog/components-context';
@@ -55,7 +56,7 @@ function renderWithProvider(routeMatch: RouteMatch) {
       cachedData = mockPosts;
       break;
     case 'post':
-      if (routeMatch.data?.slug === 'react-hooks') {
+      if (routeMatch.data?.slug === 'react-hooks-guide') {
         cachedData = mockPosts[0]; // The React Hooks post
       } else {
         cachedData = null; // Non-existent post
@@ -72,7 +73,7 @@ function renderWithProvider(routeMatch: RouteMatch) {
       cachedData = mockPosts.filter(post => !post.published);
       break;
     case 'edit':
-      if (routeMatch.data?.postSlug === 'react-hooks') {
+      if (routeMatch.data?.postSlug === 'react-hooks-guide') {
         cachedData = mockPosts[0]; // The post to edit
       } else {
         cachedData = null;
@@ -90,12 +91,11 @@ function renderWithProvider(routeMatch: RouteMatch) {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <BlogProvider
-        routeMatch={routeMatch}
-        components={mockComponents}
-      >
-        <TestComponent />
-      </BlogProvider>
+      <ComponentsProvider components={mockComponents}>
+        <BlogContextProvider routeMatch={routeMatch}>
+          <TestComponent />
+        </BlogContextProvider>
+      </ComponentsProvider>
     </QueryClientProvider>
   );
 }
