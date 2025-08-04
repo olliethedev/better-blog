@@ -1,16 +1,18 @@
-// Core client-side functionality
-// export { BetterBlogCore } from './lib/better-blog/core';
+// Core types (safe for both client and server)
 export * from './lib/better-blog/core/types';
-// export * from './lib/better-blog/core/router';
 
-// Shared components
+// Core business logic (safe for both client and server)
+export { BetterBlogCore } from './lib/better-blog/core';
+
+// Core router utilities (server-safe)
+export { matchRoute, generateStaticRoutes } from './lib/better-blog/core/router';
+
+// Server-safe utilities
+export { prefetchBlogData } from './lib/better-blog/core/prefetch';
+
+// Server-safe components (no "use client" directive)
 export * from './components/better-blog/loading';
 export * from './components/better-blog/posts-list';
-export * from './components/better-blog/post-card';
 
-// Default adapter for vanilla usage
-// export * from './lib/better-blog/adapters/default';
-
-// Generic providers for framework-agnostic usage
-export { Providers, useComponents } from './providers';
-export type { ProvidersProps, ComponentsContextValue } from './providers';
+// Note: Client components are exported from './client' entry point
+// import { BlogRouterPage, PostCard } from 'better-blog/client';

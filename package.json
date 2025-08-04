@@ -35,14 +35,14 @@
                 "default": "./dist/nextjs.cjs"
             }
         },
-        "./providers": {
+        "./client": {
             "import": {
-                "types": "./dist/providers.d.ts",
-                "default": "./dist/providers.js"
+                "types": "./dist/client.d.ts",
+                "default": "./dist/client.js"
             },
             "require": {
-                "types": "./dist/providers.d.cts",
-                "default": "./dist/providers.cjs"
+                "types": "./dist/client.d.cts",
+                "default": "./dist/client.cjs"
             }
         },
         "./react-router": {

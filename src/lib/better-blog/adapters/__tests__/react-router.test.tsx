@@ -1,7 +1,10 @@
 import React from 'react';
+import { render } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createReactRouterAdapter } from '@/lib/better-blog/adapters/react-router';
 import type { RouterDependencies } from '@/lib/better-blog/adapters/react-router';
 import { createMockConfig } from '@/test/mocks/data';
+import type { ComponentsContextValue } from '@/components/better-blog/components-context';
 
 // Mock router dependencies
 const mockRouterDependencies: RouterDependencies = {
@@ -9,6 +12,16 @@ const mockRouterDependencies: RouterDependencies = {
   Navigate: jest.fn(({ to, replace }: { to: string; replace?: boolean }) => 
     React.createElement('div', { 'data-testid': 'navigate', 'data-to': to, 'data-replace': replace })
   ) as React.ComponentType<{ to: string; replace?: boolean }>,
+};
+
+// Mock components for testing
+const mockComponents: ComponentsContextValue = {
+  Link: ({ href, children, className }) => (
+    <a href={href} className={className}>{children}</a>
+  ),
+  Image: ({ src, alt, className }) => (
+    <img src={src} alt={alt} className={className} />
+  ),
 };
 
 describe('React Router Adapter', () => {
@@ -33,8 +46,8 @@ describe('React Router Adapter', () => {
   });
 
   describe('generateRoutes', () => {
-    it('should return routes array', () => {
-      const routes = adapter.generateRoutes();
+    it('should return routes array when provided with components', () => {
+      const routes = adapter.generateRoutes(mockComponents);
       
       expect(Array.isArray(routes)).toBe(true);
       expect(routes.length).toBeGreaterThan(0);
@@ -47,11 +60,19 @@ describe('React Router Adapter', () => {
     });
 
     it('should include blog posts route', () => {
-      const routes = adapter.generateRoutes();
+      const routes = adapter.generateRoutes(mockComponents);
       const paths = routes.map(route => route.path);
       
       expect(paths).toContain('/posts/*');
       expect(routes).toHaveLength(1); // Single route that handles all sub-routing
+    });
+
+    it('should create routes with proper React elements', () => {
+      const routes = adapter.generateRoutes(mockComponents);
+      
+      for (const route of routes) {
+        expect(React.isValidElement(route.element)).toBe(true);
+      }
     });
   });
 
@@ -61,9 +82,26 @@ describe('React Router Adapter', () => {
       expect(adapter.BlogRouter.name).toBe('BlogRouter');
     });
 
-    it('should be instantiable', () => {
+    it('should be instantiable with components prop', () => {
       expect(() => {
-        React.createElement(adapter.BlogRouter);
+        React.createElement(adapter.BlogRouter, { components: mockComponents });
+      }).not.toThrow();
+    });
+
+    it('should render without throwing when properly wrapped', () => {
+      const queryClient = new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      });
+
+      expect(() => {
+        render(
+          <QueryClientProvider client={queryClient}>
+            <adapter.BlogRouter components={mockComponents} />
+          </QueryClientProvider>
+        );
       }).not.toThrow();
     });
   });

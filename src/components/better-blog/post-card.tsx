@@ -69,6 +69,22 @@ export function PostCard({
               {post.excerpt}
             </CardDescription>
           )}
+          
+          {/* Author Information */}
+          <div className="text-sm text-muted-foreground">
+            By {post.author.name}
+          </div>
+          
+          {/* Tags */}
+          {post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {post.tags.map((tag) => (
+                <Badge key={tag.id} variant="secondary" className="text-xs">
+                  #{tag.name}
+                </Badge>
+              ))}
+            </div>
+          )}
         </CardContent>
   
         <CardFooter>

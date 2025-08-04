@@ -52,7 +52,8 @@ describe('PostsList Component', () => {
     const { container } = render(<PostsList posts={mockPosts} />);
     
     expect(container.querySelector('.posts-grid')).toBeInTheDocument();
-    expect(container.querySelectorAll('.post-card')).toHaveLength(mockPosts.length);
+    // PostCard uses Card component with different class structure
+    expect(container.querySelectorAll('[data-slot="card"]')).toHaveLength(mockPosts.length);
   });
 
   it('should handle posts with missing optional fields', () => {
