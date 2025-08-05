@@ -5,9 +5,8 @@ export default defineConfig((env) => {
     return {
         entry: {
             index: "./src/index.ts",
-            client: "./src/client.tsx",
-            nextjs: "./src/nextjs.ts", 
-            "react-router": "./src/react-router.ts",
+            client: "./src/client.ts",
+            server: "./src/server.ts",
         },
         format: ["esm", "cjs"],
         splitting: true,

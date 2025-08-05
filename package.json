@@ -25,16 +25,6 @@
                 "default": "./dist/index.cjs"
             }
         },
-        "./nextjs": {
-            "import": {
-                "types": "./dist/nextjs.d.ts",
-                "default": "./dist/nextjs.js"
-            },
-            "require": {
-                "types": "./dist/nextjs.d.cts",
-                "default": "./dist/nextjs.cjs"
-            }
-        },
         "./client": {
             "import": {
                 "types": "./dist/client.d.ts",
@@ -45,14 +35,14 @@
                 "default": "./dist/client.cjs"
             }
         },
-        "./react-router": {
+        "./server": {
             "import": {
-                "types": "./dist/react-router.d.ts",
-                "default": "./dist/react-router.js"
+                "types": "./dist/server.d.ts",
+                "default": "./dist/server.js"
             },
             "require": {
-                "types": "./dist/react-router.d.cts",
-                "default": "./dist/react-router.cjs"
+                "types": "./dist/server.d.cts",
+                "default": "./dist/server.cjs"
             }
         }
     },

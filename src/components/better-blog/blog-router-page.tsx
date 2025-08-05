@@ -1,10 +1,11 @@
 "use client";
 
-import React from 'react';
-import { useBlogContext } from '../../lib/better-blog/core/blog-context';
+import { useBlogContext, BlogContextProvider } from '../../lib/better-blog/context/blog-context';
 import { PostsList } from './posts-list';
 import { BlogLoading, PostLoading, PostsLoading } from './loading';
-import type { Post } from '../../lib/better-blog/core/types';
+import { matchRoute } from '../../lib/better-blog/core/router';
+import type { Post, RouteMatch, ClientBlogConfig } from '../../lib/better-blog/core/types';
+
 
 function PostDetail({ post }: { post: Post }) {
   return (
@@ -64,8 +65,9 @@ function ErrorPage({ error }: { error: Error }) {
   );
 }
 
-export function BlogRouterPage() {
-  const { routeMatch, data, isLoading, error } = useBlogContext();
+// Internal component that renders based on routeMatch
+function BlogRouterPageContent({routeMatch}: {routeMatch: RouteMatch}) {
+  const {  data, isLoading, error } = useBlogContext();
 
   if (error) {
     return <ErrorPage error={error} />;
@@ -75,11 +77,8 @@ export function BlogRouterPage() {
     // Show appropriate loading state based on route type
     switch (routeMatch.type) {
       case 'post':
-      case 'edit':
         return <PostLoading />;
       case 'home':
-      case 'tag':
-      case 'drafts':
         return <PostsLoading />;
       default:
         return <BlogLoading />;
@@ -101,32 +100,26 @@ export function BlogRouterPage() {
       }
       return <PostDetail post={data as Post} />;
 
-    case 'tag':
-      return (
-        <div>
-          <h1>Posts tagged: #{routeMatch.data?.tag}</h1>
-          <PostsList posts={Array.isArray(data) ? data : []} />
-        </div>
-      );
-
-    case 'drafts':
-      return (
-        <div>
-          <h1>📝 My Drafts</h1>
-          <PostsList posts={Array.isArray(data) ? data : []} />
-        </div>
-      );
-
-    case 'new':
-      return <NewPostForm />;
-
-    case 'edit':
-      if (!data || typeof data !== 'object' || !('title' in data)) {
-        return <NotFoundPage message="Post not found for editing" />;
-      }
-      return <EditPostForm post={data as Post} />;
-
+    
     default:
       return <NotFoundPage message={routeMatch.metadata.title} />;
   }
 }
+
+// Main component that takes slug and handles routing + context internally
+export function BlogRouterPage({
+  slug = [],
+  clientConfig
+}: {
+  slug?: string[];
+  clientConfig?: ClientBlogConfig;
+}) {
+  const routeMatch = matchRoute(slug);
+
+  return (
+    <BlogContextProvider routeMatch={routeMatch} clientConfig={clientConfig}>
+      <BlogRouterPageContent routeMatch={routeMatch} />
+    </BlogContextProvider>
+  );
+}
+

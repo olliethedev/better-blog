@@ -15,24 +15,24 @@ export function matchRoute(slug?: string[]): RouteMatch {
   if (slug.length === 1) {
     const [segment] = slug;
 
-    // Management routes
-    if (segment === 'new') {
-      return {
-        type: 'new',
-        metadata: {
-          title: 'Create New Post'
-        }
-      };
-    }
+    // // Management routes
+    // if (segment === 'new') {
+    //   return {
+    //     type: 'new',
+    //     metadata: {
+    //       title: 'Create New Post'
+    //     }
+    //   };
+    // }
     
-    if (segment === 'drafts') {
-      return {
-        type: 'drafts',
-        metadata: {
-          title: 'My Drafts'
-        }
-      };
-    }
+    // if (segment === 'drafts') {
+    //   return {
+    //     type: 'drafts',
+    //     metadata: {
+    //       title: 'My Drafts'
+    //     }
+    //   };
+    // }
 
     // Individual post: /posts/my-blog-post-slug
     return {
@@ -44,33 +44,33 @@ export function matchRoute(slug?: string[]): RouteMatch {
     };
   }
 
-  if (slug.length === 2) {
-    const [type, identifier] = slug;
+  // if (slug.length === 2) {
+  //   const [type, identifier] = slug;
 
-    switch (type) {
-      case 'tag':
-        // /posts/tag/react
-        return {
-          type: 'tag',
-          data: { tag: identifier },
-          metadata: {
-            title: `Posts tagged: ${identifier}`
-          }
-        };
+  //   switch (type) {
+  //     case 'tag':
+  //       // /posts/tag/react
+  //       return {
+  //         type: 'tag',
+  //         data: { tag: identifier },
+  //         metadata: {
+  //           title: `Posts tagged: ${identifier}`
+  //         }
+  //       };
 
-      default:
-        // /posts/my-post/edit
-        if (identifier === 'edit') {
-          return {
-            type: 'edit',
-            data: { postSlug: type },
-            metadata: {
-              title: `Editing: ${type}`
-            }
-          };
-        }
-    }
-  }
+  //     default:
+  //       // /posts/my-post/edit
+  //       if (identifier === 'edit') {
+  //         return {
+  //           type: 'edit',
+  //           data: { postSlug: type },
+  //           metadata: {
+  //             title: `Editing: ${type}`
+  //           }
+  //         };
+  //       }
+  //   }
+  // }
 
   // Fallback
   return {

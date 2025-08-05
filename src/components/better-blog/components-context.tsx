@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React from "react";
 
 export interface ComponentsContextValue {
   Link: React.ComponentType<{
@@ -23,10 +23,11 @@ const defaultComponents: ComponentsContextValue = {
       {children}
     </a>
   ),
-  Image: ({ src, alt = '', className, width, height, ...props }) => (
-    <img 
-      src={src} 
-      alt={alt || 'Image'} 
+  Image: ({ src, alt = "", className, width, height, ...props }) => (
+    // biome-ignore lint/a11y/useAltText: <explanation>
+    <img
+      src={src}
+      alt={alt || "Image"}
       className={className}
       width={width}
       height={height}
@@ -35,16 +36,17 @@ const defaultComponents: ComponentsContextValue = {
   ),
 };
 
-export const ComponentsContext = React.createContext<ComponentsContextValue>(defaultComponents);
+export const ComponentsContext =
+  React.createContext<ComponentsContextValue>(defaultComponents);
 
 export function useComponents() {
   return React.useContext(ComponentsContext);
 }
 
-export function ComponentsProvider({ 
-  children, 
-  components 
-}: { 
+export function ComponentsProvider({
+  children,
+  components,
+}: {
   children: React.ReactNode;
   components: ComponentsContextValue;
 }) {

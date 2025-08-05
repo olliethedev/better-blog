@@ -25,19 +25,32 @@ export type Post = {
   author: Author;
 };
 
-export interface BetterBlogConfig {
+// Server-side configuration (for SSR/SSG prefetching)
+export interface ServerBlogConfig {
   getAllPosts: (filter?: { slug?: string; tag?: string }) => Promise<Post[]>;
   getPostBySlug?: (slug: string) => Promise<Post | null>;
-  getPostsByTag?: (tag: string) => Promise<Post[]>;
 }
 
-export type RouteParams = {
-  slug?: string[];
-  [key: string]: any;
-};
+// Client-side configuration (for CSR, infinite scroll, etc.)
+export interface ClientBlogConfig {
+  getAllPosts: (filter?: { slug?: string; tag?: string }) => Promise<Post[]>;
+  getPostBySlug?: (slug: string) => Promise<Post | null>;
+}
+
+// Combined configuration
+export interface BetterBlogConfig {
+  server: ServerBlogConfig;
+  client: ClientBlogConfig;
+}
+
+// Legacy config for backwards compatibility (will be removed)
+export interface LegacyBlogConfig {
+  getAllPosts: (filter?: { slug?: string; tag?: string }) => Promise<Post[]>;
+  getPostBySlug?: (slug: string) => Promise<Post | null>;
+}
 
 export interface RouteMatch {
-  type: 'home' | 'post' | 'tag' | 'new' | 'drafts' | 'edit' | 'unknown';
+  type: 'home' | 'post' | 'unknown';
   data?: {
     slug?: string;
     tag?: string;
@@ -46,5 +59,21 @@ export interface RouteMatch {
   metadata: {
     title: string;
     description?: string;
+    image?: string;
   };
+}
+
+export interface ComponentsContextValue {
+  Link: React.ComponentType<{
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }>;
+  Image: React.ComponentType<{
+    src: string;
+    alt: string;
+    className?: string;
+    width?: number;
+    height?: number;
+  }>;
 }

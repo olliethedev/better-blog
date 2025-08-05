@@ -1,9 +1,9 @@
 
-import type { BetterBlogConfig, Post } from './types';
+import type { ServerBlogConfig, Post } from './types';
 import { matchRoute, generateStaticRoutes } from './router';
 
 export class BetterBlogCore {
-  constructor(private config: BetterBlogConfig) {}
+  constructor(private config: ServerBlogConfig) {}
 
   // Core business logic methods
   async getPosts(filter?: { slug?: string; tag?: string }): Promise<Post[]> {
@@ -20,19 +20,20 @@ export class BetterBlogCore {
     return posts.find(post => post.slug === slug) || null;
   }
 
-  async getPostsByTag(tag: string): Promise<Post[]> {
-    if (this.config.getPostsByTag) {
-      return this.config.getPostsByTag(tag);
-    }
+  // async getPostsByTag(tag: string): Promise<Post[]> {
+  //   if (this.config.getPostsByTag) {
+  //     return this.config.getPostsByTag(tag);
+  //   }
     
-    // Fallback: filter all posts by tag
-    const posts = await this.config.getAllPosts({ tag });
-    return posts.filter(post => 
-      post.tags.some(postTag => postTag.slug === tag)
-    );
-  }
+  //   // Fallback: filter all posts by tag
+  //   const posts = await this.config.getAllPosts({ tag });
+  //   return posts.filter(post => 
+  //     post.tags.some(postTag => postTag.slug === tag)
+  //   );
+  // }
 
   // Router methods
+  
   matchRoute(slug?: string[]) {
     return matchRoute(slug);
   }
@@ -41,3 +42,4 @@ export class BetterBlogCore {
     return generateStaticRoutes();
   }
 }
+
