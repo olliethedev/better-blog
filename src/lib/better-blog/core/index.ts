@@ -1,9 +1,9 @@
 
-import type { ServerBlogConfig, Post } from './types';
+import type { BlogDataProvider, Post } from './types';
 import { matchRoute, generateStaticRoutes } from './router';
 
 export class BetterBlogCore {
-  constructor(private config: ServerBlogConfig) {}
+  constructor(private config: BlogDataProvider) {}
 
   // Core business logic methods
   async getPosts(filter?: { slug?: string; tag?: string }): Promise<Post[]> {

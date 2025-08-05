@@ -4,7 +4,7 @@ import { useBlogContext, BlogContextProvider } from '../../lib/better-blog/conte
 import { PostsList } from './posts-list';
 import { BlogLoading, PostLoading, PostsLoading } from './loading';
 import { matchRoute } from '../../lib/better-blog/core/router';
-import type { Post, RouteMatch, ClientBlogConfig } from '../../lib/better-blog/core/types';
+import type { Post, RouteMatch, BlogDataProvider } from '../../lib/better-blog/core/types';
 
 
 function PostDetail({ post }: { post: Post }) {
@@ -112,7 +112,7 @@ export function BlogRouterPage({
   clientConfig
 }: {
   slug?: string[];
-  clientConfig?: ClientBlogConfig;
+  clientConfig?: BlogDataProvider;
 }) {
   const routeMatch = matchRoute(slug);
 

@@ -37,9 +37,9 @@ export function matchRoute(slug?: string[]): RouteMatch {
     // Individual post: /posts/my-blog-post-slug
     return {
       type: 'post',
-      data: { slug: segment },
+      params: { slug: segment },
       metadata: {
-        title: `Post: ${segment}`
+        title: `Post: ${segment}` // Fallback title, will be replaced by actual post title 
       }
     };
   }

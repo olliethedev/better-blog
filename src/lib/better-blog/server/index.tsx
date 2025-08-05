@@ -2,7 +2,8 @@ import React from "react";
 import type { QueryClient } from "@tanstack/react-query";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { BetterBlogCore } from "../core";
-import type { ServerBlogConfig } from "../core/types";
+import type { BlogDataProvider } from "../core/types";
+import { generatePostMetadata } from "../core/utils";
 import { BlogRouterPage } from "../../../components/better-blog/blog-router-page";
 import { BlogLoading } from "../../../components/better-blog/loading";
 import { prefetchBlogData } from "./prefetch";
@@ -20,7 +21,7 @@ export interface BetterBlogServerAdapter {
 }
 
 export function createServerAdapter(
-  serverConfig: ServerBlogConfig,
+  serverConfig: BlogDataProvider,
   queryClient: QueryClient
 ): BetterBlogServerAdapter {
   const blog = new BetterBlogCore(serverConfig);
@@ -34,9 +35,29 @@ export function createServerAdapter(
     async generateMetadata({ params }) {
       const { all: slug } = await params;
       const match = blog.matchRoute(slug);
+      
+      // For post routes, fetch the actual post data to generate dynamic metadata
+      if (match.type === 'post' && match.params?.slug) {
+        try {
+          const slug = match.params.slug;
+          const post = await serverConfig.getPostBySlug?.(slug) ?? 
+                       (await serverConfig.getAllPosts({ slug }))
+                         .find(p => p.slug === slug);
+          
+          if (post) {
+            return generatePostMetadata(post);
+          }
+        } catch (error) {
+          console.error('Error fetching post metadata:', error);
+          // Fall back to route-based metadata
+        }
+      }
+      
+      // Use fallback metadata from route match
       return {
         title: match.metadata.title,
         description: match.metadata.description,
+        image: match.metadata.image,
       };
     },
 
@@ -60,7 +81,7 @@ async function BlogEntryContent({
   queryClient,
 }: {
   params: Promise<{ all: string[] }>;
-  serverConfig: ServerBlogConfig;
+  serverConfig: BlogDataProvider;
   queryClient: QueryClient;
 }) {
   const { all: slug } = await params;

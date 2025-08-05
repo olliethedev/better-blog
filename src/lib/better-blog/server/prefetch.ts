@@ -2,14 +2,14 @@
 // NO "use client" directive - can be called from server components
 
 import type { QueryClient } from '@tanstack/react-query';
-import type { ServerBlogConfig, RouteMatch } from '../core/types';
+import type { BlogDataProvider, RouteMatch } from '../core/types';
 
 export async function prefetchBlogData(
   routeMatch: RouteMatch, 
-  serverConfig: ServerBlogConfig, 
+  serverConfig: BlogDataProvider, 
   queryClient: QueryClient
 ): Promise<void> {
-  const queryKey = ['blog', routeMatch.type, routeMatch.data];
+  const queryKey = ['blog', routeMatch.type, routeMatch.params];
   
   await queryClient.prefetchQuery({
     queryKey,
@@ -19,8 +19,8 @@ export async function prefetchBlogData(
           return await serverConfig.getAllPosts();
         
         case 'post': {
-          if (!routeMatch.data?.slug) throw new Error('Post slug is required');
-          const slug = routeMatch.data.slug;
+          if (!routeMatch.params?.slug) throw new Error('Post slug is required');
+          const slug = routeMatch.params.slug;
           return await serverConfig.getPostBySlug?.(slug) ?? 
                  (await serverConfig.getAllPosts({ slug })).find(p => p.slug === slug) ?? null;
         }

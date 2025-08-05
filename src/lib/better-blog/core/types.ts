@@ -25,22 +25,15 @@ export type Post = {
   author: Author;
 };
 
-// Server-side configuration (for SSR/SSG prefetching)
-export interface ServerBlogConfig {
-  getAllPosts: (filter?: { slug?: string; tag?: string }) => Promise<Post[]>;
-  getPostBySlug?: (slug: string) => Promise<Post | null>;
-}
-
-// Client-side configuration (for CSR, infinite scroll, etc.)
-export interface ClientBlogConfig {
+export interface BlogDataProvider {
   getAllPosts: (filter?: { slug?: string; tag?: string }) => Promise<Post[]>;
   getPostBySlug?: (slug: string) => Promise<Post | null>;
 }
 
 // Combined configuration
 export interface BetterBlogConfig {
-  server: ServerBlogConfig;
-  client: ClientBlogConfig;
+  server: BlogDataProvider;
+  client: BlogDataProvider;
 }
 
 // Legacy config for backwards compatibility (will be removed)
@@ -51,7 +44,7 @@ export interface LegacyBlogConfig {
 
 export interface RouteMatch {
   type: 'home' | 'post' | 'unknown';
-  data?: {
+  params?: {
     slug?: string;
     tag?: string;
     postSlug?: string;
@@ -62,6 +55,14 @@ export interface RouteMatch {
     image?: string;
   };
 }
+
+export interface BlogMetadata {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+
 
 export interface ComponentsContextValue {
   Link: React.ComponentType<{

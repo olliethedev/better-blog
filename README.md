@@ -1,10 +1,143 @@
 # better-blog
 
-WIP
+A modern, type-safe React blog library designed for Next.js with first-class SSR/SSG support and clean client/server boundaries.
+
+## Architecture Overview
+
+### Core Design Principles
+
+1. **Explicit Client/Server Boundaries**: Strict separation between server-safe and client-only code
+2. **Configuration-Driven**: Dependency injection pattern for data access
+3. **Framework Agnostic Core**: Business logic independent of React/Next.js
+4. **Performance First**: SSR prefetching with zero hydration mismatches
+5. **TypeScript Native**: Comprehensive type safety throughout
+
+### Package Structure
+
+```
+better-blog/
+├── src/
+│   ├── index.ts          # Server-safe exports (SSR/SSG)
+│   ├── client.ts         # Client-only exports ("use client")
+│   ├── server.ts         # Server-specific functionality
+│   ├── lib/better-blog/
+│   │   ├── core/         # Framework-agnostic business logic
+│   │   ├── context/      # React Context + TanStack Query
+│   │   └── server/       # SSR/SSG utilities
+│   └── components/       # React components
+```
+
+### Entry Points
+
+- **`better-blog`** - Server-safe exports for SSR/SSG
+- **`better-blog/client`** - Client-only components and hooks
+- **`better-blog/server`** - Server-specific adapters and utilities
+
+
+### Core Components
+
+#### 1. BetterBlogCore (`src/lib/better-blog/core/`)
+
+The framework-agnostic business logic layer:
+
+```typescript
+class BetterBlogCore {
+  constructor(private config: BlogDataProvider) {}
+  
+  async getPosts(filter?: { slug?: string; tag?: string }): Promise<Post[]>
+  async getPostBySlug(slug: string): Promise<Post | null>
+  matchRoute(slug?: string[]): RouteMatch
+  getStaticRoutes(): Array<{ slug: string[] }>
+}
+```
+
+**Key Features:**
+- Configuration-driven data access
+- File-system based routing (`/posts/[slug]`)
+- Comprehensive TypeScript types
+- No React dependencies
+
+#### 2. Server Adapter (`src/lib/better-blog/server/`)
+
+Next.js App Router integration:
+
+```typescript
+function createServerAdapter(
+  serverConfig: BlogDataProvider,
+  queryClient: QueryClient
+): BetterBlogServerAdapter
+```
+
+**Provides:**
+- `generateStaticParams()` for SSG
+- `generateMetadata()` for SEO
+- Server component entry point
+- TanStack Query prefetching
+
+#### 3. Client Context (`src/lib/better-blog/context/`)
+
+React state management with smart caching:
+
+```typescript
+function BlogContextProvider({ 
+  routeMatch, 
+  clientConfig?, 
+  children 
+}: BlogContextProviderProps)
+```
+
+**Features:**
+- Uses server-prefetched data when available
+- Falls back to client fetching with loading states
+- TanStack Query integration
+- Zero hydration mismatches
+
+#### 4. Router (`src/lib/better-blog/core/router.ts`)
+
+Pattern-based routing system:
+
+- `/posts` → Home (list all posts)
+- `/posts/[slug]` → Individual post
+- Future: `/posts/tag/[tag]`, `/posts/drafts`, etc.
+
+### Configuration System
+
+#### Data Provider Configuration (for client and server)
+```typescript
+interface BlogDataProvider {
+  getAllPosts: (filter?) => Promise<Post[]>;
+  getPostBySlug?: (slug: string) => Promise<Post | null>;
+}
+```
+
+### Performance Strategy
+
+1. **SSR Path**: Server prefetches → Client hydrates from cache (no loading states)
+2. **CSR Path**: Client fetches directly via TanStack Query (with loading states)
+3. **Smart Caching**: 5-minute stale time, 10-minute garbage collection
+4. **Bundle Optimization**: Tree-shaking friendly, peer dependencies
+
+### Build System
+
+- **tsup** with ESM/CJS dual builds
+- **Directive Preservation** for proper client/server boundaries
+- **Type Generation** with `.d.ts` files
+- **External Dependencies** to avoid version conflicts
 
 ## Features
 
-- [ ] 
+- [x] Server-side rendering (SSR) support
+- [x] Static site generation (SSG) support  
+- [x] Client-side routing with loading states
+- [x] TanStack Query integration for caching
+- [x] TypeScript-first development
+- [x] Configurable data sources
+- [x] Component dependency injection
+- [ ] Tag-based filtering
+- [ ] Draft post management
+- [ ] Post editing interface
+- [ ] Search functionality
+- [ ] Infinite scroll pagination
 
 ## Development Workflow
 

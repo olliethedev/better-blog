@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ClientBlogConfig, RouteMatch } from '../core/types';
+import type { BlogDataProvider, RouteMatch } from '../core/types';
 
 export interface BlogContextValue {
   data: unknown;
@@ -20,49 +20,68 @@ export function useBlogContext(): BlogContextValue {
   return context;
 }
 
-function useBlogData(routeMatch: RouteMatch, clientConfig?: ClientBlogConfig) {
+function useBlogData(routeMatch: RouteMatch, clientConfig?: BlogDataProvider) {
   const queryClient = useQueryClient();
-  const queryKey = ['blog', routeMatch.type, routeMatch.data];
+  const queryKey = ['blog', routeMatch.type, routeMatch.params];
   
-  // If no clientConfig provided, read directly from cache (server-prefetched data)
-  if (!clientConfig) {
-    const cachedData = queryClient.getQueryData(queryKey);
-    const queryState = queryClient.getQueryState(queryKey);
-    
-    return {
-      data: cachedData,
-      isLoading: false, // Never show loading on client - we either have data or we don't
-      error: queryState?.error || null,
-    };
-  }
-
-  // When clientConfig is available - use for client-side data fetching (infinite scroll, search, etc.)
-  return useQuery({
+  // Always use useQuery for consistent behavior
+  const queryResult = useQuery({
     queryKey,
     queryFn: async () => {
-      switch (routeMatch.type) {
-        case 'home':
-          return await clientConfig.getAllPosts();
-        
-        case 'post': {
-          if (!routeMatch.data?.slug) throw new Error('Post slug is required');
-          const slug = routeMatch.data.slug;
-          return await clientConfig.getPostBySlug?.(slug) ?? 
-                 (await clientConfig.getAllPosts({ slug })).find(p => p.slug === slug) ?? null;
+      // If clientConfig is provided, use it for fetching
+      if (clientConfig) {
+        switch (routeMatch.type) {
+          case 'home':
+            return await clientConfig.getAllPosts();
+          
+          case 'post': {
+            if (!routeMatch.params?.slug) throw new Error('Post slug is required');
+            const slug = routeMatch.params.slug;
+            return await clientConfig.getPostBySlug?.(slug) ?? 
+                   (await clientConfig.getAllPosts({ slug })).find(p => p.slug === slug) ?? null;
+          }
+          
+          default:
+            return null;
         }
-        
-        default:
-          return null;
       }
+      
+      // This should never be called when no clientConfig due to enabled: false
+      throw new Error('Query should be disabled when no clientConfig provided');
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
+    // Only enable when clientConfig is provided
+    enabled: !!clientConfig,
+    // For server-prefetched data, don't refetch
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    // This is crucial: provide initial data from cache for hydration consistency
+    initialData: () => {
+      if (!clientConfig) {
+        const cachedData = queryClient.getQueryData(queryKey);
+        return cachedData;
+      }
+      return undefined;
+    },
   });
+
+  // When no clientConfig and query is disabled, manually override loading state
+  // to ensure hydration consistency
+  if (!clientConfig) {
+    return {
+      ...queryResult,
+      isLoading: false, // Force loading to false for hydration consistency
+      isPending: false, // Also override isPending if it exists
+    };
+  }
+
+  return queryResult;
 }
 
 export interface BlogContextProviderProps {
   routeMatch: RouteMatch;
-  clientConfig?: ClientBlogConfig;
+  clientConfig?: BlogDataProvider;
   children: React.ReactNode;
 }
 
