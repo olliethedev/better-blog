@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import type { Post } from "@/lib/better-blog/core/types";
-import { useComponents } from "@/components/better-blog/components-context";
+import { useComponents } from "@/lib/better-blog/context/better-blog-context";
 
 export function PostCard({
     post,

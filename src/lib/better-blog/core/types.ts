@@ -26,7 +26,7 @@ export type Post = {
 };
 
 export interface BlogDataProvider {
-  getAllPosts: (filter?: { slug?: string; tag?: string }) => Promise<Post[]>;
+  getAllPosts: (filter?: { slug?: string; tag?: string; offset?: number; limit?: number }) => Promise<Post[]>;
   getPostBySlug?: (slug: string) => Promise<Post | null>;
 }
 
@@ -43,7 +43,7 @@ export interface LegacyBlogConfig {
 }
 
 export interface RouteMatch {
-  type: 'home' | 'post' | 'unknown';
+  type: 'home' | 'post' | 'tag' | 'drafts' | 'new' | 'edit' | 'unknown';
   params?: {
     slug?: string;
     tag?: string;
@@ -61,6 +61,8 @@ export interface BlogMetadata {
   description?: string;
   image?: string;
 }
+
+
 
 
 

@@ -3,53 +3,44 @@
 
 import type { QueryClient } from '@tanstack/react-query';
 import type { BlogDataProvider, RouteMatch } from '../core/types';
+import { routeSchema } from '../core/routes';
 
 export async function prefetchBlogData(
   routeMatch: RouteMatch, 
   serverConfig: BlogDataProvider, 
   queryClient: QueryClient
 ): Promise<void> {
-  const queryKey = ['blog', routeMatch.type, routeMatch.params];
+  // Find the route definition for this route type
+  const routeDef = routeSchema.routes.find(route => route.type === routeMatch.type);
   
-  await queryClient.prefetchQuery({
-    queryKey,
-    queryFn: async () => {
-      switch (routeMatch.type) {
-        case 'home':
-          return await serverConfig.getAllPosts();
-        
-        case 'post': {
-          if (!routeMatch.params?.slug) throw new Error('Post slug is required');
-          const slug = routeMatch.params.slug;
-          return await serverConfig.getPostBySlug?.(slug) ?? 
-                 (await serverConfig.getAllPosts({ slug })).find(p => p.slug === slug) ?? null;
-        }
-        
-        // case 'tag': {
-        //   if (!routeMatch.data?.tag) throw new Error('Tag is required');
-        //   return await dataAPI.getPostsByTag?.(routeMatch.data.tag) ??
-        //          (await dataAPI.getAllPosts({ tag: routeMatch.data.tag }));
-        // }
-        
-        // case 'drafts': {
-        //   const allPosts = await dataAPI.getAllPosts();
-        //   return allPosts.filter(post => !post.published);
-        // }
-        
-        // case 'edit': {
-        //   if (!routeMatch.data?.postSlug) throw new Error('Post slug is required for editing');
-        //   const postSlug = routeMatch.data.postSlug;
-        //   return await dataAPI.getPostBySlug?.(postSlug) ?? 
-        //          (await dataAPI.getAllPosts({ slug: postSlug })).find(p => p.slug === postSlug) ?? null;
-        // }
-        
-        // case 'new':
-        //   return null;
-        
-        default:
-          return null;
-      }
-    },
-    staleTime: 1000 * 60 * 5,
-  });
+  if (!routeDef || !routeDef.data) {
+    // No data fetching needed for this route
+    return;
+  }
+  
+  // Use the route's query key factory to generate consistent keys
+  const queryKey = routeDef.data.queryKey(routeMatch.params || {});
+  
+  if (routeDef.data.isInfinite) {
+    // Use prefetchInfiniteQuery for paginated routes
+    await queryClient.prefetchInfiniteQuery({
+      queryKey,
+      queryFn: async ({ pageParam = 0 }) => {
+        // Use the route schema's server data handler
+        return await routeDef.data!.server(routeMatch.params || {}, serverConfig);
+      },
+      initialPageParam: 0,
+      staleTime: 1000 * 60 * 5, // 5 minutes - matches client-side hooks
+    });
+  } else {
+    // Use regular prefetchQuery for single data routes
+    await queryClient.prefetchQuery({
+      queryKey,
+      queryFn: async () => {
+        // Use the route schema's server data handler
+        return await routeDef.data!.server(routeMatch.params || {}, serverConfig);
+      },
+      staleTime: 1000 * 60 * 5, // 5 minutes - matches client-side hooks
+    });
+  }
 }
