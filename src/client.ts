@@ -4,9 +4,6 @@ export { BlogRouterPage } from './components/better-blog/blog-router-page';
 export { BetterBlogContextProvider, useBetterBlogContext } from './lib/better-blog/context/better-blog-context';
 export { useRoute } from './lib/better-blog/context/route-context';
 export { useComponents, usePageOverrides, ComponentsContextValue } from './lib/better-blog/context/better-blog-context';
-export { PostsList } from './components/better-blog/posts-list';
-export { PostCard } from './components/better-blog/post-card';
-export { BlogLoading, PostLoading, PostsLoading } from './components/better-blog/loading';
 export type { PageComponentOverrides as ComponentOverrides } from './lib/better-blog/core/client-components';
 
 

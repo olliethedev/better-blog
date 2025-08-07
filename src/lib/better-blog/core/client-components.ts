@@ -11,27 +11,20 @@ import {
   EditPostPageComponent,
   loadingComponents
 } from '../../../components/better-blog/route-components';
+import type { RouteMatch } from './types';
+import { defaultLoadingComponents } from '@/components/better-blog/loading';
 
-export type RouteType = 'home' | 'post' | 'tag' | 'drafts' | 'new' | 'edit';
 
-// Default component mappings
-export const defaultComponents: Record<RouteType, React.ComponentType> = {
+// Default component mappings (excluding 'unknown' type)
+export const defaultComponents = {
   home: HomePageComponent,
   post: PostPageComponent,
   tag: TagPageComponent,
   drafts: DraftsPageComponent,
   new: NewPostPageComponent,
   edit: EditPostPageComponent,
-};
+} as const;
 
-export const defaultLoadingComponents: Record<RouteType, React.ComponentType<Record<string, never>>> = {
-  home: loadingComponents.home,
-  post: loadingComponents.post,
-  tag: loadingComponents.tag,
-  drafts: loadingComponents.drafts,
-  new: loadingComponents.new,
-  edit: loadingComponents.edit,
-};
 
 // Component override interface (simplified - just components)
 export interface PageComponentOverrides {
@@ -56,10 +49,15 @@ export interface PageComponentOverrides {
  * Resolves the final component for a route type, applying overrides
  */
 export function resolveComponent(
-  routeType: string,
+  routeType: RouteMatch['type'],
   overrides?: PageComponentOverrides
 ): React.ComponentType | undefined {
-  const type = routeType as RouteType;
+  // Handle unknown route types early
+  if (routeType === 'unknown' || !(routeType in defaultComponents)) {
+    return undefined;
+  }
+  
+  const type = routeType;
   
   // Check for override first
   if (overrides) {
@@ -87,10 +85,15 @@ export function resolveComponent(
  * Resolves the final loading component for a route type, applying overrides
  */
 export function resolveLoadingComponent(
-  routeType: string,
+  routeType: RouteMatch['type'],
   overrides?: PageComponentOverrides
 ): React.ComponentType<Record<string, never>> | undefined {
-  const type = routeType as RouteType;
+  // Handle unknown route types early
+  if (routeType === 'unknown' || !(routeType in defaultLoadingComponents)) {
+    return undefined;
+  }
+  
+  const type = routeType;
   
   // Check for override first
   if (overrides) {

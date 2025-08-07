@@ -1,13 +1,14 @@
 import React from "react";
 import type { QueryClient } from "@tanstack/react-query";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { BetterBlogCore } from "../core";
 import type { BlogDataProvider } from "../core/types";
 import { generatePostMetadata } from "../core/utils";
 import { BlogRouterPage } from "../../../components/better-blog/blog-router-page";
 import { BlogLoading } from "../../../components/better-blog/loading";
 import { prefetchBlogData } from "./prefetch";
-import { matchRoute } from "../core/router";
+import { generateStaticRoutes, matchRoute } from "../core/router";
+import { resolveServerLoadingComponent } from "../core/server-components";
+import type { PageComponentOverrides } from "../core/client-components";
 
 export interface BetterBlogServerAdapter {
   generateStaticParams: () => Array<{ all: string[] }>;
@@ -17,24 +18,25 @@ export interface BetterBlogServerAdapter {
   Entry: React.ComponentType<{
     params: Promise<{ all: string[] }>;
     queryClient: QueryClient;
+    loadingComponentOverrides?: Pick<PageComponentOverrides, 'HomeLoadingComponent' | 'PostLoadingComponent' | 'TagLoadingComponent' | 'DraftsLoadingComponent' | 'NewPostLoadingComponent' | 'EditPostLoadingComponent'>;
   }>;
 }
+
 
 export function createServerAdapter(
   serverConfig: BlogDataProvider,
   queryClient: QueryClient
 ): BetterBlogServerAdapter {
-  const blog = new BetterBlogCore(serverConfig);
 
   return {
     generateStaticParams() {
-      const staticRoutes = blog.getStaticRoutes();
+      const staticRoutes = generateStaticRoutes();
       return staticRoutes.map((route) => ({ all: route.slug }));
     },
 
     async generateMetadata({ params }) {
       const { all: slug } = await params;
-      const match = blog.matchRoute(slug);
+      const match = matchRoute(slug);
       
       // For post routes, fetch the actual post data to generate dynamic metadata
       if (match.type === 'post' && match.params?.slug) {
@@ -61,9 +63,20 @@ export function createServerAdapter(
       };
     },
 
-    Entry: function BlogEntry({ params }) {
+    Entry: async function BlogEntry({ params, loadingComponentOverrides }) {
+      const { all: slug } = await params;
+      const routeMatch = matchRoute(slug);
+      const LoadingComponent = resolveServerLoadingComponent(routeMatch.type, loadingComponentOverrides);
+      
+      // Use the resolved loading component, or fall back to BlogLoading with appropriate message
+      const fallbackComponent = LoadingComponent ? (
+        <LoadingComponent />
+      ) : (
+        <BlogLoading message={`Loading ${routeMatch.type}...`} />
+      );
+      
       return (
-        <React.Suspense fallback={<BlogLoading />}>
+        <React.Suspense fallback={fallbackComponent}>
           <BlogEntryContent
             params={params}
             serverConfig={serverConfig}
