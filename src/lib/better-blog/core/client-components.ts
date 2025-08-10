@@ -9,7 +9,6 @@ import {
   DraftsPageComponent,
   NewPostPageComponent,
   EditPostPageComponent,
-  loadingComponents
 } from '../../../components/better-blog/route-components';
 import type { RouteMatch } from './types';
 import { defaultLoadingComponents } from '@/components/better-blog/loading';

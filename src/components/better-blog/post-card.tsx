@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import type { Post } from "@/lib/better-blog/core/types";
-import { useComponents } from "@/lib/better-blog/context/better-blog-context";
+import { useBlogPath, useComponents } from "@/lib/better-blog/context/better-blog-context";
 
 export function PostCard({
     post,
@@ -17,6 +17,7 @@ export function PostCard({
     canEdit: boolean;
   }) {
     const { Link, Image } = useComponents();
+    const blogPath = useBlogPath;
     const publishedDate = post.publishedAt || post.createdAt;
   
     return (
@@ -57,7 +58,7 @@ export function PostCard({
           </div>
   
           <CardTitle className="line-clamp-2 transition-colors text-lg leading-tight">
-            <Link href={`/posts/${post.slug}`} className="hover:underline">
+            <Link href={blogPath(post.slug)} className="hover:underline">
               {post.title}
             </Link>
           </CardTitle>
@@ -90,14 +91,14 @@ export function PostCard({
         <CardFooter>
           <div className="flex items-center justify-between w-full">
             <Button variant="ghost" size="sm" asChild>
-              <Link href={`/posts/${post.slug}`}>
+              <Link href={blogPath(post.slug)}>
                 Read more
                 <ArrowRightIcon className="w-3 h-3 ml-1" />
               </Link>
             </Button>
             {canEdit && (
               <Button size="sm" asChild>
-                <Link href={`/posts/${post.slug}/edit`}>
+                <Link href={blogPath(post.slug, 'edit')}>
                   Edit
                 </Link>
               </Button>

@@ -1,6 +1,7 @@
 import type { Post } from '../../lib/better-blog/core/types';
 import { PostCard } from './post-card';
 import { Button } from '../ui/button';
+import { useBetterBlogContext } from '@/lib/better-blog/context/better-blog-context';
 
 interface PostsListProps {
   posts: Post[];
@@ -10,13 +11,14 @@ interface PostsListProps {
 }
 
 export function PostsList({ posts, onLoadMore, hasMore, isLoadingMore }: PostsListProps) {
+  const { localization } = useBetterBlogContext();
   if (posts.length === 0) {
     return <div>No posts found.</div>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="posts-grid bg-blue-500">
+      <div className="posts-grid p-4 bg-green-500">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} canEdit={false} />
         ))}

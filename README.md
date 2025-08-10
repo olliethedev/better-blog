@@ -1,322 +1,386 @@
-# better-blog
+## better-blog
 
-A modern, type-safe React blog library designed for Next.js with first-class SSR/SSG support, schema-driven routing, and clean client/server boundaries.
+Add a production-ready, SEO-friendly blog to your React app in minutes. better-blog is a framework-agnostic, type-safe router + component set with drop-in setup, SSR/SSG out of the box, and full customization—works with modern frameworks like Next.js App Router and React Router.
 
-## Architecture Overview
+### Highlights
 
-better-blog is architected as a **schema-driven, SSR-first React blog library** with strict client/server boundaries and declarative routing. The system is designed for maximum performance, type safety, and developer experience.
+- **Drop-in blog in minutes**: One provider + one catch-all route
+- **Fully customizable UI**: Override any page or loading component; keep your design system
+- **Bring your own content source**: Pluggable `BlogDataProvider` for CMS/API/files/DB
+- **Works anywhere**: Next.js App Router or React Router with the same core
+- **TypeScript-first DX**: Strong types across routes, hooks, and providers
+- **SEO-first by default**: SSR/SSG support, route-aware metadata helpers, hydration-safe rendering
 
-### Core Design Principles
 
-1. **Schema-Driven Routing**: Declarative route definitions with automatic component mapping and data fetching
-2. **Explicit Client/Server Boundaries**: Strict separation using "use client" directives and separate entry points
-3. **Configuration-Driven Data Access**: Dependency injection pattern for flexible data sources (CMS, API, files)
-4. **Framework Agnostic Core**: Business logic independent of React/Next.js implementation details
-5. **Performance First**: SSR prefetching with zero hydration mismatches and smart caching
-6. **TypeScript Native**: Comprehensive type safety with inference and validation throughout
+---
 
-### Module Architecture
-
-The library is organized into distinct modules with clear boundaries:
-
-```
-src/
-├── index.ts              # Main entry (server-safe)
-├── client.ts             # Client-only exports
-├── server.ts             # Server-only exports
-└── lib/better-blog/
-    ├── core/             # Framework-agnostic business logic
-    │   ├── types.ts      # Core type definitions
-    │   ├── router.ts     # Route matching engine
-    │   ├── routes.tsx    # Route schema definitions
-    │   ├── route-schema.ts # Pattern matching utilities
-    │   ├── client-components.ts # Client component mappings
-    │   ├── component-resolver.ts # Component resolution logic
-    │   └── utils.ts      # Shared utilities
-    ├── context/          # React context providers
-    │   ├── better-blog-context.tsx # Main context
-    │   └── route-context.tsx       # Route-specific context
-    ├── hooks/            # Client-side data hooks
-    └── server/           # Server-side adapters
-        ├── index.tsx     # Next.js server adapter
-        └── prefetch.ts   # SSR data prefetching
-```
-
-### Entry Points & Boundaries
-
-- **`better-blog`** (`src/index.ts`) - Server-safe exports for SSR/SSG components and utilities
-- **`better-blog/client`** (`src/client.ts`) - Client-only components, hooks, and context providers
-- **`better-blog/server`** (`src/server.ts`) - Server-specific adapters, prefetching, and SSG utilities
-
-This separation ensures:
-- Server components never import client-only code
-- Client components have access to browser-specific APIs
-- Build tools can properly tree-shake unused code paths
-- TypeScript can enforce proper usage patterns
-
-### Route System Architecture
-
-#### 1. Schema-Driven Route Definitions
-
-Routes are defined declaratively in `routes.tsx` using a pattern-based schema:
-
-```typescript
-interface RouteDefinition {
-  type: string;                    // Route identifier
-  pattern: (string | ':param')[];  // URL pattern matching
-  staticRoutes?: { slug: string[] }[]; // Static routes for SSG
-  metadata: { title, description, image }; // SEO metadata
-  data?: {                         // Data fetching configuration
-    queryKey: (params) => unknown[];      // TanStack Query key
-    server: (params, provider) => Promise<T>; // Server data fetcher
-    isInfinite?: boolean;          // Pagination support
-  };
-}
-```
-
-#### 2. Pattern Matching Engine
-
-The router uses a sophisticated pattern matching system:
-
-- **Static segments**: `['posts', 'drafts']` matches `/posts/drafts` exactly
-- **Dynamic segments**: `[':slug']` captures URL parameters as `{slug: 'value'}`
-- **Mixed patterns**: `[':slug', 'edit']` matches `/posts/my-post/edit`
-
-Routes are matched in order of definition with first-match-wins semantics.
-
-#### 3. Component Resolution Pipeline
-
-```
-URL → matchRoute() → RouteMatch → resolveComponent() → React Component
-```
-
-1. **Route Matching**: URL segments parsed and matched against route patterns
-2. **Parameter Extraction**: Dynamic segments extracted into typed parameters object
-3. **Component Resolution**: Route type mapped to React component via resolver
-4. **Override Support**: Custom components can override defaults via context
-
-### Data Flow Architecture
-
-#### SSR (Server-Side Rendering) Path
-
-```
-Request → Server Adapter → Route Match → Prefetch Data → Dehydrate → Client Hydration
-```
-
-1. **Server Adapter**: Next.js catches all routes via `[...all]/page.tsx`
-2. **Route Resolution**: URL parsed and matched against route schema
-3. **Data Prefetching**: Server executes route's data handler with BlogDataProvider
-4. **Query Dehydration**: TanStack Query state serialized for client
-5. **Component Rendering**: Server renders with prefetched data
-6. **Client Hydration**: Client rehydrates from dehydrated state (no loading states)
-
-#### CSR (Client-Side Rendering) Path
-
-```
-Navigation → Route Match → Client Query → Loading State → Component Update
-```
-
-1. **Client Navigation**: React Router or programmatic navigation
-2. **Route Resolution**: Same pattern matching as server
-3. **Data Fetching**: Client executes route's data handler via React Query
-4. **Loading States**: Custom loading components shown during fetch
-5. **Component Update**: Component receives data and re-renders
-
-### Component Architecture
-
-#### 1. Three-Layer Component System
-
-```
-├── Route Components (business logic)
-│   ├── HomePageComponent
-│   ├── PostPageComponent
-│   └── TagPageComponent
-├── UI Components (presentation)
-│   ├── PostCard
-│   ├── PostsList
-│   └── Badge
-└── Base Components (system)
-    ├── BlogRouterPage (main router)
-    └── Loading (fallback states)
-```
-
-#### 2. Component Override System
-
-Components can be overridden at multiple levels:
-
-- **Global Overrides**: Via `BetterBlogContextProvider.pageOverrides`
-- **Framework Overrides**: Via `BetterBlogContextProvider.components` (Link, Image)
-- **Loading Overrides**: Custom loading states per route type
-
-#### 3. Context Architecture
-
-```typescript
-interface BetterBlogContextValue {
-  clientConfig: BlogDataProvider;     // Client data access
-  components: ComponentsContextValue; // Framework components (Link, Image)
-  pageOverrides?: PageComponentOverrides; // Custom page components
-}
-```
-
-The context provides:
-- **Data Provider Injection**: Configurable data access layer
-- **Component Abstraction**: Framework-agnostic Link and Image components
-- **Override Support**: Custom component injection without code changes
-
-### Data Provider Architecture
-
-#### Dual Provider Pattern
-
-```typescript
-interface BetterBlogConfig {
-  server: BlogDataProvider; // Server-side data access
-  client: BlogDataProvider; // Client-side data access (may differ)
-}
-```
-
-This enables:
-- **Different Implementation**: Server might use direct DB, client uses API
-- **Security Boundaries**: Server can access sensitive data, client cannot
-- **Performance Optimization**: Different caching strategies per environment
-
-#### Provider Interface
-
-```typescript
-interface BlogDataProvider {
-  getAllPosts: (filter?: FilterOptions) => Promise<Post[]>;
-  getPostBySlug?: (slug: string) => Promise<Post | null>;
-}
-```
-
-The minimal interface allows integration with:
-- **Headless CMS**: Contentful, Strapi, Sanity
-- **File Systems**: Markdown, MDX, JSON
-- **Databases**: PostgreSQL, MongoDB, SQLite
-- **APIs**: REST, GraphQL, tRPC
-
-### Performance Architecture
-
-#### 1. Caching Strategy
-
-- **Server-Side**: Data prefetched and dehydrated into page HTML
-- **Client-Side**: TanStack Query with 5-minute stale time, 10-minute GC
-- **Static Generation**: Route schema generates static paths automatically
-
-#### 2. Bundle Optimization
-
-- **Code Splitting**: Separate client/server/core bundles
-- **Tree Shaking**: ESM modules with side-effect-free exports
-- **Peer Dependencies**: Avoids version conflicts and reduces bundle size
-- **Directive Preservation**: "use client" boundaries maintained through build
-
-#### 3. Loading State Management
-
-- **SSR**: No loading states (data prefetched)
-- **CSR**: Customizable loading components per route type
-- **Suspense Integration**: React Suspense boundaries for graceful fallbacks
-
-### Build System Architecture
-
-#### Multi-Format Output
-
-The build system produces:
-
-```
-dist/
-├── index.js/cjs          # Main entry (server-safe)
-├── client.js/cjs         # Client components
-├── server.js/cjs         # Server adapters
-└── *.d.ts               # TypeScript definitions
-```
-
-#### Key Build Features
-
-- **tsup Configuration**: Optimized for library distribution
-- **Directive Preservation**: Maintains React "use client" directives
-- **External Dependencies**: All React ecosystem deps marked external
-- **Dual Format**: ESM and CommonJS for maximum compatibility
-- **Development Mode**: Watch mode with automatic yalc publishing
-
-This architecture enables better-blog to provide a cohesive, performant blogging solution while maintaining flexibility for diverse use cases and hosting environments.
-
-## Development Workflow
-
-### Prerequisites
-
-Install [yalc](https://github.com/wclr/yalc) globally for better local package linking:
+## Installation
 
 ```bash
-npm install -g yalc
+pnpm add better-blog @tanstack/react-query
 ```
 
-### Setting Up Local Development
+### Tailwind CSS
 
-1. **Clone and setup the library**:
+Configure Tailwind to include better-blog's classes:
+
+- Tailwind v4 (in your `globals.css`):
+
+```css
+/* globals.css */
+@source "../node_modules/better-blog";
+```
+
+- Tailwind v3 (in your `tailwind.config.{js,ts}`):
+
+```ts
+// tailwind.config.ts
+export default {
+  content: [
+    // your app paths...
+    "./node_modules/better-blog/dist/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  // ...rest of config
+};
+```
+
+## Core concepts
+
+- **Package structure**
+  - `better-blog`: shared utilities and types
+  - `better-blog/client`: client components (`BlogRouterPage`, `BetterBlogContextProvider`, hooks)
+  - `better-blog/server`: server adapters (e.g. `createServerAdapter` for SSR/SSG)
+
+- **Data provider**
+  - You inject a `BlogDataProvider` implementation (CMS, files, API, DB):
+    ```ts
+    export interface BlogDataProvider {
+      getAllPosts: (filter?: { slug?: string; tag?: string; offset?: number; limit?: number }) => Promise<Post[]>;
+      getPostBySlug?: (slug: string) => Promise<Post | null>;
+      ...
+    }
+    ```
+
+
+---
+
+## Next.js App Router (SSR/SSG) example
+
+This renders all blog routes under `/posts/...` with server prefetch + client hydration. Provide separate data providers for server and client.
+
+1) `app/posts/[[...all]]/page.tsx` (server)
+
+```tsx
+import { createServerAdapter } from 'better-blog/server';
+import type { BlogDataProvider, Post } from 'better-blog';
+import type { Metadata } from 'next';
+import { getQueryClient } from '@/lib/get-query-client';
+
+const serverBlogConfig: BlogDataProvider = {
+  async getAllPosts(filter) {...},
+  async getPostBySlug(slug) {...},
+  ...
+};
+
+const queryClient = getQueryClient();
+const adapter = createServerAdapter(serverBlogConfig, queryClient);
+
+export const generateStaticParams = adapter.generateStaticParams;
+export const generateMetadata: (ctx: { params: Promise<{ all: string[] }> }) => Promise<Metadata> = adapter.generateMetadata as any;
+
+export default function Page({ params }: { params: { all?: string[] } }) {
+  return (
+    <adapter.Entry
+      params={Promise.resolve({ all: params.all ?? [] })}
+      queryClient={queryClient}
+    />
+  );
+}
+```
+
+2) `app/posts/layout.tsx` (server)
+
+```tsx
+import type { ReactNode } from 'react';
+import { Provider } from '@/components/providers';
+
+export default function BlogLayout({ children }: { children: ReactNode }) {
+  return (
+    <Provider>
+      <header><nav><a href="/posts">All Posts</a></nav></header>
+      <main>{children}</main>
+      <footer />
+    </Provider>
+  );
+}
+```
+
+3) `components/providers.tsx` (client)
+
+```tsx
+'use client';
+import type { ReactNode } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import Link from 'next/link';
+import Image from 'next/image';
+import { BetterBlogContextProvider } from 'better-blog/client';
+import type { ComponentsContextValue, BlogDataProvider, Post } from 'better-blog';
+import { getQueryClient } from '@/lib/get-query-client';
+
+const components: ComponentsContextValue = {
+  Link: ({ href, children, className }) => (<Link href={href} className={className}>{children}</Link>),
+  Image: ({ src, alt, className, width, height }) => (
+    <Image src={src} alt={alt} className={className} width={width ?? 800} height={height ?? 400} />
+  ),
+};
+
+// Client provider
+const clientBlogConfig: BlogDataProvider = {
+  async getAllPosts(filter) {...},
+  async getPostBySlug(slug) {...},
+  ...
+};
+
+export function Provider({ children }: { children: ReactNode }) {
+  const queryClient = getQueryClient();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BetterBlogContextProvider clientConfig={clientBlogConfig} components={components}>
+        {children}
+      </BetterBlogContextProvider>
+    </QueryClientProvider>
+  );
+}
+```
+
+That’s it: your pages are rendered with prefetched data and hydrated on the client. Override UI or add loading states via the provider (see below).
+
+---
+
+## React DOM Router (CSR) example
+
+This renders all blog routes under `/blog/*` using client-side data fetching.
+
+1) `main.tsx`
+
+```tsx
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Provider } from './providers';
+import BlogEntryPage from './BlogEntryPage';
+
+createRoot(document.getElementById('root')!).render(
+  <BrowserRouter>
+    <Provider>
+      <Routes>
+        <Route path="/blog/*" element={<BlogEntryPage />} />
+      </Routes>
+    </Provider>
+  </BrowserRouter>
+);
+```
+
+2) `BlogEntryPage.tsx`
+
+```tsx
+import { useLocation } from 'react-router-dom';
+import { BlogRouterPage } from 'better-blog/client';
+
+export default function BlogEntryPage() {
+  const pathname = useLocation().pathname.replace('/blog', '') || '/';
+  const slug = pathname.split('/').filter(Boolean);
+  return <BlogRouterPage slug={slug} />;
+}
+```
+
+3) `providers.tsx`
+
+```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NavLink } from 'react-router-dom';
+import { BetterBlogContextProvider } from 'better-blog/client';
+
+const components = {
+  Link: ({ href, children, className }) => (
+    <NavLink to={href.replace('/posts', '/blog')} className={className}>
+      {children}
+    </NavLink>
+  ),
+  Image: (p) => <img {...p} />,
+};
+
+const clientBlogConfig = {
+  async getAllPosts() { return []; },
+  async getPostBySlug() { return null; },
+};
+
+const queryClient = new QueryClient();
+
+export function Provider({ children }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BetterBlogContextProvider clientConfig={clientBlogConfig} components={components}>
+        {children}
+      </BetterBlogContextProvider>
+    </QueryClientProvider>
+  );
+}
+```
+
+---
+
+## TanStack Query (React Query) setup
+
+Why we use it:
+
+- **Caching + de/rehydration**: Server prefetch + client hydration for SEO and zero-flash data.
+- **Great DX**: Automatic refetching, pagination support, and easy overrides.
+
+Add a small helper to create/reuse a `QueryClient` in both server and browser environments.
+
+Create `lib/get-query-client.ts`:
+
+```ts
+import {
+  QueryClient,
+  defaultShouldDehydrateQuery,
+  isServer,
+} from '@tanstack/react-query';
+
+function makeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+      },
+      dehydrate: {
+        // Include pending queries in dehydration (useful for Suspense)
+        shouldDehydrateQuery: (query) =>
+          defaultShouldDehydrateQuery(query) || query.state.status === 'pending',
+      },
+    },
+  });
+}
+
+let browserQueryClient: QueryClient | undefined = undefined;
+
+export function getQueryClient() {
+  if (isServer) {
+    // Server: always make a new query client
+    return makeQueryClient();
+  }
+  // Browser: reuse a single instance to avoid remounts across Suspense
+  if (!browserQueryClient) browserQueryClient = makeQueryClient();
+  return browserQueryClient;
+}
+```
+
+Use `getQueryClient()` in the Next.js and React Router examples above.
+
+---
+
+## Overriding page components
+
+Use `pageOverrides` to replace any built-in page or loading component, and `components` to wire your router-specific `Link`/`Image`.
+
+```tsx
+import { BetterBlogContextProvider } from 'better-blog/client';
+
+function MyHome() { return <div>Custom Home</div>; }
+function MyHomeLoading() { return <div>Loading home…</div>; }
+
+<BetterBlogContextProvider
+  clientConfig={clientConfig}
+  components={{ Link: MyLink, Image: MyImage }}
+  pageOverrides={{ HomeComponent: MyHome, HomeLoadingComponent: MyHomeLoading }}
+>
+  {children}
+</BetterBlogContextProvider>
+```
+
+---
+
+## API surface (most used)
+
+- **Server utilities** (`better-blog`)
+  - `matchRoute(slug?: string[]): RouteMatch`
+  - `generateStaticRoutes(): Array<{ slug: string[] }>`
+  - `generatePostMetadata(post: Post): { title: string; description?: string; image?: string }`
+
+- **Server adapter** (`better-blog/server`)
+  - `createServerAdapter(serverConfig: BlogDataProvider, queryClient: QueryClient)` → `{ generateStaticParams, generateMetadata, Entry }`
+
+- **Client** (`better-blog/client`)
+  - `BetterBlogContextProvider`, `BlogRouterPage`
+  - Hooks: `usePosts`, `usePost`, `useTagPosts`, `useDrafts`, `useCreatePost`, `useUpdatePost`, `useDeletePost`
+
+---
+
+## Architecture (for contributors)
+
+- **Design**
+  - Schema-driven routes and data; minimal state in components
+  - Strict client/server separation via dedicated entry points
+
+- **Key modules**
+  - `core/router.ts`: `matchRoute`, `generateStaticRoutes`
+  - `core/routes.tsx`: route schema (patterns, metadata, data handlers)
+  - `core/route-schema.ts`: pattern matching + metadata resolution
+  - `core/client-components.ts`: maps route types to client components; override helpers
+  - `components/better-blog/*`: default UI and route components
+  - `server/index.tsx`: Next.js-oriented server adapter (prefetch + hydrate)
+
+- **Folder map**
+  ```
+  src/
+  ├─ index.ts           # server-safe exports
+  ├─ client.ts          # client-only exports
+  ├─ server.ts          # server adapters
+  └─ lib/better-blog/
+     ├─ core/           # framework-agnostic logic
+     ├─ context/        # React contexts
+     ├─ hooks/          # data hooks (React Query)
+     └─ server/         # SSR utilities
+  ```
+
+---
+
+## Developing the library
+
+### Prereqs
+
 ```bash
-git clone <repo-url>
-cd better-blog
 pnpm install
-pnpm build
+```
+
+Optional: for local linking use [yalc](https://github.com/wclr/yalc).
+
+### Common commands
+
+- `pnpm dev` – watch build and auto-publish via yalc to linked local apps
+- `pnpm build` – production build (ESM + CJS + types)
+- `pnpm test` – run unit tests
+
+### Testing locally in an app
+
+```bash
 yalc publish --push
+# in your app
+yalc add better-blog && pnpm install
 ```
 
-2. **Create test applications** (recommended):
-```bash
-# Next.js (SSR/SSG testing)
-pnpm dlx shadcn@latest init
-```
-
-3. **Link the library to test apps**:
-```bash
-# In each test application
-cd your-test-app
-yalc add better-blog
-pnpm install
-```
-
-### Development Loop
-
-1. **Start the library in watch mode**:
-```bash
-cd better-blog
-pnpm dev
-```
-This will:
-- Watch for file changes
-- Rebuild the library automatically
-- Push changes to all linked test applications
-
-2. **Start your test applications** (in separate terminals):
-```bash
-# Terminal 2: Next.js test
-cd ../your-test-app
-pnpm dev
-```
-
-3. **Make changes**: Edit files in `src/`. The library will automatically rebuild and update in all linked test applications with hot reload.
-
-
-### Scripts
-
-- `pnpm dev` - Watch mode with auto-push to linked projects
-- `pnpm build` - Production build
-- `pnpm prepublishOnly` - Clean build before publishing (runs automatically)
-- `pnpm test` - Run tests
-- `pnpm test:watch` - Run tests in watch mode
-
-
-### Troubleshooting
-
+---
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+MIT
 
+---
 
-TODO:
-[] localization
-[] (multi)sitemap generation (sitemap, robots, etc)
-[] authorization (show admin ui elements, hide admin pages to non-admin users)
-[] improve metadata
-[] dynamic base path support (/blog, /olliethedev/blog, /news)
-[] data provider adapters (postgres, redis, api)
+## Roadmap (short)
+
+- localization
+- sitemap/robots generation
+- basic auth gates for admin UI
+- richer metadata helpers
+- data provider adapters (Postgres, Redis, API)

@@ -10,6 +10,7 @@ import {
   useDrafts,
 } from '../../lib/better-blog/hooks';
 import { useRoute } from '../../lib/better-blog/context/route-context';
+import { useBetterBlogContext } from '@/lib/better-blog/context/better-blog-context';
 
 // ============================================================================
 // ZERO-PROP ROUTE COMPONENTS - PURE REACTIVE FUNCTIONS!
@@ -17,12 +18,13 @@ import { useRoute } from '../../lib/better-blog/context/route-context';
 
 export function HomePageComponent() {
   const { posts, isLoading, loadMore, hasMore, isLoadingMore } = usePosts();
+  const { localization } = useBetterBlogContext();
   
   if (isLoading) return <PostsLoading />;
   
   return (
-    <div>
-      <h1>Blog Posts</h1>
+    <div className="container mx-auto px-4">
+      <h1>{localization.BLOG_LIST_TITLE}</h1>
       <PostsList 
         posts={posts} 
         onLoadMore={loadMore}

@@ -26,7 +26,7 @@ export function matchRoute(slug?: string[]): RouteMatch {
   return {
     type: 'unknown',
     metadata: {
-      title: `Unknown route: /posts/${normalizedSlug.join('/')}`
+      title: `Unknown route: /${normalizedSlug.join('/')}`
     }
   };
 }
