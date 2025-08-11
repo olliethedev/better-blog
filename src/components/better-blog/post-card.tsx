@@ -7,17 +7,19 @@ import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon } from "lucide-react";
 import type { Post } from "@/lib/better-blog/core/types";
-import { useBlogPath, useComponents } from "@/lib/better-blog/context/better-blog-context";
+import { useAdminUiOptions, useBlogPath, useComponents } from "@/lib/better-blog/context/better-blog-context";
 
 export function PostCard({
     post,
     canEdit,
   }: {
     post: Post;
-    canEdit: boolean;
+    canEdit?: boolean;
   }) {
     const { Link, Image } = useComponents();
+    const { canUpdate } = useAdminUiOptions();
     const blogPath = useBlogPath;
+    const canEditResolved = canEdit ?? canUpdate;
     const publishedDate = post.publishedAt || post.createdAt;
   
     return (
@@ -74,7 +76,7 @@ export function PostCard({
                 <ArrowRightIcon className="w-3 h-3 ml-1" />
               </Link>
             </Button>
-            {canEdit && (
+            {canEditResolved && (
               <Button size="sm" asChild>
                 <Link href={blogPath(post.slug, 'edit')}>
                   Edit

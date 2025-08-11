@@ -49,6 +49,7 @@ export interface BetterBlogContextValue {
   pageOverrides?: PageComponentOverrides;
   basePath: string;
   localization: BlogLocalization;
+  adminUiOptions?: AdminUiOptions;
 }
 
 const BetterBlogContext = React.createContext<BetterBlogContextValue | null>(null);
@@ -90,6 +91,24 @@ export function useBlogPath(
   return suffix ? `${basePath}/${suffix}` : basePath;
 }
 
+// Admin UI permissions/options
+export interface AdminUiOptions {
+  canCreate: boolean;
+  canUpdate: boolean;
+  canDelete: boolean;
+}
+
+const defaultAdminUiOptions: AdminUiOptions = {
+  canCreate: false,
+  canUpdate: false,
+  canDelete: false,
+};
+
+export function useAdminUiOptions(): AdminUiOptions {
+  const { adminUiOptions } = useBetterBlogContext();
+  return { ...defaultAdminUiOptions, ...(adminUiOptions ?? {}) };
+}
+
 
 export interface BetterBlogContextProviderProps {
   clientConfig: BlogDataProvider;
@@ -97,6 +116,7 @@ export interface BetterBlogContextProviderProps {
   pageOverrides?: PageComponentOverrides;
   basePath?: string; // defaults to "/posts"
   localization?: BlogLocalization;
+  adminUiOptions?: Partial<AdminUiOptions>;
   children: React.ReactNode;
 }
 
@@ -106,6 +126,7 @@ export function BetterBlogContextProvider({
   pageOverrides,
   basePath = '/posts',
   localization: localizationProp,
+  adminUiOptions,
   children 
 }: BetterBlogContextProviderProps) {
   function normalizeBasePath(path: string): string {
@@ -128,6 +149,9 @@ export function BetterBlogContextProvider({
     pageOverrides,
     basePath: normalizeBasePath(basePath),
     localization,
+    adminUiOptions: adminUiOptions
+      ? { ...defaultAdminUiOptions, ...adminUiOptions }
+      : defaultAdminUiOptions,
   };
 
   return (

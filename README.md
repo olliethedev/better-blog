@@ -379,7 +379,11 @@ MIT
 
 ## Roadmap (short)
 
+- post details page
+- new post page
+- edit post page
+- drafts list page
+- tag posts lists page
 - sitemap/robots generation
-- basic auth gates for admin UI
 - richer metadata helpers
 - data provider adapters (Postgres, Redis, API)
