@@ -24,7 +24,7 @@ export function PostCard({
       <Card className="group relative flex h-full flex-col gap-2 pt-0 pb-4 transition-shadow duration-200 hover:shadow-lg">
         {/* Featured Image or Placeholder */}
         <div className="relative h-48 w-full overflow-hidden rounded-t-xl bg-muted">
-          {post.image ? (
+          {post.image &&  (
             <Image
               src={post.image}
               alt={post.title}
@@ -32,13 +32,7 @@ export function PostCard({
               width={500}
               height={300}
             />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/80">
-              <div className="flex flex-col items-center text-muted-foreground">
-                <ImageIcon className="w-14 h-14 mb-2" />
-              </div>
-            </div>
-          )}
+          ) }
         </div>
   
         {!post.published && (
@@ -69,22 +63,6 @@ export function PostCard({
             <CardDescription className="line-clamp-3 mt-2">
               {post.excerpt}
             </CardDescription>
-          )}
-          
-          {/* Author Information */}
-          <div className="text-sm text-muted-foreground">
-            By {post.author.name}
-          </div>
-          
-          {/* Tags */}
-          {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {post.tags.map((tag) => (
-                <Badge key={tag.id} variant="secondary" className="text-xs">
-                  #{tag.name}
-                </Badge>
-              ))}
-            </div>
           )}
         </CardContent>
   

@@ -18,7 +18,7 @@ export function PostsList({ posts, onLoadMore, hasMore, isLoadingMore }: PostsLi
 
   return (
     <div className="space-y-6">
-      <div className="posts-grid p-4 bg-green-500">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
           <PostCard key={post.id} post={post} canEdit={false} />
         ))}

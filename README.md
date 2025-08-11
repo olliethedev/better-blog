@@ -379,7 +379,6 @@ MIT
 
 ## Roadmap (short)
 
-- localization
 - sitemap/robots generation
 - basic auth gates for admin UI
 - richer metadata helpers

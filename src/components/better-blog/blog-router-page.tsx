@@ -3,7 +3,7 @@
 import { matchRoute } from '../../lib/better-blog/core/router';
 import { RouteProvider } from '../../lib/better-blog/context/route-context';
 import { resolveRouteComponent } from '../../lib/better-blog/core/component-resolver';
-import { usePageOverrides } from '../../lib/better-blog/context/better-blog-context';
+import { useBetterBlogContext, usePageOverrides } from '../../lib/better-blog/context/better-blog-context';
 import type { RouteMatch } from '../../lib/better-blog/core/types';
 
 
@@ -41,11 +41,14 @@ function BlogRouterPageContent({
 
 // Main component that takes slug and handles routing + context internally
 export function BlogRouterPage({
-  slug = [],
+  path,
 }: {
-  slug?: string[];
+  path?: string;
 }) {
-  const routeMatch = matchRoute(slug);
+
+
+  const { basePath } = useBetterBlogContext();
+  const routeMatch = matchRoute(path?.split('/').filter(Boolean), basePath);
   
   // Get page overrides from context to extract NotFoundComponent
   const pageOverrides = usePageOverrides();

@@ -1,7 +1,7 @@
 import React from "react";
 import type { QueryClient } from "@tanstack/react-query";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import type { BlogDataProvider } from "../core/types";
+import type { BlogDataProvider, RouteMatch } from "../core/types";
 import { generatePostMetadata } from "../core/utils";
 import { BlogRouterPage } from "../../../components/better-blog/blog-router-page";
 import { BlogLoading } from "../../../components/better-blog/loading";
@@ -12,11 +12,9 @@ import type { PageComponentOverrides } from "../core/client-components";
 
 export interface BetterBlogServerAdapter {
   generateStaticParams: () => Array<{ all: string[] }>;
-  generateMetadata: (context: {
-    params: Promise<{ all: string[] }>;
-  }) => Promise<{ title: string; description?: string }>;
+  generateMetadata: (path?: string) => Promise<{ title: string; description?: string }>;
   Entry: React.ComponentType<{
-    params: Promise<{ all: string[] }>;
+    path?: string;
     queryClient: QueryClient;
     loadingComponentOverrides?: Pick<PageComponentOverrides, 'HomeLoadingComponent' | 'PostLoadingComponent' | 'TagLoadingComponent' | 'DraftsLoadingComponent' | 'NewPostLoadingComponent' | 'EditPostLoadingComponent'>;
   }>;
@@ -34,9 +32,8 @@ export function createServerAdapter(
       return staticRoutes.map((route) => ({ all: route.slug }));
     },
 
-    async generateMetadata({ params }) {
-      const { all: slug } = await params;
-      const match = matchRoute(slug);
+    async generateMetadata(path?: string) {
+      const match = matchRoute(path?.split('/').filter(Boolean));
       
       // For post routes, fetch the actual post data to generate dynamic metadata
       if (match.type === 'post' && match.params?.slug) {
@@ -63,9 +60,8 @@ export function createServerAdapter(
       };
     },
 
-    Entry: async function BlogEntry({ params, loadingComponentOverrides }) {
-      const { all: slug } = await params;
-      const routeMatch = matchRoute(slug);
+    Entry: async function BlogEntry({ path, loadingComponentOverrides }) {
+      const routeMatch = matchRoute(path?.split('/').filter(Boolean));
       const LoadingComponent = resolveServerLoadingComponent(routeMatch.type, loadingComponentOverrides);
       
       // Use the resolved loading component, or fall back to BlogLoading with appropriate message
@@ -78,7 +74,8 @@ export function createServerAdapter(
       return (
         <React.Suspense fallback={fallbackComponent}>
           <BlogEntryContent
-            params={params}
+            routeMatch={routeMatch}
+            path={path}
             serverConfig={serverConfig}
             queryClient={queryClient}
           />
@@ -89,16 +86,16 @@ export function createServerAdapter(
 }
 
 async function BlogEntryContent({
-  params,
+  path,
+  routeMatch,
   serverConfig,
   queryClient,
 }: {
-  params: Promise<{ all: string[] }>;
+  path?: string;
+  routeMatch: RouteMatch;
   serverConfig: BlogDataProvider;
   queryClient: QueryClient;
 }) {
-  const { all: slug } = await params;
-  const routeMatch = matchRoute(slug);
 
   // Prefetch data on the server
   await prefetchBlogData(routeMatch, serverConfig, queryClient);
@@ -108,7 +105,7 @@ async function BlogEntryContent({
 
   return (
     <HydrationBoundary state={dehydratedState}>
-        <BlogRouterPage slug={slug} />
+        <BlogRouterPage path={path} />
     </HydrationBoundary>
   );
 }
