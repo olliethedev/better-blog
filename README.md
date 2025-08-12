@@ -378,7 +378,7 @@ MIT
 ---
 
 ## Roadmap (short)
-
+- post search
 - post details page
 - new post page
 - edit post page

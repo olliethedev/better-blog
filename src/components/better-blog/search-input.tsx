@@ -1,0 +1,115 @@
+"use client"
+
+import * as React from "react"
+import {
+    buildPath,
+    useBetterBlogContext
+} from "../../lib/better-blog/context/better-blog-context"
+import { usePostSearch } from "../../lib/better-blog/hooks"
+import { stripHtml, stripMarkdown } from "../../lib/format-utils"
+import { HighlightText } from "./highlight-text"
+import { SearchModal, type SearchResult } from "./search-modal"
+
+// Simplified blog post search result interface
+interface BlogPostSearchResult extends SearchResult {
+    slug: string
+    publishedAt?: Date | null
+    authorName?: string
+    processedContent: string
+}
+
+interface SearchInputProps {
+    className?: string
+    triggerClassName?: string
+    placeholder?: string
+    buttonText?: string
+    emptyMessage?: string
+}
+
+const renderBlogResult = (
+    item: BlogPostSearchResult,
+    index: number,
+    query: string
+) => (
+    <button
+        type="button"
+        key={item.id}
+        className="flex w-full cursor-pointer flex-col gap-2 rounded-sm border-border border-b px-4 py-3 text-left transition-colors hover:bg-accent"
+        onClick={() => item.onClick?.()}
+    >
+        <div className="flex items-start justify-between gap-2">
+            <HighlightText
+                text={item.title}
+                searchQuery={query}
+                className="flex-1 font-medium text-sm leading-5"
+            />
+            {item.publishedAt && (
+                <span className="whitespace-nowrap text-muted-foreground text-xs">
+                    {new Date(item.publishedAt).toLocaleDateString()}
+                </span>
+            )}
+        </div>
+
+        <HighlightText
+            text={item.processedContent}
+            searchQuery={query}
+            className="text-muted-foreground text-xs leading-4"
+            maxLength={120}
+        />
+    </button>
+)
+
+export function SearchInput({
+    className,
+    triggerClassName,
+    placeholder,
+    buttonText,
+    emptyMessage
+}: SearchInputProps) {
+    const { navigate, basePath } = useBetterBlogContext()
+    const [currentQuery, setCurrentQuery] = React.useState("")
+
+    const { data: searchResults = [], isLoading } = usePostSearch({
+        query: currentQuery,
+        enabled: true,
+        debounceMs: 300
+    })
+
+    const formattedResults: BlogPostSearchResult[] = React.useMemo(() => {
+        return searchResults.map((post) => ({
+            id: post.id,
+            title: post.title,
+            slug: post.slug,
+            publishedAt: post.publishedAt,
+            authorName: post.author?.name,
+            processedContent: stripMarkdown(stripHtml(post.content || "")),
+            onClick: () => navigate(buildPath(basePath, post.slug))
+        }))
+    }, [searchResults, navigate, basePath])
+
+    // Search function that updates our query state
+    const handleSearch = React.useCallback(
+        (query: string): BlogPostSearchResult[] => {
+            setCurrentQuery(query)
+            return [] // Return empty since we use external async results
+        },
+        []
+    )
+
+    return (
+        <SearchModal<BlogPostSearchResult>
+            placeholder={placeholder}
+            buttonText={buttonText}
+            emptyMessage={emptyMessage}
+            searchFn={handleSearch}
+            renderResult={renderBlogResult}
+            results={formattedResults}
+            isLoading={isLoading}
+            className={className}
+            triggerClassName={triggerClassName}
+            keyboardShortcut="⌘K"
+        />
+    )
+}
+
+export default SearchInput

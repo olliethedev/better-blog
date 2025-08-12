@@ -26,20 +26,20 @@ export type Post = {
 };
 
 export interface BlogDataProvider {
-  getAllPosts: (filter?: { slug?: string; tag?: string; offset?: number; limit?: number }) => Promise<Post[]>;
-  getPostBySlug?: (slug: string) => Promise<Post | null>;
+    getAllPosts: (filter?: {
+        slug?: string
+        tag?: string
+        offset?: number
+        limit?: number
+        query?: string
+    }) => Promise<Post[]>
+    getPostBySlug?: (slug: string) => Promise<Post | null>
 }
 
 // Combined configuration
 export interface BetterBlogConfig {
   server: BlogDataProvider;
   client: BlogDataProvider;
-}
-
-// Legacy config for backwards compatibility (will be removed)
-export interface LegacyBlogConfig {
-  getAllPosts: (filter?: { slug?: string; tag?: string }) => Promise<Post[]>;
-  getPostBySlug?: (slug: string) => Promise<Post | null>;
 }
 
 export interface RouteMatch {

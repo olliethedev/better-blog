@@ -4,4 +4,4 @@ export const blogLocalization = {
     ...BLOG_LIST,
 }
 
-export type BlogLocalization = Partial<typeof blogLocalization>
+export type BlogLocalization = typeof blogLocalization
