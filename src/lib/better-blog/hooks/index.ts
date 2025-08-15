@@ -10,7 +10,7 @@ import {
 import { useEffect, useRef } from "react"
 import { useDebounce } from "../../../hooks/use-debounce"
 import { useBetterBlogContext } from "../context/better-blog-context"
-import type { Post } from "../core/types"
+import type { Post, Tag } from "../core/types"
 
 // ============================================================================
 // CORE HOOK TYPES
@@ -35,6 +35,13 @@ export interface UsePostsResult {
 
 export interface UsePostResult {
     post: Post | null
+    isLoading: boolean
+    error: Error | null
+    refetch: () => void
+}
+
+export interface UseTagsResult {
+    tags: Tag[]
     isLoading: boolean
     error: Error | null
     refetch: () => void
@@ -160,6 +167,68 @@ export function useTagPosts(tag?: string): UsePostsResult {
 }
 
 /**
+ * Hook for fetching all unique tags across posts
+ */
+export function useTags(): UseTagsResult {
+    const { clientConfig } = useBetterBlogContext()
+
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ["tags"],
+        queryFn: async () => {
+            if (!clientConfig) throw new Error("Client config not available")
+
+            const pageSize = 50
+            let offset = 0
+            const uniqueTagsById = new Map<string, Tag>()
+
+            // Paginate through all posts to aggregate unique tags
+            // Stops when the last fetched page has fewer than pageSize items
+            // or when no posts are returned
+            // Assumes clientConfig.getAllPosts is stable and deterministic
+            // for the provided paging parameters
+            // eslint-disable-next-line no-constant-condition
+            while (true) {
+                const posts = await clientConfig.getAllPosts({
+                    offset,
+                    limit: pageSize
+                })
+
+                if (!posts || posts.length === 0) break
+
+                for (const post of posts as Post[]) {
+                    if (Array.isArray(post.tags)) {
+                        for (const tag of post.tags) {
+                            if (tag && typeof tag.id === "string") {
+                                if (!uniqueTagsById.has(tag.id)) {
+                                    uniqueTagsById.set(tag.id, tag)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (posts.length < pageSize) break
+                offset += pageSize
+            }
+
+            return Array.from(uniqueTagsById.values()).sort((a, b) =>
+                a.name.localeCompare(b.name)
+            )
+        },
+        enabled: !!clientConfig,
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 10
+    })
+
+    return {
+        tags: data ?? [],
+        isLoading,
+        error,
+        refetch
+    }
+}
+
+/**
  * Hook for fetching draft posts with pagination
  */
 export function useDrafts(): UseDraftsResult {
@@ -259,7 +328,8 @@ export function useCreatePost() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async (postData: Partial<Post>) => {
+        // Accept unknown shape to allow adapters (e.g., Prisma) to pass nested inputs
+        mutationFn: async (postData: unknown) => {
             // This would be implemented when we add write operations
             throw new Error("Create post not implemented yet")
         },
@@ -278,10 +348,8 @@ export function useUpdatePost() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({
-            slug,
-            data
-        }: { slug: string; data: Partial<Post> }) => {
+        // Accept unknown shape to allow adapters (e.g., Prisma) to pass nested inputs
+        mutationFn: async ({ slug, data }: { slug: string; data: unknown }) => {
             // This would be implemented when we add write operations
             throw new Error("Update post not implemented yet")
         },

@@ -1,0 +1,119 @@
+import { Crepe, CrepeFeature } from "@milkdown/crepe"
+import "@milkdown/crepe/theme/common/style.css"
+import "./markdown-editor-styles.css"
+
+import { useBetterBlogContext } from "@/client"
+import { cn } from "@/lib/utils"
+import { editorViewCtx, parserCtx } from "@milkdown/kit/core"
+import { listener, listenerCtx } from "@milkdown/kit/plugin/listener"
+import { Slice } from "@milkdown/kit/prose/model"
+import { Selection } from "@milkdown/kit/prose/state"
+import throttle from "lodash.throttle"
+import { useLayoutEffect, useRef } from "react"
+
+export function MarkdownEditor({
+    value,
+    onChange,
+    className
+}: {
+    value?: string
+    onChange?: (markdown: string) => void
+    className?: string
+}) {
+    const { uploadImage } = useBetterBlogContext()
+    const containerRef = useRef<HTMLDivElement | null>(null)
+    const crepeRef = useRef<Crepe | null>(null)
+    const isReadyRef = useRef(false)
+    const onChangeRef = useRef<typeof onChange>(onChange)
+    const initialValueRef = useRef<string>(value ?? "")
+    type ThrottledFn = ((markdown: string) => void) & {
+        cancel?: () => void
+        flush?: () => void
+    }
+    const throttledOnChangeRef = useRef<ThrottledFn | null>(null)
+
+    onChangeRef.current = onChange
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useLayoutEffect(() => {
+        if (crepeRef.current) return
+        const container = containerRef.current
+        if (!container) return
+
+        const crepe = new Crepe({
+            root: container,
+            defaultValue: initialValueRef.current,
+            featureConfigs: {
+                [CrepeFeature.Placeholder]: {
+                    text: "Write something..."
+                },
+                [CrepeFeature.ImageBlock]: {
+                    onUpload: async (file) => {
+                        const url = await uploadImage(file)
+                        return url
+                    }
+                }
+            }
+        })
+
+        // Prepare throttled onChange once per editor instance
+        throttledOnChangeRef.current = throttle((markdown: string) => {
+            if (onChangeRef.current) onChangeRef.current(markdown)
+        }, 200)
+
+        crepe.editor
+            .config((ctx) => {
+                ctx.get(listenerCtx).markdownUpdated((_, markdown) => {
+                    throttledOnChangeRef.current?.(markdown)
+                })
+            })
+            .use(listener)
+
+        crepe.create().then(() => {
+            isReadyRef.current = true
+        })
+        crepeRef.current = crepe
+
+        return () => {
+            try {
+                isReadyRef.current = false
+                throttledOnChangeRef.current?.cancel?.()
+                throttledOnChangeRef.current = null
+                crepe.destroy()
+            } finally {
+                crepeRef.current = null
+            }
+        }
+    }, [])
+
+    useLayoutEffect(() => {
+        if (!isReadyRef.current) return
+        if (!crepeRef.current) return
+        if (typeof value !== "string") return
+
+        const currentMarkdown = crepeRef.current.getMarkdown()
+        if (currentMarkdown === value) return
+
+        crepeRef.current.editor.action((ctx) => {
+            const view = ctx.get(editorViewCtx)
+            if (view?.hasFocus?.() === true) return
+            const parser = ctx.get(parserCtx)
+            const doc = parser(value)
+            if (!doc) return
+
+            const state = view.state
+            const selection = state.selection
+            const from = selection.from
+
+            let tr = state.tr
+            tr = tr.replace(0, state.doc.content.size, new Slice(doc.content, 0, 0))
+
+            const docSize = doc.content.size
+            const safeFrom = Math.max(1, Math.min(from, Math.max(1, docSize - 2)))
+            tr = tr.setSelection(Selection.near(tr.doc.resolve(safeFrom)))
+            view.dispatch(tr)
+        })
+    }, [value])
+
+    return <div ref={containerRef} className={cn("milkdown-custom", className)} />
+}

@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import { BlogRouterPage } from '../blog-router-page';
 import { BetterBlogContextProvider } from '@/lib/better-blog/context/better-blog-context';
 import type { PageComponentOverrides } from '@/lib/better-blog/core/client-components';
+import { render, screen } from "@testing-library/react"
+import { BlogRouterPage } from "../blog-router-page"
 
 function renderWithProvider({
   path,
@@ -19,13 +19,14 @@ function renderWithProvider({
 
   return render(
     <BetterBlogContextProvider
-      clientConfig={clientConfig}
-      pageOverrides={overrides}
-      basePath={basePath}
+        clientConfig={clientConfig}
+        pageOverrides={overrides}
+        basePath={basePath}
+        uploadImage={async () => "https://example.com/image.jpg"}
     >
-      <BlogRouterPage path={path} />
+        <BlogRouterPage path={path} />
     </BetterBlogContextProvider>
-  );
+)
 }
 
 const Home = () => <div data-testid="home">Home Mock</div>;

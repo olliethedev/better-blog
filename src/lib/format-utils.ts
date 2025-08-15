@@ -1,60 +1,87 @@
 export function stripHtml(html: string): string {
     // Remove HTML tags
-    let text = html.replace(/<[^>]*>/g, '');
-    
+    let text = html.replace(/<[^>]*>/g, "")
+
     // Decode common HTML entities
     text = text
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#x27;/g, "'")
-      .replace(/&#x2F;/g, '/')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&hellip;/g, '...');
-    
-    // Clean up extra whitespace and newlines
-    return text.replace(/\s+/g, ' ').trim();
-  }
-  
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#x27;/g, "'")
+        .replace(/&#x2F;/g, "/")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&hellip;/g, "...")
 
-  export function stripMarkdown(markdown: string): string {
-    let text = markdown;
-    
-    // Remove headers (# ## ### etc.)
-    text = text.replace(/^#{1,6}\s+/gm, '');
-    
-    // Remove bold and italic (**text**, *text*, __text__, _text_)
-    text = text.replace(/\*\*([^*]+)\*\*/g, '$1');
-    text = text.replace(/\*([^*]+)\*/g, '$1');
-    text = text.replace(/__([^_]+)__/g, '$1');
-    text = text.replace(/_([^_]+)_/g, '$1');
-    
-    // Remove strikethrough (~~text~~)
-    text = text.replace(/~~([^~]+)~~/g, '$1');
-    
-    // Remove inline code (`code`)
-    text = text.replace(/`([^`]+)`/g, '$1');
-    
-    // Remove code blocks (```code```)
-    text = text.replace(/```[\s\S]*?```/g, '');
-    
-    // Remove links [text](url) -> text
-    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-    
-    // Remove images ![alt](url)
-    text = text.replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1');
-    
-    // Remove blockquotes (> text)
-    text = text.replace(/^>\s+/gm, '');
-    
-    // Remove horizontal rules (--- or ***)
-    text = text.replace(/^[-*]{3,}$/gm, '');
-    
-    // Remove list markers (- * + and numbered lists)
-    text = text.replace(/^[\s]*[-*+]\s+/gm, '');
-    text = text.replace(/^[\s]*\d+\.\s+/gm, '');
-    
     // Clean up extra whitespace and newlines
-    return text.replace(/\n\s*\n/g, '\n').replace(/\s+/g, ' ').trim();
-  }
+    return text.replace(/\s+/g, " ").trim()
+}
+
+export function stripMarkdown(markdown: string): string {
+    let text = markdown
+
+    // Remove headers (# ## ### etc.)
+    text = text.replace(/^#{1,6}\s+/gm, "")
+
+    // Remove bold and italic (**text**, *text*, __text__, _text_)
+    text = text.replace(/\*\*([^*]+)\*\*/g, "$1")
+    text = text.replace(/\*([^*]+)\*/g, "$1")
+    text = text.replace(/__([^_]+)__/g, "$1")
+    text = text.replace(/_([^_]+)_/g, "$1")
+
+    // Remove strikethrough (~~text~~)
+    text = text.replace(/~~([^~]+)~~/g, "$1")
+
+    // Remove inline code (`code`)
+    text = text.replace(/`([^`]+)`/g, "$1")
+
+    // Remove code blocks (```code```)
+    text = text.replace(/```[\s\S]*?```/g, "")
+
+    // Remove links [text](url) -> text
+    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+
+    // Remove images ![alt](url)
+    text = text.replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+
+    // Remove blockquotes (> text)
+    text = text.replace(/^>\s+/gm, "")
+
+    // Remove horizontal rules (--- or ***)
+    text = text.replace(/^[-*]{3,}$/gm, "")
+
+    // Remove list markers (- * + and numbered lists)
+    text = text.replace(/^[\s]*[-*+]\s+/gm, "")
+    text = text.replace(/^[\s]*\d+\.\s+/gm, "")
+
+    // Clean up extra whitespace and newlines
+    return text
+        .replace(/\n\s*\n/g, "\n")
+        .replace(/\s+/g, " ")
+        .trim()
+}
+
+export function slugify(text: string): string {
+    return text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "") // Remove special characters except spaces and hyphens
+        .replace(/\s+/g, "-") // Replace spaces with hyphens
+        .replace(/--+/g, "-") // Replace multiple hyphens with single hyphen
+        .trim()
+}
+
+export function deslugify(slug: string): string {
+    return slug
+        .replace(/-/g, " ") // Replace hyphens with spaces
+        .replace(/\b\w/g, (char) => char.toUpperCase()) // Capitalize first letter of each word
+}
+
+export function prettifyTagName(tagName: string): string {
+    // If it looks like a slug (contains hyphens), deslugify it
+    if (tagName.includes("-")) {
+        return deslugify(tagName)
+    }
+
+    // Otherwise, just capitalize the first letter of each word
+    return tagName.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase())
+}

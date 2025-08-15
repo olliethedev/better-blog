@@ -60,6 +60,7 @@ export interface BetterBlogContextValue {
     adminUiOptions?: AdminUiOptions
     navigate: typeof defaultNavigate
     replace: typeof defaultReplace
+    uploadImage: (file: File) => Promise<string>
 }
 
 const BetterBlogContext = React.createContext<BetterBlogContextValue | null>(
@@ -140,6 +141,7 @@ export interface BetterBlogContextProviderProps {
     children: React.ReactNode
     navigate?: typeof defaultNavigate
     replace?: typeof defaultReplace
+    uploadImage: (file: File) => Promise<string>
 }
 
 export function BetterBlogContextProvider({
@@ -151,7 +153,8 @@ export function BetterBlogContextProvider({
     adminUiOptions,
     children,
     navigate = defaultNavigate,
-    replace = defaultReplace
+    replace = defaultReplace,
+    uploadImage
 }: BetterBlogContextProviderProps) {
     function normalizeBasePath(path: string): string {
         const withLeading = path.startsWith("/") ? path : `/${path}`
@@ -177,7 +180,8 @@ export function BetterBlogContextProvider({
             ? { ...defaultAdminUiOptions, ...adminUiOptions }
             : defaultAdminUiOptions,
         navigate,
-        replace
+        replace,
+        uploadImage
     }
 
     return (
