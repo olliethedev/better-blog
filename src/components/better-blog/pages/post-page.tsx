@@ -3,6 +3,7 @@
 import { useRoute } from "../../../lib/better-blog/context/route-context";
 import { usePost } from "../../../lib/better-blog/hooks";
 import { PostLoading } from "../loading";
+import { MarkdownContent } from "../markdown-content"
 
 export function PostPageComponent() {
   const { routeMatch } = useRoute();
@@ -21,21 +22,21 @@ export function PostPageComponent() {
 
   return (
     <article>
-      <h1>{post.title}</h1>
-      <div className="post-meta">
-        <span>By {post.author.name}</span>
-        <span>{post.createdAt.toLocaleDateString()}</span>
-      </div>
-      <div className="post-tags">
-        {post.tags.map((tag) => (
-          <span key={tag.id} className="tag">
-            #{tag.name}
-          </span>
-        ))}
-      </div>
-      <div className="post-content">{post.content}</div>
+        <h1>{post.title}</h1>
+        <div className="post-meta">
+            <span>By {post.author.name}</span>
+            <span>{post.createdAt.toLocaleDateString()}</span>
+        </div>
+        <div className="post-tags">
+            {post.tags.map((tag) => (
+                <span key={tag.id} className="tag">
+                    #{tag.name}
+                </span>
+            ))}
+        </div>
+        <MarkdownContent markdown={post.content} />
     </article>
-  );
+)
 }
 
 

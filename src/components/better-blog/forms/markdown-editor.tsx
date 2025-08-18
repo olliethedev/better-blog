@@ -4,12 +4,12 @@ import "./markdown-editor-styles.css"
 
 import { useBetterBlogContext } from "@/client"
 import { cn } from "@/lib/utils"
+import { throttle } from "@/lib/utils"
 import { editorViewCtx, parserCtx } from "@milkdown/kit/core"
 import { listener, listenerCtx } from "@milkdown/kit/plugin/listener"
 import { Slice } from "@milkdown/kit/prose/model"
 import { Selection } from "@milkdown/kit/prose/state"
-import throttle from "lodash.throttle"
-import { useLayoutEffect, useRef } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 
 export function MarkdownEditor({
     value,
@@ -24,6 +24,7 @@ export function MarkdownEditor({
     const containerRef = useRef<HTMLDivElement | null>(null)
     const crepeRef = useRef<Crepe | null>(null)
     const isReadyRef = useRef(false)
+    const [isReady, setIsReady] = useState(false)
     const onChangeRef = useRef<typeof onChange>(onChange)
     const initialValueRef = useRef<string>(value ?? "")
     type ThrottledFn = ((markdown: string) => void) & {
@@ -71,6 +72,7 @@ export function MarkdownEditor({
 
         crepe.create().then(() => {
             isReadyRef.current = true
+            setIsReady(true)
         })
         crepeRef.current = crepe
 
@@ -87,7 +89,7 @@ export function MarkdownEditor({
     }, [])
 
     useLayoutEffect(() => {
-        if (!isReadyRef.current) return
+        if (!isReady) return
         if (!crepeRef.current) return
         if (typeof value !== "string") return
 
@@ -106,14 +108,21 @@ export function MarkdownEditor({
             const from = selection.from
 
             let tr = state.tr
-            tr = tr.replace(0, state.doc.content.size, new Slice(doc.content, 0, 0))
+            tr = tr.replace(
+                0,
+                state.doc.content.size,
+                new Slice(doc.content, 0, 0)
+            )
 
             const docSize = doc.content.size
-            const safeFrom = Math.max(1, Math.min(from, Math.max(1, docSize - 2)))
+            const safeFrom = Math.max(
+                1,
+                Math.min(from, Math.max(1, docSize - 2))
+            )
             tr = tr.setSelection(Selection.near(tr.doc.resolve(safeFrom)))
             view.dispatch(tr)
         })
-    }, [value])
+    }, [value, isReady])
 
     return <div ref={containerRef} className={cn("milkdown-custom", className)} />
 }

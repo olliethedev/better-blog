@@ -6,7 +6,7 @@ export default defineConfig((env) => {
         entry: {
             index: "./src/index.ts",
             client: "./src/client.ts",
-            server: "./src/server.ts",
+            server: "./src/server.ts"
         },
         format: ["esm", "cjs"],
         splitting: true,
@@ -17,7 +17,7 @@ export default defineConfig((env) => {
         dts: true,
         external: [
             "react",
-            "react-dom", 
+            "react-dom",
             "@radix-ui/react-avatar",
             "@radix-ui/react-checkbox",
             "@radix-ui/react-context",
@@ -40,7 +40,11 @@ export default defineConfig((env) => {
             "sonner",
             "tailwind-merge",
             "tailwindcss",
-            "zod"
+            "zod",
+            "react-markdown",
+            "remark-gfm",
+            "rehype-highlight",
+            "lowlight"
         ],
         esbuildPlugins: [
             preserveDirectivesPlugin({

@@ -66,7 +66,6 @@
         "@testing-library/react": "^16.3.0",
         "@testing-library/user-event": "^14.6.1",
         "@types/jest": "^30.0.0",
-        "@types/lodash.throttle": "^4.1.9",
         "@types/node": "^24.1.0",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
@@ -125,12 +124,15 @@
         "cmdk": ">=1.1.0",
         "date-fns": ">=4.1.0",
         "lowlight": ">=3.3.0",
+        "highlight.js": ">=11.9.0",
         "lucide-react": ">=0.469.0",
         "react": ">=18.0.0",
         "react-day-picker": ">=9.8.1",
         "react-dom": ">=18.0.0",
         "react-hook-form": ">=7.55.0",
         "react-markdown": ">=10.1.0",
+        "remark-gfm": ">=4.0.0",
+        "rehype-highlight": ">=7.0.0",
         "react-medium-image-zoom": ">=5.0.0",
         "sonner": ">=1.7.0",
         "tailwind-merge": ">=2.6.0",
@@ -148,7 +150,6 @@
     "packageManager": "pnpm@10.12.1",
     "dependencies": {
         "@milkdown/crepe": "^7.15.3",
-        "@milkdown/kit": "^7.15.3",
-        "lodash.throttle": "^4.1.1"
+        "@milkdown/kit": "^7.15.3"
     }
 }

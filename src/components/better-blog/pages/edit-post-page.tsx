@@ -2,6 +2,7 @@
 
 import { useRoute } from "../../../lib/better-blog/context/route-context";
 import { usePost } from "../../../lib/better-blog/hooks";
+import { EditPostForm } from "../forms/post-forms"
 import { PostLoading } from "../loading";
 
 export function EditPostPageComponent() {
@@ -21,10 +22,13 @@ export function EditPostPageComponent() {
 
   return (
     <div>
-      <h1>✏️ Editing: {post.title}</h1>
-      <p>Edit form will be implemented here</p>
+        <EditPostForm
+            postSlug={post.slug}
+            onClose={() => {}}
+            onSuccess={() => {}}
+        />
     </div>
-  );
+)
 }
 
 
