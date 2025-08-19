@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          # Do not enable dependency cache because repo doesn't commit pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install
