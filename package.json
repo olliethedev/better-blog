@@ -46,19 +46,14 @@
             }
         }
     },
-    "files": [
-        "src",
-        "dist"
-    ],
-    "keywords": [
-        "typescript",
-        "react",
-        "blog",
-        "shadcn",
-        "nextjs"
-    ],
+    "files": ["src", "dist"],
+    "keywords": ["typescript", "react", "blog", "shadcn", "nextjs"],
     "author": "olliethedev",
     "license": "MIT",
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
         "@tailwindcss/typography": "^0.5.16",
@@ -142,10 +137,7 @@
     },
     "pnpm": {
         "overrides": {},
-        "onlyBuiltDependencies": [
-            "@biomejs/biome",
-            "esbuild"
-        ]
+        "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"]
     },
     "packageManager": "pnpm@10.12.1",
     "dependencies": {
