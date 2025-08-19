@@ -1,8 +1,12 @@
 {
     "name": "better-blog",
     "homepage": "https://better-blog.com",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Better Blog",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/olliethedev/better-blog"
+    },
     "scripts": {
         "build": "tsup --clean --dts",
         "dev": "tsup --watch --onSuccess \"yalc publish --push\"",
@@ -46,17 +50,8 @@
             }
         }
     },
-    "files": [
-        "src",
-        "dist"
-    ],
-    "keywords": [
-        "typescript",
-        "react",
-        "blog",
-        "shadcn",
-        "nextjs"
-    ],
+    "files": ["src", "dist"],
+    "keywords": ["typescript", "react", "blog", "shadcn", "nextjs"],
     "author": "olliethedev",
     "license": "MIT",
     "publishConfig": {
@@ -146,10 +141,7 @@
     },
     "pnpm": {
         "overrides": {},
-        "onlyBuiltDependencies": [
-            "@biomejs/biome",
-            "esbuild"
-        ]
+        "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"]
     },
     "packageManager": "pnpm@10.12.1",
     "dependencies": {

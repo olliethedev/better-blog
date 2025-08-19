@@ -1,9 +1,9 @@
 name: Publish to npm
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  release:
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
@@ -39,7 +41,13 @@ jobs:
       - name: Verify tag matches package.json version
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          # Determine tag from release event or fallback to ref
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            RAW_TAG="${{ github.event.release.tag_name }}"
+          else
+            RAW_TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          TAG_VERSION="${RAW_TAG#v}"
           if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
             echo "Tag version ($TAG_VERSION) does not match package.json version ($PKG_VERSION)"
             exit 1
