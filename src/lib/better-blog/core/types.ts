@@ -25,6 +25,14 @@ export type Post = {
   author: Author;
 };
 
+import type {
+    PostCreateWithoutRefineInput,
+    PostUpdateWithoutRefineInput
+} from "../schema/post"
+
+export type PostCreateInput = PostCreateWithoutRefineInput
+export type PostUpdateInput = PostUpdateWithoutRefineInput
+
 export interface BlogDataProvider {
     getAllPosts: (filter?: {
         slug?: string
@@ -34,6 +42,9 @@ export interface BlogDataProvider {
         query?: string
     }) => Promise<Post[]>
     getPostBySlug?: (slug: string) => Promise<Post | null>
+    createPost?: (input: PostCreateInput) => Promise<Post>
+    updatePost?: (slug: string, input: PostUpdateInput) => Promise<Post>
+    deletePost?: (slug: string) => Promise<void>
 }
 
 // Combined configuration

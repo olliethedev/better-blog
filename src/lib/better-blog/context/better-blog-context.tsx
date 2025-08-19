@@ -6,6 +6,7 @@ import {
     blogLocalization
 } from "../../../localization/blog-localization"
 import type { PageComponentOverrides } from "../core/client-components"
+import { createApiBlogProvider } from "../core/providers/api-provider"
 import type { BlogDataProvider } from "../core/types"
 
 export interface ComponentsContextValue {
@@ -132,7 +133,7 @@ export function useAdminUiOptions(): AdminUiOptions {
 }
 
 export interface BetterBlogContextProviderProps {
-    clientConfig: BlogDataProvider
+    clientConfig?: BlogDataProvider
     components?: Partial<ComponentsContextValue> // defaults to standard HTML elements
     pageOverrides?: PageComponentOverrides
     basePath?: string // defaults to "/posts"
@@ -142,6 +143,8 @@ export interface BetterBlogContextProviderProps {
     navigate?: typeof defaultNavigate
     replace?: typeof defaultReplace
     uploadImage: (file: File) => Promise<string>
+    /** Base path for the API router; used if no clientConfig is provided */
+    apiBasePath?: string
 }
 
 export function BetterBlogContextProvider({
@@ -154,7 +157,8 @@ export function BetterBlogContextProvider({
     children,
     navigate = defaultNavigate,
     replace = defaultReplace,
-    uploadImage
+    uploadImage,
+    apiBasePath = "/api/blog"
 }: BetterBlogContextProviderProps) {
     function normalizeBasePath(path: string): string {
         const withLeading = path.startsWith("/") ? path : `/${path}`
@@ -168,7 +172,8 @@ export function BetterBlogContextProvider({
     }, [localizationProp])
 
     const contextValue: BetterBlogContextValue = {
-        clientConfig,
+        clientConfig:
+            clientConfig ?? createApiBlogProvider({ baseURL: apiBasePath }),
         components: {
             ...defaultComponents,
             ...components

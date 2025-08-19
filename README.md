@@ -161,6 +161,65 @@ That’s it: your pages are rendered with prefetched data and hydrated on the cl
 
 ---
 
+## API routes
+
+If you prefer not to ship a client-side `BlogDataProvider`, better-blog can expose API endpoints and consume them via a default API-backed provider.
+
+### 1) Mount the API router (Next.js)
+
+Create `app/api/blog/[...all]/route.ts`:
+
+```ts
+import { createBlogApiRouter } from 'better-blog/server';
+import type { BlogDataProvider } from 'better-blog';
+
+// Your server-side provider (DB/CMS/etc.) implementing reads and optional mutations
+const serverProvider: BlogDataProvider = {
+  async getAllPosts(filter) { /* ... */ return [] },
+  async getPostBySlug(slug) { /* ... */ return null },
+  async createPost(input) { /* ... */ return {} as any },
+  async updatePost(slug, input) { /* ... */ return {} as any },
+  async deletePost(slug) { /* ... */ }
+}
+
+const { handler } = createBlogApiRouter(serverProvider, {
+  basePath: '/api/blog' // must match your route path
+});
+
+export const GET = handler;
+export const POST = handler;
+export const PUT = handler;
+export const DELETE = handler;
+```
+
+Endpoints exposed:
+- `GET /api/blog/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
+- `GET /api/blog/posts/:slug` – fetch one
+- `POST /api/blog/posts` – create
+- `PUT /api/blog/posts/:slug` – update
+- `DELETE /api/blog/posts/:slug` – delete
+
+All inputs are validated with zod schemas from `src/lib/better-blog/schema/post.ts`.
+
+### 2) Use the default API-backed provider (client)
+
+Omit `clientConfig` to let the provider default to calling the API, or set a custom base path.
+
+```tsx
+import { BetterBlogContextProvider } from 'better-blog/client';
+
+<BetterBlogContextProvider
+  // clientConfig is optional – defaults to API-backed provider
+  apiBasePath="/api/blog" // must match router basePath
+>
+  {children}
+</BetterBlogContextProvider>
+```
+
+
+
+---
+
 ## React DOM Router (CSR) example
 
 This renders all blog routes under `/blog/*` using client-side data fetching.
