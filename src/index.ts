@@ -5,3 +5,7 @@ export type * from './lib/better-blog/core/types';
 
 //schemas
 export * from "./lib/better-blog/schema/post"
+
+//queries
+
+export { createBlogQueries } from "./lib/better-blog/core/queries"

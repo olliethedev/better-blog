@@ -10,14 +10,9 @@ export interface CreateApiBlogProviderOptions {
 export function createApiBlogProvider(
     options?: CreateApiBlogProviderOptions
 ): BlogDataProvider {
-    const rawClient = createClient<BlogApiRoutes>({
+    const client = createClient<BlogApiRoutes>({
         baseURL: options?.baseURL ?? "/api/blog"
     })
-    const client = rawClient as unknown as (
-        path: string,
-        options?: Record<string, unknown>
-    ) => Promise<unknown>
-
     return {
         async getAllPosts(filter) {
             const res = (await client("/posts", {
@@ -36,7 +31,7 @@ export function createApiBlogProvider(
         },
 
         async createPost(input: PostCreateInput) {
-            const res = (await client("/posts", {
+            const res = (await client("@post/posts", {
                 method: "POST",
                 body: input
             })) as unknown as Post
@@ -44,7 +39,7 @@ export function createApiBlogProvider(
         },
 
         async updatePost(slug: string, input: PostUpdateInput) {
-            const res = (await client("/posts/:slug", {
+            const res = (await client("@put/posts/:slug", {
                 method: "PUT",
                 params: { slug },
                 body: input
@@ -53,7 +48,7 @@ export function createApiBlogProvider(
         },
 
         async deletePost(slug: string) {
-            await client("/posts/:slug", {
+            await client("@delete/posts/:slug", {
                 method: "DELETE",
                 params: { slug }
             })

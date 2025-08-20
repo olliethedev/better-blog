@@ -8,9 +8,18 @@ import {
 
 const listPostsQuerySchema = PostListQuerySchema
 
-console.log("listPostsSchema has ~standard", !!listPostsQuerySchema["~standard"])
-console.log("createPostSchema has ~standard", !!PostCreateWithoutRefineSchema["~standard"])
-console.log("updatePostSchema has ~standard", !!PostUpdateWithoutRefineSchema["~standard"])
+console.log(
+    "listPostsSchema has ~standard",
+    !!listPostsQuerySchema["~standard"]
+)
+console.log(
+    "createPostSchema has ~standard",
+    !!PostCreateWithoutRefineSchema["~standard"]
+)
+console.log(
+    "updatePostSchema has ~standard",
+    !!PostUpdateWithoutRefineSchema["~standard"]
+)
 
 export interface CreateBlogApiRouterOptions {
     basePath?: string
@@ -33,10 +42,7 @@ export interface CreateBlogApiRouterOptions {
 export function createBlogApiRouter(
     provider: BlogDataProvider,
     options?: CreateBlogApiRouterOptions
-): {
-    router: ReturnType<typeof createRouter>
-    handler: (request: Request) => Promise<Response>
-} {
+) {
     const listPosts = createEndpoint(
         "/posts",
         {
@@ -144,10 +150,7 @@ export function createBlogApiRouter(
         }
     )
 
-    return {
-        router,
-        handler: router.handler
-    }
+    return router
 }
 
-export type BlogApiRoutes = ReturnType<typeof createBlogApiRouter>["router"]
+export type BlogApiRoutes = ReturnType<typeof createBlogApiRouter>
