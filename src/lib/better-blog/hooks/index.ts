@@ -217,9 +217,11 @@ export function useDrafts(): UseDraftsResult {
         gcTime: 1000 * 60 * 10
     })
 
-    const drafts = ((
-        data as unknown as InfiniteData<Post[], number> | undefined
-    )?.pages?.flat() ?? []) as Post[]
+    const drafts = (
+        (
+            data as unknown as InfiniteData<Post[], number> | undefined
+        )?.pages?.flat() ?? []
+    ).filter((p) => !p.published) as Post[]
 
     return {
         drafts,
@@ -243,7 +245,7 @@ export function usePostSearch({
     limit = 10
 }: UsePostSearchOptions): UsePostSearchResult {
     const debouncedQuery = useDebounce(query, debounceMs)
-    const shouldSearch = enabled && debouncedQuery.trim().length > 0
+    const shouldSearch = enabled && (query?.trim().length ?? 0) > 0
 
     const lastResultsRef = useRef<Post[]>([])
 
@@ -259,16 +261,18 @@ export function usePostSearch({
         }
     }, [posts, isLoading])
 
-    const dataToReturn = isLoading ? lastResultsRef.current : posts
+    const isDebouncing = enabled && debounceMs > 0 && debouncedQuery !== query
+    const effectiveLoading = isLoading || isDebouncing
+    const dataToReturn = effectiveLoading ? lastResultsRef.current : posts
 
     return {
         posts: dataToReturn,
         // compatibility alias similar to tanstack useQuery
         data: dataToReturn,
-        isLoading,
+        isLoading: effectiveLoading,
         error,
         refetch,
-        isSearching: isLoading,
+        isSearching: effectiveLoading,
         searchQuery: debouncedQuery
     }
 }

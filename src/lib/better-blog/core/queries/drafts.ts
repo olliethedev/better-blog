@@ -19,7 +19,7 @@ export function createDraftsQueries(provider: BlogDataProvider) {
         const pageParam = ctx.pageParam ?? 0;
         const limit = params?.limit ?? 10;
         const posts = (await provider.getAllPosts({ offset: pageParam, limit })) as Post[];
-        return posts.filter((post) => !post.published);
+        return posts
       },
     }),
   });

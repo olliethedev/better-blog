@@ -16,14 +16,17 @@ export function createTagsQueries(provider: BlogDataProvider) {
           if (!posts || posts.length === 0) break;
           for (const post of posts) {
             if (Array.isArray(post.tags)) {
-              for (const tag of post.tags) {
-                if (tag && typeof tag.id === "string" && !uniqueTagsById.has(tag.id)) {
-                  uniqueTagsById.set(tag.id, tag);
+                for (const tag of post.tags) {
+                    if (
+                        tag &&
+                        typeof tag.id === "string" &&
+                        !uniqueTagsById.has(tag.id)
+                    ) {
+                        uniqueTagsById.set(tag.id, tag)
+                    }
                 }
-              }
             }
-          }
-          if (posts.length < pageSize) break;
+        }
           offset += pageSize;
         }
         return Array.from(uniqueTagsById.values()).sort((a, b) => a.name.localeCompare(b.name));
