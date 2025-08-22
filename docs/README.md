@@ -13,7 +13,7 @@ $ pnpm dev
 Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 
-## ✍️ How to Write Docs
+## How to Write Docs
 
 1. Create `.mdx` pages inside the `app/docs/` folder.
    Example:
@@ -36,7 +36,7 @@ Learn more in the [Fumadocs MDX Guide →](https://fumadocs.dev/docs/mdx)
 
 ---
 
-## 📚 Learn More
+## Learn More
 
 - 🔗 [Fumadocs Documentation](https://fumadocs.dev)
 - 🔗 [Next.js Documentation](https://nextjs.org/docs)
