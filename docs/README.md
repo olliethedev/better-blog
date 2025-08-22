@@ -40,5 +40,4 @@ Learn more in the [Fumadocs MDX Guide →](https://fumadocs.dev/docs/mdx)
 
 - 🔗 [Fumadocs Documentation](https://fumadocs.dev)
 - 🔗 [Next.js Documentation](https://nextjs.org/docs)
-- 🔗 [Learn Next.js](https://nextjs.org/learn)
 
