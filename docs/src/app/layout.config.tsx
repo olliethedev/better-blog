@@ -6,8 +6,7 @@ import { IoBookSharp } from "react-icons/io5";
  * Shared layout configurations
  *
  * you can customise layouts individually from:
- * Home Layout: app/(home)/layout.tsx
- * Docs Layout: app/docs/layout.tsx
+ * Docs Layout: app/(home)/layout.tsx
  */
 export const baseOptions: BaseLayoutProps = {
   nav: {

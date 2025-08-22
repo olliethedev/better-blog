@@ -10,7 +10,7 @@ $ pnpm install
 $ pnpm dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000) in your browser.
+Visit [http://localhost:3000/docs](http://localhost:3000/docs) in your browser.
 
 
 ## How to Write Docs
