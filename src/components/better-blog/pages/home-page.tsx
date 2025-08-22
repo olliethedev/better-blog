@@ -20,13 +20,28 @@ import { PostsLoading } from "../loading"
 import { PostsList } from "../posts-list"
 
 export function HomePageComponent() {
-    const { posts, isLoading, loadMore, hasMore, isLoadingMore } = usePosts({})
+    const { posts, isLoading, error, loadMore, hasMore, isLoadingMore } = usePosts(
+        {}
+    )
     const { localization } = useBetterBlogContext()
     const { Link } = useComponents()
     const newPostHref = useBlogPath("new")
     const draftPostsHref = useBlogPath("drafts")
 
     if (isLoading) return <PostsLoading />
+
+    if (error) {
+        return (
+            <div className="space-y-4">
+                <h2 className="font-semibold text-destructive">
+                    Failed to load posts
+                </h2>
+                <pre className="overflow-auto rounded bg-muted p-3 text-sm">
+                    {error.message}
+                </pre>
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-8">

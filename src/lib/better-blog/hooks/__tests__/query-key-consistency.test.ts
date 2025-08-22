@@ -1,22 +1,22 @@
 import { QueryClient } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
-import { createWrapper } from "../../../../test/utils"
-import { createDemoMemoryDBProvider } from "../../../better-blog/core/providers/dummy-memory-db-provider"
-import { createBlogQueries } from "../../core/queries"
-import { usePostSearch, usePosts } from "../index"
+import { createWrapper as createWrapper2 } from "../../../../test/utils"
+import { createDemoMemoryDBProvider as createDemoMemoryDBProvider2 } from "../../core/providers/dummy-memory-db-provider"
+import { createBlogQueries as createBlogQueries2 } from "../../core/queries"
+import { usePostSearch, usePosts as usePosts2 } from "../index"
 
 describe("Query key consistency", () => {
     test("usePosts and usePostSearch use compatible query keys", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = createDemoMemoryDBProvider2()
         // Create a fresh query client to control the test environment
         const queryClient = new QueryClient({
             defaultOptions: { queries: { retry: false } }
         })
-        const wrapper = createWrapper(provider, queryClient)
+        const wrapper = createWrapper2(provider, queryClient)
 
         // First use the standard posts hook
         const { result: postsResult } = renderHook(
-            () => usePosts({ limit: 10 }),
+            () => usePosts2({ limit: 10 }),
             {
                 wrapper
             }
@@ -31,7 +31,7 @@ describe("Query key consistency", () => {
         })
         await waitFor(() => expect(postsResult.current.posts).toHaveLength(12))
 
-        // Now use the search hook with empty query 
+        // Now use the search hook with empty query
         // Empty query should have no results as we disable the query
         const { result: searchResult } = renderHook(
             () => usePostSearch({ query: "", enabled: true, limit: 10 }),
@@ -49,20 +49,18 @@ describe("Query key consistency", () => {
             { wrapper }
         )
 
-        await waitFor(() =>
-            expect(activeSearchResult.current.isLoading).toBe(false)
-        )
+        await waitFor(() => expect(activeSearchResult.current.isLoading).toBe(false))
         expect(activeSearchResult.current.posts.length).toBeGreaterThan(0)
 
         // Create a new query client for testing remount with fresh cache
         const remountQueryClient = new QueryClient({
             defaultOptions: { queries: { retry: false } }
         })
-        const remountWrapper = createWrapper(provider, remountQueryClient)
+        const remountWrapper = createWrapper2(provider, remountQueryClient)
         
         // Test that page reload/remount scenario doesn't cause issues
         const { result: remountResult } = renderHook(
-            () => usePosts({ limit: 10 }),
+            () => usePosts2({ limit: 10 }),
             {
                 wrapper: remountWrapper
             }
@@ -74,8 +72,8 @@ describe("Query key consistency", () => {
     })
 
     test("query key generation is consistent", () => {
-        const provider = createDemoMemoryDBProvider()
-        const queries = createBlogQueries(provider)
+        const provider = createDemoMemoryDBProvider2()
+        const queries = createBlogQueries2(provider)
 
         // Test all combinations of query key generation
         const baseQueryKey = queries.posts.list({}).queryKey
