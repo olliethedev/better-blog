@@ -26,12 +26,18 @@ function revivePost(raw: ReturnType<typeof PostSerializedSchema.parse>): Post {
 export interface CreateApiBlogProviderOptions {
     /** Base URL including router basePath, e.g. "/api/blog" (default) */
     baseURL?: string
+    /**
+     * Optional override used in tests to inject a custom HTTP client creator.
+     * Must be compatible with better-call's createClient API.
+     */
+    createClientImpl?: typeof createClient
 }
 
 export function createApiBlogProvider(
     options?: CreateApiBlogProviderOptions
 ): BlogDataProvider {
-    const client = createClient<BlogApiRoutes>({
+    const clientFactory = options?.createClientImpl ?? createClient
+    const client = clientFactory<BlogApiRoutes>({
         baseURL: options?.baseURL ?? "/api/blog"
     })
 

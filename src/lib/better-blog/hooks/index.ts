@@ -117,6 +117,8 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
             return allPages.length * limit
         },
         enabled: enabled && !!clientConfig,
+        retry: false,
+        refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 10
     })
@@ -152,6 +154,8 @@ export function usePost(slug?: string): UsePostResult {
     >({
         ...basePost,
         enabled: !!clientConfig && !!slug,
+        retry: false,
+        refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 10
     })
@@ -182,6 +186,8 @@ export function useTags(): UseTagsResult {
     const { data, isLoading, error, refetch } = useQuery({
         ...baseTags,
         enabled: !!clientConfig,
+        retry: false,
+        refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 10
     })
@@ -220,6 +226,8 @@ export function useDrafts(): UseDraftsResult {
             return allPages.length * 10
         },
         enabled: !!clientConfig,
+        retry: false,
+        refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 10
     })
