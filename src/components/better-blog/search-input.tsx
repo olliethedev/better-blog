@@ -71,7 +71,7 @@ export function SearchInput({
 
     const { data: searchResults = [], isLoading } = usePostSearch({
         query: currentQuery,
-        enabled: true,
+        enabled: currentQuery.trim().length > 0,
         debounceMs: 300
     })
 

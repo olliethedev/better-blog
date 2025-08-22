@@ -1,14 +1,14 @@
-import React from "react";
 import type { QueryClient } from "@tanstack/react-query";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import type { BlogDataProvider, RouteMatch } from "../core/types";
-import { generatePostMetadata } from "../core/utils";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
+import React from "react"
 import { BlogRouterPage } from "../../../components/better-blog/blog-router-page";
 import { BlogLoading } from "../../../components/better-blog/loading";
-import { prefetchBlogData } from "./prefetch";
+import type { PageComponentOverrides } from "../core/client-components"
 import { generateStaticRoutes, matchRoute } from "../core/router";
 import { resolveServerLoadingComponent } from "../core/server-components";
-import type { PageComponentOverrides } from "../core/client-components";
+import type { BlogDataProvider, RouteMatch } from "../core/types"
+import { generatePostMetadata } from "../core/utils"
+import { prefetchBlogData } from "./prefetch"
 
 export interface BetterBlogServerAdapter {
   generateStaticParams: () => Array<{ all: string[] }>;
@@ -84,6 +84,9 @@ export function createServerAdapter(
     },
   };
 }
+
+export { createBlogApiRouter } from "./api"
+export type { BlogApiRoutes } from "./api"
 
 async function BlogEntryContent({
   path,

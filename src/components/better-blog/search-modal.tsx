@@ -49,8 +49,9 @@ export function SearchModal<T extends SearchResult>({
     const [query, setQuery] = React.useState("")
     const [results, setResults] = React.useState<T[]>([])
 
-    // Debounce the search query to avoid excessive calls
-    const debouncedQuery = useDebounce(query, 300)
+    // Only debounce if not using external results
+    const shouldDebounce = externalResults === undefined
+    const debouncedQuery = useDebounce(query, shouldDebounce ? 300 : 0)
 
     // Handle keyboard shortcut
     React.useEffect(() => {
@@ -73,12 +74,10 @@ export function SearchModal<T extends SearchResult>({
             setResults([])
             return
         }
+    }, [open])
 
-        // Don't clear results when query becomes empty - keep showing previous results
-        // Only clear them when the modal is first opened or closed
-        if (!debouncedQuery.trim()) {
-            return
-        }
+    React.useEffect(() => {
+        if (!open) return
 
         // Always call searchFn to notify parent component of the search query
         const searchResults = searchFn(debouncedQuery)

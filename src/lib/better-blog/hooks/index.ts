@@ -7,10 +7,16 @@ import {
     useQuery,
     useQueryClient
 } from "@tanstack/react-query"
+import type { InfiniteData } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
 import { useDebounce } from "../../../hooks/use-debounce"
 import { useBetterBlogContext } from "../context/better-blog-context"
+import { createBlogQueries } from "../core/queries"
 import type { Post, Tag } from "../core/types"
+import type {
+    PostCreateExtendedInput,
+    PostUpdateExtendedInput
+} from "../schema/post"
 
 // ============================================================================
 // CORE HOOK TYPES
@@ -84,6 +90,15 @@ export interface UseDraftsResult {
 export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
     const { clientConfig } = useBetterBlogContext()
     const { tag, limit = 10, enabled = true, query } = options
+    const queries = createBlogQueries(clientConfig)
+    
+    const queryParams = {
+        tag,
+        limit,
+        query
+    }
+
+    const basePosts = queries.posts.list(queryParams)
 
     const {
         data,
@@ -94,16 +109,7 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
         isFetchingNextPage,
         refetch
     } = useInfiniteQuery({
-        queryKey: ["posts", { tag, query }],
-        queryFn: async ({ pageParam = 0 }) => {
-            if (!clientConfig) throw new Error("Client config not available")
-            return await clientConfig.getAllPosts({
-                tag,
-                query,
-                offset: pageParam as number,
-                limit
-            })
-        },
+        ...basePosts,
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
             const posts = lastPage as Post[]
@@ -111,11 +117,13 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
             return allPages.length * limit
         },
         enabled: enabled && !!clientConfig,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-        gcTime: 1000 * 60 * 10 // 10 minutes
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 10
     })
 
-    const posts = (data?.pages.flat() ?? []) as Post[]
+    const posts = ((
+        data as InfiniteData<Post[], number> | undefined
+    )?.pages?.flat() ?? []) as Post[]
 
     return {
         posts,
@@ -133,19 +141,16 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
  */
 export function usePost(slug?: string): UsePostResult {
     const { clientConfig } = useBetterBlogContext()
+    const queries = createBlogQueries(clientConfig)
 
-    const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ["post", slug],
-        queryFn: async () => {
-            if (!clientConfig || !slug) return null
-
-            // Try getPostBySlug first, fallback to getAllPosts filter
-            const post = await clientConfig.getPostBySlug?.(slug)
-            if (post) return post
-
-            const posts = await clientConfig.getAllPosts({ slug })
-            return posts.find((p) => p.slug === slug) || null
-        },
+    const basePost = queries.posts.detail(slug ?? "")
+    const { data, isLoading, error, refetch } = useQuery<
+        Post | null,
+        Error,
+        Post | null,
+        typeof basePost.queryKey
+    >({
+        ...basePost,
         enabled: !!clientConfig && !!slug,
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 10
@@ -171,50 +176,11 @@ export function useTagPosts(tag?: string): UsePostsResult {
  */
 export function useTags(): UseTagsResult {
     const { clientConfig } = useBetterBlogContext()
+    const queries = createBlogQueries(clientConfig)
 
+    const baseTags = queries.tags.list
     const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ["tags"],
-        queryFn: async () => {
-            if (!clientConfig) throw new Error("Client config not available")
-
-            const pageSize = 50
-            let offset = 0
-            const uniqueTagsById = new Map<string, Tag>()
-
-            // Paginate through all posts to aggregate unique tags
-            // Stops when the last fetched page has fewer than pageSize items
-            // or when no posts are returned
-            // Assumes clientConfig.getAllPosts is stable and deterministic
-            // for the provided paging parameters
-            // eslint-disable-next-line no-constant-condition
-            while (true) {
-                const posts = await clientConfig.getAllPosts({
-                    offset,
-                    limit: pageSize
-                })
-
-                if (!posts || posts.length === 0) break
-
-                for (const post of posts as Post[]) {
-                    if (Array.isArray(post.tags)) {
-                        for (const tag of post.tags) {
-                            if (tag && typeof tag.id === "string") {
-                                if (!uniqueTagsById.has(tag.id)) {
-                                    uniqueTagsById.set(tag.id, tag)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (posts.length < pageSize) break
-                offset += pageSize
-            }
-
-            return Array.from(uniqueTagsById.values()).sort((a, b) =>
-                a.name.localeCompare(b.name)
-            )
-        },
+        ...baseTags,
         enabled: !!clientConfig,
         staleTime: 1000 * 60 * 5,
         gcTime: 1000 * 60 * 10
@@ -233,6 +199,9 @@ export function useTags(): UseTagsResult {
  */
 export function useDrafts(): UseDraftsResult {
     const { clientConfig } = useBetterBlogContext()
+    const queries = createBlogQueries(clientConfig)
+
+    const baseDrafts = queries.drafts.list({ limit: 10 })
 
     const {
         data,
@@ -243,15 +212,7 @@ export function useDrafts(): UseDraftsResult {
         isFetchingNextPage,
         refetch
     } = useInfiniteQuery({
-        queryKey: ["drafts"],
-        queryFn: async ({ pageParam = 0 }) => {
-            if (!clientConfig) throw new Error("Client config not available")
-            const posts = await clientConfig.getAllPosts({
-                offset: pageParam as number,
-                limit: 10
-            })
-            return posts.filter((post) => !post.published)
-        },
+        ...baseDrafts,
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
             const posts = lastPage as Post[]
@@ -263,7 +224,10 @@ export function useDrafts(): UseDraftsResult {
         gcTime: 1000 * 60 * 10
     })
 
-    const drafts = (data?.pages.flat() ?? []) as Post[]
+    const drafts = (
+        ((data as InfiniteData<Post[], number> | undefined)?.pages?.flat() ??
+            []) as Post[]
+    ).filter((p) => !p.published) as Post[]
 
     return {
         drafts,
@@ -287,15 +251,20 @@ export function usePostSearch({
     limit = 10
 }: UsePostSearchOptions): UsePostSearchResult {
     const debouncedQuery = useDebounce(query, debounceMs)
-    const shouldSearch = enabled && debouncedQuery.trim().length > 0
+    const shouldSearch = enabled && (query?.trim().length ?? 0) > 0
 
     const lastResultsRef = useRef<Post[]>([])
-
+    
+    // Only enable the query when there is an actual search term
+    // This prevents empty searches from using the base posts query
     const { posts, isLoading, error, refetch } = usePosts({
         query: debouncedQuery,
         limit,
-        enabled: shouldSearch
+        enabled: shouldSearch && debouncedQuery.trim() !== ""
     })
+    
+    // If search is disabled or query is empty, always return empty results
+    const effectivePosts = shouldSearch ? posts : []
 
     useEffect(() => {
         if (!isLoading && posts && posts.length >= 0) {
@@ -303,16 +272,24 @@ export function usePostSearch({
         }
     }, [posts, isLoading])
 
-    const dataToReturn = isLoading ? lastResultsRef.current : posts
+    const isDebouncing = enabled && debounceMs > 0 && debouncedQuery !== query
+    const effectiveLoading = isLoading || isDebouncing
+    // During loading, use the last results
+    // For empty searches or when disabled, use empty array
+    const dataToReturn = !shouldSearch
+        ? []
+        : effectiveLoading
+          ? lastResultsRef.current
+          : effectivePosts
 
     return {
         posts: dataToReturn,
         // compatibility alias similar to tanstack useQuery
         data: dataToReturn,
-        isLoading,
+        isLoading: effectiveLoading,
         error,
         refetch,
-        isSearching: isLoading,
+        isSearching: effectiveLoading,
         searchQuery: debouncedQuery
     }
 }
@@ -326,17 +303,22 @@ export function usePostSearch({
  */
 export function useCreatePost() {
     const queryClient = useQueryClient()
+    const { clientConfig } = useBetterBlogContext()
+    const queries = createBlogQueries(clientConfig)
 
     return useMutation({
-        // Accept unknown shape to allow adapters (e.g., Prisma) to pass nested inputs
-        mutationFn: async (postData: unknown) => {
-            // This would be implemented when we add write operations
-            throw new Error("Create post not implemented yet")
+        mutationFn: async (postData: PostCreateExtendedInput) => {
+            if (!clientConfig?.createPost) {
+                throw new Error("Create post not supported by provider")
+            }
+            return await clientConfig.createPost(postData)
         },
         onSuccess: () => {
             // Invalidate relevant queries
-            queryClient.invalidateQueries({ queryKey: ["posts"] })
-            queryClient.invalidateQueries({ queryKey: ["drafts"] })
+            queryClient.invalidateQueries({ queryKey: queries.posts.list._def })
+            queryClient.invalidateQueries({
+                queryKey: queries.drafts.list._def
+            })
         }
     })
 }
@@ -346,17 +328,25 @@ export function useCreatePost() {
  */
 export function useUpdatePost() {
     const queryClient = useQueryClient()
+    const { clientConfig } = useBetterBlogContext()
+    const queries = createBlogQueries(clientConfig)
 
     return useMutation({
-        // Accept unknown shape to allow adapters (e.g., Prisma) to pass nested inputs
-        mutationFn: async ({ slug, data }: { slug: string; data: unknown }) => {
-            // This would be implemented when we add write operations
-            throw new Error("Update post not implemented yet")
+        mutationFn: async ({
+            slug,
+            data
+        }: { slug: string; data: PostUpdateExtendedInput }) => {
+            if (!clientConfig?.updatePost) {
+                throw new Error("Update post not supported by provider")
+            }
+            return await clientConfig.updatePost(slug, data)
         },
         onSuccess: (_, { slug }) => {
             // Invalidate relevant queries
-            queryClient.invalidateQueries({ queryKey: ["post", slug] })
-            queryClient.invalidateQueries({ queryKey: ["posts"] })
+            queryClient.invalidateQueries({
+                queryKey: queries.posts.detail(slug).queryKey
+            })
+            queryClient.invalidateQueries({ queryKey: queries.posts.list._def })
         }
     })
 }
@@ -366,16 +356,22 @@ export function useUpdatePost() {
  */
 export function useDeletePost() {
     const queryClient = useQueryClient()
+    const { clientConfig } = useBetterBlogContext()
+    const queries = createBlogQueries(clientConfig)
 
     return useMutation({
         mutationFn: async (slug: string) => {
-            // This would be implemented when we add write operations
-            throw new Error("Delete post not implemented yet")
+            if (!clientConfig?.deletePost) {
+                throw new Error("Delete post not supported by provider")
+            }
+            await clientConfig.deletePost(slug)
         },
         onSuccess: () => {
             // Invalidate all post-related queries
-            queryClient.invalidateQueries({ queryKey: ["posts"] })
-            queryClient.invalidateQueries({ queryKey: ["drafts"] })
+            queryClient.invalidateQueries({ queryKey: queries.posts.list._def })
+            queryClient.invalidateQueries({
+                queryKey: queries.drafts.list._def
+            })
         }
     })
 }

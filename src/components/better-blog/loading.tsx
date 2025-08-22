@@ -10,7 +10,11 @@ export function BlogLoading({ message = "Loading..." }: { message?: string }) {
 }
 
 export function PostsLoading() {
-  return <BlogLoading message="Loading posts..." />;
+  return (
+    <div data-testid="posts-skeleton">
+        <BlogLoading message="Loading posts..." />
+    </div>
+)
 }
 
 export function PostLoading() {
