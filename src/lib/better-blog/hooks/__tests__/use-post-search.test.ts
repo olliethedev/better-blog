@@ -1,56 +1,94 @@
-import { act, renderHook, waitFor } from "@testing-library/react"
+import { QueryClient } from "@tanstack/react-query"
+import { renderHook, waitFor } from "@testing-library/react"
 import { createWrapper } from "../../../../test/utils"
-import type { BlogDataProvider, Post } from "../../core/types"
+import { createDemoMemoryDBProvider } from "../../../better-blog/core/providers/dummy-memory-db-provider"
 import { usePostSearch } from "../index"
 
-function makePost(i: number, title = `title-${i}`): Post {
-    return {
-        id: `id-${i}`,
-        slug: `slug-${i}`,
-        title,
-        content: "",
-        excerpt: "",
-        published: true,
-        tags: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        author: { id: "a", name: "n" }
-    }
-}
-
 describe("usePostSearch", () => {
-    jest.useFakeTimers()
+    test("handles search debouncing correctly", async () => {
+        const provider = createDemoMemoryDBProvider()
+        // Create a fresh query client for each test to avoid cache interactions
+        const queryClient = new QueryClient({
+            defaultOptions: { queries: { retry: false } }
+        })
+        const wrapper = createWrapper(provider, queryClient)
 
-    test("debounces and preserves last successful results", async () => {
-        const provider: BlogDataProvider = {
-            async getAllPosts({ query }: { query?: string } = {}) {
-                if (query === "a") return [makePost(1, "alpha")]
-                if (query === "ab") return [makePost(2, "alpha beta")]
-                if (query === "abc") return [makePost(3, "alpha beta gamma")]
-                return []
-            }
-        }
-        const wrapper = createWrapper(provider)
+        // Start with an empty query
         const { result, rerender } = renderHook(
-            ({ q }) => usePostSearch({ query: q, debounceMs: 200 }),
-            { wrapper, initialProps: { q: "a" } }
+            (props) =>
+                usePostSearch({
+                    query: props.query,
+                    enabled: true,
+                    debounceMs: 10 // Use a very small debounce for testing
+                }),
+            {
+                wrapper,
+                initialProps: { query: "" }
+            }
         )
 
-        // advance debounce and resolve first
-        await act(async () => { jest.advanceTimersByTime(200) })
-        await waitFor(() => expect(result.current.isLoading).toBe(false))
-        expect(result.current.posts[0]?.title).toContain("alpha")
+        // With empty query, should not be searching
+        expect(result.current.isSearching).toBe(false)
+        expect(result.current.posts).toHaveLength(0)
 
-        // update query rapidly; lastResults should stick while loading
-        rerender({ q: "ab" })
-        await act(async () => { jest.advanceTimersByTime(50) })
-        expect(result.current.isLoading).toBe(true)
-        expect(result.current.posts[0]?.title).toContain("alpha")
+        // Update to a real query
+        rerender({ query: "hello" })
 
-        await act(async () => { jest.advanceTimersByTime(200) })
-        await waitFor(() => expect(result.current.isLoading).toBe(false))
-        expect(result.current.posts[0]?.title).toContain("alpha beta")
+        // Should be in searching state
+        expect(result.current.isSearching).toBe(true)
+
+        // Wait for debounce to complete
+        await waitFor(() => expect(result.current.isSearching).toBe(false))
+
+        // Should have results after search completes
+        expect(result.current.posts.length).toBeGreaterThan(0)
+
+        // Change back to empty query
+        rerender({ query: "" })
+
+        // Should reset search
+        await waitFor(() => expect(result.current.isSearching).toBe(false))
+        expect(result.current.posts).toHaveLength(0)
+    })
+
+    test("preserves last successful results during loading", async () => {
+        const provider = createDemoMemoryDBProvider()
+        // Create a fresh query client for each test to avoid cache interactions
+        const queryClient = new QueryClient({
+            defaultOptions: { queries: { retry: false } }
+        })
+        const wrapper = createWrapper(provider, queryClient)
+
+        // Start with a valid search query
+        const { result, rerender } = renderHook(
+            (props) =>
+                usePostSearch({
+                    query: props.query,
+                    enabled: true,
+                    debounceMs: 10
+                }),
+            {
+                wrapper,
+                initialProps: { query: "hello" }
+            }
+        )
+
+        // Wait for initial search to complete
+        await waitFor(() => expect(result.current.isSearching).toBe(false))
+        const initialResults = result.current.posts
+        expect(initialResults.length).toBeGreaterThan(0)
+
+        // Change to a new query
+        rerender({ query: "different query" })
+
+        // During loading, should preserve the last results
+        expect(result.current.isSearching).toBe(true)
+        expect(result.current.posts).toEqual(initialResults)
+
+        // Wait for new search to complete
+        await waitFor(() => expect(result.current.isSearching).toBe(false))
+
+        // Should have new results
+        expect(result.current.posts).not.toEqual(initialResults)
     })
 })
-
-

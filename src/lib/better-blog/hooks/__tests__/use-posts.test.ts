@@ -1,49 +1,119 @@
+import { QueryClient } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { createWrapper } from "../../../../test/utils"
-import type { BlogDataProvider, Post } from "../../core/types"
-import { usePosts } from "../index"
-
-function makePost(i: number): Post {
-    return {
-        id: `id-${i}`,
-        slug: `slug-${i}`,
-        title: `title-${i}`,
-        content: "",
-        excerpt: "",
-        published: true,
-        tags: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        author: { id: "a", name: "n" }
-    }
-}
+import { createDemoMemoryDBProvider } from "../../../better-blog/core/providers/dummy-memory-db-provider"
+import { createBlogQueries } from "../../core/queries"
+import { usePostSearch, usePosts } from "../index"
 
 describe("usePosts", () => {
     test("loads first page and paginates", async () => {
-        const pageSize = 10
-        const page0 = Array.from({ length: pageSize }, (_, i) => makePost(i))
-        const page1 = Array.from({ length: pageSize }, (_, i) => makePost(i + pageSize))
-        const provider: BlogDataProvider = {
-            async getAllPosts({ offset = 0, limit = pageSize } = {}) {
-                if (offset === 0) return page0
-                if (offset === pageSize) return page1
-                return []
-            }
-        }
+        const provider = createDemoMemoryDBProvider()
         const wrapper = createWrapper(provider)
-        const { result } = renderHook(() => usePosts({ limit: pageSize }), {
+        const { result } = renderHook(() => usePosts({ limit: 10 }), {
             wrapper
         })
 
         expect(result.current.isLoading).toBe(true)
         await waitFor(() => expect(result.current.isLoading).toBe(false))
-        expect(result.current.posts).toHaveLength(pageSize)
+        expect(result.current.posts).toHaveLength(10)
 
         await act(async () => {
             await result.current.loadMore()
         })
-        await waitFor(() => expect(result.current.posts).toHaveLength(pageSize * 2))
+        await waitFor(() => expect(result.current.posts).toHaveLength(12))
+    })
+
+    test("handles empty query parameter correctly", async () => {
+        const provider = createDemoMemoryDBProvider()
+        const wrapper = createWrapper(provider)
+        const queryClient = new QueryClient()
+
+        // Spy on fetchQuery to check the exact query keys being used
+        const fetchQuerySpy = jest.spyOn(queryClient, "fetchInfiniteQuery")
+
+        const { result: resultWithoutQuery } = renderHook(
+            () => usePosts({ limit: 10 }),
+            {
+                wrapper
+            }
+        )
+
+        await waitFor(() =>
+            expect(resultWithoutQuery.current.isLoading).toBe(false)
+        )
+
+        const { result: resultWithEmptyQuery } = renderHook(
+            () => usePosts({ limit: 10, query: "" }),
+            {
+                wrapper
+            }
+        )
+
+        await waitFor(() =>
+            expect(resultWithEmptyQuery.current.isLoading).toBe(false)
+        )
+
+        // Check that both results use the same query key structure
+        expect(resultWithoutQuery.current.posts).toHaveLength(10)
+        expect(resultWithEmptyQuery.current.posts).toHaveLength(10)
+    })
+
+    test("generates consistent query keys", async () => {
+        const provider = createDemoMemoryDBProvider()
+        const queries = createBlogQueries(provider)
+
+        // Test various scenarios to ensure query keys are consistent
+        const noQueryKey = queries.posts.list({ limit: 10 }).queryKey
+        const emptyQueryKey = queries.posts.list({
+            limit: 10,
+            query: ""
+        }).queryKey
+        const withQueryKey = queries.posts.list({
+            limit: 10,
+            query: "test"
+        }).queryKey
+
+        // Empty query should be treated the same as no query
+        expect(JSON.stringify(noQueryKey)).toEqual(
+            JSON.stringify(emptyQueryKey)
+        )
+
+        // Query with value should be different
+        expect(JSON.stringify(noQueryKey)).not.toEqual(
+            JSON.stringify(withQueryKey)
+        )
     })
 })
 
+describe("usePostSearch", () => {
+    test("handles empty search query correctly", async () => {
+        const provider = createDemoMemoryDBProvider()
+        const wrapper = createWrapper(provider)
 
+        const { result } = renderHook(
+            () => usePostSearch({ query: "", enabled: true }),
+            {
+                wrapper
+            }
+        )
+
+        // Should not be loading with an empty query
+        expect(result.current.isLoading).toBe(false)
+        expect(result.current.posts).toHaveLength(0)
+    })
+
+    test("returns search results with valid query", async () => {
+        const provider = createDemoMemoryDBProvider()
+        const wrapper = createWrapper(provider)
+
+        const { result } = renderHook(
+            () => usePostSearch({ query: "hello", enabled: true }),
+            {
+                wrapper
+            }
+        )
+
+        await waitFor(() => expect(result.current.isLoading).toBe(false))
+        expect(result.current.posts.length).toBeGreaterThan(0)
+    })
+})

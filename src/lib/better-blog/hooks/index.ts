@@ -13,6 +13,10 @@ import { useDebounce } from "../../../hooks/use-debounce"
 import { useBetterBlogContext } from "../context/better-blog-context"
 import { createBlogQueries } from "../core/queries"
 import type { Post, Tag } from "../core/types"
+import type {
+    PostCreateExtendedInput,
+    PostUpdateExtendedInput
+} from "../schema/post"
 
 // ============================================================================
 // CORE HOOK TYPES
@@ -87,8 +91,15 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
     const { clientConfig } = useBetterBlogContext()
     const { tag, limit = 10, enabled = true, query } = options
     const queries = createBlogQueries(clientConfig)
+    
+    const queryParams = {
+        tag,
+        limit,
+        query
+    }
 
-    const basePosts = queries.posts.list({ tag, query, limit })
+    const basePosts = queries.posts.list(queryParams)
+
     const {
         data,
         isLoading,
@@ -111,7 +122,7 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
     })
 
     const posts = ((
-        data as unknown as InfiniteData<Post[], number> | undefined
+        data as InfiniteData<Post[], number> | undefined
     )?.pages?.flat() ?? []) as Post[]
 
     return {
@@ -168,12 +179,7 @@ export function useTags(): UseTagsResult {
     const queries = createBlogQueries(clientConfig)
 
     const baseTags = queries.tags.list
-    const { data, isLoading, error, refetch } = useQuery<
-        Tag[],
-        Error,
-        Tag[],
-        typeof baseTags.queryKey
-    >({
+    const { data, isLoading, error, refetch } = useQuery({
         ...baseTags,
         enabled: !!clientConfig,
         staleTime: 1000 * 60 * 5,
@@ -196,6 +202,7 @@ export function useDrafts(): UseDraftsResult {
     const queries = createBlogQueries(clientConfig)
 
     const baseDrafts = queries.drafts.list({ limit: 10 })
+
     const {
         data,
         isLoading,
@@ -218,9 +225,8 @@ export function useDrafts(): UseDraftsResult {
     })
 
     const drafts = (
-        (
-            data as unknown as InfiniteData<Post[], number> | undefined
-        )?.pages?.flat() ?? []
+        ((data as InfiniteData<Post[], number> | undefined)?.pages?.flat() ??
+            []) as Post[]
     ).filter((p) => !p.published) as Post[]
 
     return {
@@ -248,12 +254,17 @@ export function usePostSearch({
     const shouldSearch = enabled && (query?.trim().length ?? 0) > 0
 
     const lastResultsRef = useRef<Post[]>([])
-
+    
+    // Only enable the query when there is an actual search term
+    // This prevents empty searches from using the base posts query
     const { posts, isLoading, error, refetch } = usePosts({
         query: debouncedQuery,
         limit,
-        enabled: shouldSearch
+        enabled: shouldSearch && debouncedQuery.trim() !== ""
     })
+    
+    // If search is disabled or query is empty, always return empty results
+    const effectivePosts = shouldSearch ? posts : []
 
     useEffect(() => {
         if (!isLoading && posts && posts.length >= 0) {
@@ -263,7 +274,13 @@ export function usePostSearch({
 
     const isDebouncing = enabled && debounceMs > 0 && debouncedQuery !== query
     const effectiveLoading = isLoading || isDebouncing
-    const dataToReturn = effectiveLoading ? lastResultsRef.current : posts
+    // During loading, use the last results
+    // For empty searches or when disabled, use empty array
+    const dataToReturn = !shouldSearch
+        ? []
+        : effectiveLoading
+          ? lastResultsRef.current
+          : effectivePosts
 
     return {
         posts: dataToReturn,
@@ -290,10 +307,11 @@ export function useCreatePost() {
     const queries = createBlogQueries(clientConfig)
 
     return useMutation({
-        // Accept unknown shape to allow adapters (e.g., Prisma) to pass nested inputs
-        mutationFn: async (postData: unknown) => {
-            // This would be implemented when we add write operations
-            throw new Error("Create post not implemented yet")
+        mutationFn: async (postData: PostCreateExtendedInput) => {
+            if (!clientConfig?.createPost) {
+                throw new Error("Create post not supported by provider")
+            }
+            return await clientConfig.createPost(postData)
         },
         onSuccess: () => {
             // Invalidate relevant queries
@@ -314,10 +332,14 @@ export function useUpdatePost() {
     const queries = createBlogQueries(clientConfig)
 
     return useMutation({
-        // Accept unknown shape to allow adapters (e.g., Prisma) to pass nested inputs
-        mutationFn: async ({ slug, data }: { slug: string; data: unknown }) => {
-            // This would be implemented when we add write operations
-            throw new Error("Update post not implemented yet")
+        mutationFn: async ({
+            slug,
+            data
+        }: { slug: string; data: PostUpdateExtendedInput }) => {
+            if (!clientConfig?.updatePost) {
+                throw new Error("Update post not supported by provider")
+            }
+            return await clientConfig.updatePost(slug, data)
         },
         onSuccess: (_, { slug }) => {
             // Invalidate relevant queries
@@ -339,8 +361,10 @@ export function useDeletePost() {
 
     return useMutation({
         mutationFn: async (slug: string) => {
-            // This would be implemented when we add write operations
-            throw new Error("Delete post not implemented yet")
+            if (!clientConfig?.deletePost) {
+                throw new Error("Delete post not supported by provider")
+            }
+            await clientConfig.deletePost(slug)
         },
         onSuccess: () => {
             // Invalidate all post-related queries

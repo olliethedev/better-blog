@@ -20,7 +20,7 @@ import { PostsLoading } from "../loading"
 import { PostsList } from "../posts-list"
 
 export function HomePageComponent() {
-    const { posts, isLoading, loadMore, hasMore, isLoadingMore } = usePosts()
+    const { posts, isLoading, loadMore, hasMore, isLoadingMore } = usePosts({})
     const { localization } = useBetterBlogContext()
     const { Link } = useComponents()
     const newPostHref = useBlogPath("new")

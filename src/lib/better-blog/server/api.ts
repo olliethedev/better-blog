@@ -1,25 +1,13 @@
 import { createEndpoint, createRouter } from "better-call"
 import type { BlogDataProvider, Post } from "../core/types"
 import {
-    PostCreateWithoutRefineSchema,
+    PostCreateSchema,
     PostListQuerySchema,
-    PostUpdateWithoutRefineSchema
+    PostUpdateSchema
 } from "../schema/post"
 
 const listPostsQuerySchema = PostListQuerySchema
 
-console.log(
-    "listPostsSchema has ~standard",
-    !!listPostsQuerySchema["~standard"]
-)
-console.log(
-    "createPostSchema has ~standard",
-    !!PostCreateWithoutRefineSchema["~standard"]
-)
-console.log(
-    "updatePostSchema has ~standard",
-    !!PostUpdateWithoutRefineSchema["~standard"]
-)
 
 export interface CreateBlogApiRouterOptions {
     basePath?: string
@@ -82,7 +70,7 @@ export function createBlogApiRouter(
         "/posts",
         {
             method: "POST",
-            body: PostCreateWithoutRefineSchema
+            body: PostCreateSchema
         },
         async (ctx) => {
             if (!provider.createPost) {
@@ -99,7 +87,7 @@ export function createBlogApiRouter(
         "/posts/:slug",
         {
             method: "PUT",
-            body: PostUpdateWithoutRefineSchema
+            body: PostUpdateSchema
         },
         async (ctx) => {
             const slug = ctx.params.slug

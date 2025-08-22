@@ -26,12 +26,12 @@ export type Post = {
 };
 
 import type {
-    PostCreateWithoutRefineInput,
-    PostUpdateWithoutRefineInput
+    PostCreateExtendedInput,
+    PostUpdateExtendedInput
 } from "../schema/post"
 
-export type PostCreateInput = PostCreateWithoutRefineInput
-export type PostUpdateInput = PostUpdateWithoutRefineInput
+export type { PostCreateExtendedInput, PostUpdateExtendedInput }
+
 
 export interface BlogDataProvider {
     getAllPosts: (filter?: {
@@ -40,10 +40,11 @@ export interface BlogDataProvider {
         offset?: number
         limit?: number
         query?: string
+        published?: boolean
     }) => Promise<Post[]>
     getPostBySlug?: (slug: string) => Promise<Post | null>
-    createPost?: (input: PostCreateInput) => Promise<Post>
-    updatePost?: (slug: string, input: PostUpdateInput) => Promise<Post>
+    createPost?: (input: PostCreateExtendedInput) => Promise<Post>
+    updatePost?: (slug: string, input: PostUpdateExtendedInput) => Promise<Post>
     deletePost?: (slug: string) => Promise<void>
 }
 

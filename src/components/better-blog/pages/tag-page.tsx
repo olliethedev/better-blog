@@ -14,15 +14,15 @@ export function TagPageComponent() {
 
   return (
     <div>
-      <h1>Posts tagged: {tag}</h1>
-      <PostsList
-        posts={posts}
-        onLoadMore={loadMore}
-        hasMore={hasMore}
-        isLoadingMore={isLoadingMore}
-      />
+        <h1>Posts tagged: {tag}</h1>
+        <PostsList
+            posts={posts}
+            onLoadMore={loadMore}
+            hasMore={hasMore}
+            isLoadingMore={isLoadingMore}
+        />
     </div>
-  );
+)
 }
 
 

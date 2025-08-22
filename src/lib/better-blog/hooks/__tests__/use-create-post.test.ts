@@ -14,7 +14,12 @@ describe("useCreatePost", () => {
 
         await act(async () => {
             try {
-                await result.current.mutateAsync({})
+                await result.current.mutateAsync({
+                    title: "t",
+                    content: "c",
+                    excerpt: "",
+                    published: false
+                })
             } catch {}
         })
 

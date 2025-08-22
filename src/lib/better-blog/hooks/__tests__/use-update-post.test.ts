@@ -18,7 +18,15 @@ describe("useUpdatePost", () => {
         // Here we call mutateAsync which will throw, but we focus on existence
         await act(async () => {
             try {
-                await result.current.mutateAsync({ slug: "s", data: {} })
+                await result.current.mutateAsync({
+                    slug: "s",
+                    data: {
+                        title: "t",
+                        content: "c",
+                        excerpt: "",
+                        slug: "s"
+                    }
+                })
             } catch {}
         })
 
