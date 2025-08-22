@@ -1,0 +1,73 @@
+---
+title: React Router
+description: Client-side rendering with React DOM Router
+---
+
+Render all blog routes under `/blog/*` using client-side data fetching.
+
+#### 1) `main.tsx`
+
+```tsx
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Provider } from './providers';
+import BlogEntryPage from './BlogEntryPage';
+
+createRoot(document.getElementById('root')!).render(
+  <BrowserRouter>
+    <Provider>
+      <Routes>
+        <Route path="/blog/*" element={<BlogEntryPage />} />
+      </Routes>
+    </Provider>
+  </BrowserRouter>
+);
+```
+
+#### 2) `BlogEntryPage.tsx`
+
+```tsx
+import { useLocation } from 'react-router-dom';
+import { BlogRouterPage } from 'better-blog/client';
+
+export default function BlogEntryPage() {
+  const pathname = useLocation().pathname.replace('/blog', '') || '/';
+  const slug = pathname.split('/').filter(Boolean);
+  return <BlogRouterPage slug={slug} />;
+}
+```
+
+#### 3) `providers.tsx`
+
+```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NavLink } from 'react-router-dom';
+import { BetterBlogContextProvider } from 'better-blog/client';
+
+const components = {
+  Link: ({ href, children, className }) => (
+    <NavLink to={href.replace('/posts', '/blog')} className={className}>
+      {children}
+    </NavLink>
+  ),
+  Image: (p) => <img {...p} />,
+};
+
+const clientBlogConfig = {
+  async getAllPosts() { return []; },
+  async getPostBySlug() { return null; },
+};
+
+const queryClient = new QueryClient();
+
+export function Provider({ children }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BetterBlogContextProvider clientConfig={clientBlogConfig} components={components}>
+        {children}
+      </BetterBlogContextProvider>
+    </QueryClientProvider>
+  );
+}
+```
+

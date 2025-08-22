@@ -1,0 +1,57 @@
+---
+title: API routes
+description: Expose CRUD endpoints and use the default API-backed provider
+---
+
+If you prefer not to ship a client-side `BlogDataProvider`, Better Blog can expose API endpoints and consume them via a default API-backed provider.
+
+### 1) Mount the API router (Next.js)
+
+Create `app/api/blog/[...all]/route.ts`:
+
+```ts
+import { createBlogApiRouter } from 'better-blog/server';
+import type { BlogDataProvider } from 'better-blog';
+
+// Your server-side provider (DB/CMS/etc.) implementing reads and optional mutations
+const serverProvider: BlogDataProvider = {
+  async getAllPosts(filter) { /* ... */ return [] },
+  async getPostBySlug(slug) { /* ... */ return null },
+  async createPost(input) { /* ... */ return {} as any },
+  async updatePost(slug, input) { /* ... */ return {} as any },
+  async deletePost(slug) { /* ... */ }
+}
+
+const { handler } = createBlogApiRouter(serverProvider, {
+  basePath: '/api/blog'
+});
+
+export const GET = handler;
+export const POST = handler;
+export const PUT = handler;
+export const DELETE = handler;
+```
+
+Endpoints exposed:
+
+- `GET /api/blog/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
+- `GET /api/blog/posts/:slug` – fetch one
+- `POST /api/blog/posts` – create
+- `PUT /api/blog/posts/:slug` – update
+- `DELETE /api/blog/posts/:slug` – delete
+
+### 2) Use the default API-backed provider (client)
+
+Omit `clientConfig` to let the provider default to calling the API, or set a custom base path.
+
+```tsx
+import { BetterBlogContextProvider } from 'better-blog/client';
+
+<BetterBlogContextProvider
+  // clientConfig is optional – defaults to API-backed provider
+  apiBasePath="/api/blog" // must match router basePath
+>
+  {children}
+</BetterBlogContextProvider>
+```
+

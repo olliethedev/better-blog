@@ -1,0 +1,54 @@
+---
+title: Introduction
+description: Add a production-ready, SEO-friendly blog to your React app in minutes.
+full: true
+---
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Rocket, BookOpenCheck, Server, Layers } from "lucide-react";
+
+## 👋 Welcome to Better Blog
+
+**Better Blog** is a framework-agnostic, type-safe router and component set for blogs. It supports SSR/SSG, client hydration, and full UI overrides while letting you bring your own data source.
+
+### Highlights
+
+- **Drop-in blog in minutes**: One provider + one catch-all route
+- **Fully customizable UI**: Override any page or loading component
+- **Bring your own content source**: Pluggable `BlogDataProvider`
+- **Works anywhere**: Next.js App Router or React Router
+- **TypeScript-first**: Strong types across routes, hooks, and providers
+- **SEO-first**: SSR/SSG helpers and hydration-safe rendering
+
+## Get started
+
+<Cards>
+  <Card
+    title="Installation"
+    href="/docs/installation"
+    icon={<Rocket size={20} />}
+    description="Install the package and set up Tailwind content scanning."
+  />
+  <Card
+    title="Next.js App Router"
+    href="/docs/nextjs-app-router"
+    icon={<Server size={20} />}
+    description="SSR/SSG with server prefetch + client hydration."
+  />
+  <Card
+    title="React Router"
+    href="/docs/react-router"
+    icon={<Layers size={20} />}
+    description="Client-side rendering setup using React DOM Router."
+  />
+  <Card
+    title="API routes"
+    href="/docs/api-routes"
+    icon={<BookOpenCheck size={20} />}
+    description="Ship an API and consume it with the default provider."
+  />
+</Cards>
+
+---
+
+Looking for concepts and APIs? See [Core concepts](/docs/core-concepts) and [Overriding components](/docs/overrides).

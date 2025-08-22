@@ -28,6 +28,7 @@ export default {
     },
     extensionsToTreatAsEsm: [".ts", ".tsx"],
     moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+    testPathIgnorePatterns: ["<rootDir>/docs/"],
     testMatch: [
         "<rootDir>/src/**/__tests__/**/*.(ts|tsx)",
         "<rootDir>/src/**/*.(test|spec).(ts|tsx)"

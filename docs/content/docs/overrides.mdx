@@ -1,0 +1,28 @@
+---
+title: Overriding components
+description: Replace built-in pages and wire your own Link/Image
+---
+
+Use `pageOverrides` to replace any built-in page or loading component, and `components` to wire your router-specific `Link`/`Image`.
+
+```tsx
+import { BetterBlogContextProvider } from 'better-blog/client';
+
+function MyHome() { return <div>Custom Home</div>; }
+function MyHomeLoading() { return <div>Loading home…</div>; }
+
+<BetterBlogContextProvider
+  clientConfig={clientConfig}
+  components={{ Link: MyLink, Image: MyImage }}
+  pageOverrides={{ HomeComponent: MyHome, HomeLoadingComponent: MyHomeLoading }}
+>
+  {children}
+</BetterBlogContextProvider>
+```
+
+Common overrides:
+
+- Replace home, post list, tag list, post detail pages
+- Swap loading/skeleton components for each route
+- Inject your design system primitives via `components`
+
