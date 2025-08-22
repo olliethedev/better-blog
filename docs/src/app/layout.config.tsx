@@ -9,6 +9,7 @@ import { IoBookSharp } from "react-icons/io5";
  * Docs Layout: app/(home)/layout.tsx
  */
 export const baseOptions: BaseLayoutProps = {
+  githubUrl: "https://github.com/olliethedev/better-blog",
   nav: {
     title: (
       <>
