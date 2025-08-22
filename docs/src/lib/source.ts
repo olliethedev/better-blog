@@ -4,7 +4,7 @@ import { loader } from "fumadocs-core/source";
 import { icons } from "lucide-react";
 
 export const source = loader({
-  baseUrl: "/docs",
+  baseUrl: "/",
   source: docs.toFumadocsSource(),
   icon(icon) {
     if (!icon) {

@@ -1,54 +1,55 @@
-"use client";
+import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import type { ReactNode } from "react";
-import { HomeLayout } from "fumadocs-ui/layouts/home";
 import { baseOptions } from "@/app/layout.config";
-import { RiTwitterXLine } from "react-icons/ri";
-import { FaBook, FaGithub } from "react-icons/fa";
-import { SOCIALS } from "@/constants";
-import Link from "next/link";
+import { source } from "@/lib/source";
+import { LargeSearchToggle } from "fumadocs-ui/components/layout/search-toggle";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <HomeLayout
+    <DocsLayout
+      tree={source.pageTree}
       {...baseOptions}
-      links={[
-        {
-          type: "custom",
-          children: (
-            <div className="flex items-center gap-3 ml-4">
-              <Link className="flex items-center gap-1" href="/docs">
-                <FaBook />
-                Docs
-              </Link>
+      searchToggle={{
+        components: {
+          lg: (
+            <div className="flex gap-1.5 max-md:hidden">
+              <LargeSearchToggle className="flex-1" />
+              
             </div>
           ),
         },
+      }}
+      sidebar={{
+        tabs: {
+          transform(option, node) {
+            const meta = source.getNodeMeta(node);
+            if (!meta || !node.icon) return option;
 
-        // --- External Links (Inline) ---
-        {
-          type: "custom",
+            const color = `var(--${
+              meta.path.split("/")[0]
+            }-color, var(--color-fd-foreground))`;
 
-          children: (
-            <div className="flex items-center gap-4 ml-6">
-              <Link className="flex items-center gap-1" href={SOCIALS.Github} target="_blank">
-              <FaGithub className="h-4 w-4" />
-                <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-all">
-                  GitHub
-                </span>
-              </Link>
-
-              <Link className="flex items-center gap-1" href={SOCIALS.X} target="_blank">
-              <RiTwitterXLine className="h-4 w-4" />
-                <span className="pointer-events-none absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-all">
-                  Twitter
-                </span>
-              </Link>
-            </div>
-          ),
+            return {
+              ...option,
+              icon: (
+                <div
+                  className="[&_svg]:size-full rounded-lg size-full max-md:bg-(--tab-color)/10 max-md:border max-md:p-1.5"
+                  style={
+                    {
+                      color,
+                      "--tab-color": color,
+                    } as object
+                  }
+                >
+                  {node.icon}
+                </div>
+              ),
+            };
+          },
         },
-      ]}
+      }}
     >
       {children}
-    </HomeLayout>
+    </DocsLayout>
   );
 }
