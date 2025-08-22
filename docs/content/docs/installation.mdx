@@ -1,0 +1,45 @@
+---
+title: Installation
+description: Install Better Blog and configure your project
+---
+
+### Install the package
+
+```bash
+pnpm add better-blog @tanstack/react-query
+# or
+npm install better-blog @tanstack/react-query
+# or
+yarn add better-blog @tanstack/react-query
+```
+
+### Tailwind CSS content configuration
+
+Better Blog ships utility classes. Configure Tailwind to scan the package.
+
+- Tailwind v4 (in your `globals.css`):
+
+```css
+/* globals.css */
+@source "../node_modules/better-blog";
+```
+
+- Tailwind v3 (in your `tailwind.config.{js,ts}`):
+
+```ts
+// tailwind.config.ts
+export default {
+  content: [
+    // your app paths...
+    "./node_modules/better-blog/dist/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+};
+```
+
+### What you get
+
+- Route-aware blog router and default pages
+- Strongly typed hooks built on TanStack Query
+- Server adapter for SSR/SSG
+- Override points for UI and loading components
+

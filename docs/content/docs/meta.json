@@ -1,0 +1,17 @@
+{
+  "title": "Better Blog",
+  "description": "Add a production-ready, SEO-friendly blog to your app.",
+  "icon": "Building",
+  "root": true,
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "installation",
+    "core-concepts",
+    "---Guides---",
+    "nextjs-app-router",
+    "react-router",
+    "api-routes",
+    "overrides"
+  ]
+}

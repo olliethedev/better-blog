@@ -3,11 +3,25 @@
     "tasks": {
         "build": {
             "dependsOn": ["^build"],
-            "outputs": ["dist/**"]
+            "outputs": ["dist/**"],
+            "inputs": [
+                "src/**",
+                "tsconfig.json",
+                "tsup.config.ts",
+                "package.json",
+                "pnpm-lock.yaml"
+            ]
         },
         "dev": {
             "persistent": true,
-            "cache": false
+            "cache": false,
+            "inputs": [
+                "src/**",
+                "tsconfig.json",
+                "tsup.config.ts",
+                "package.json",
+                "pnpm-lock.yaml"
+            ]
         }
     }
 }
