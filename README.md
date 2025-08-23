@@ -6,7 +6,7 @@ Do not use it in production.
 
 Add a production-ready, SEO-friendly blog to your React app in minutes. better-blog is a framework-agnostic, type-safe router + component set with drop-in setup, SSR/SSG out of the box, and full customization—works with modern frameworks like Next.js App Router and React Router.
 
-Read the docs at [better-blog.com](https://better-blog.com).
+Read the docs at [better-blog.com](https://www.better-blog.com).
 
 ### Highlights
 
