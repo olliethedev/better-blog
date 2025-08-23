@@ -16,6 +16,7 @@ export const baseOptions: BaseLayoutProps = {
         <span>Better Blog</span> 
       </>
     ),
+    url:"https://www.better-blog.com"
   },
   // see https://fumadocs.dev/docs/ui/navigation/links
 };
