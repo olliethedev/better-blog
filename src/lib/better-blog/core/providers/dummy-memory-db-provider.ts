@@ -164,7 +164,7 @@ export function createDummyMemoryDBProvider(
         query?: string
         published?: boolean
     }): Post[] {
-        const { slug, tag, offset = 0, limit = 10, query, published } = filter ?? {}
+        const { slug, tag, offset = 0, limit, query, published } = filter ?? {}
 
         let result = posts.slice().sort((a, b) => {
             const aDate = a.publishedAt ?? a.createdAt
@@ -180,7 +180,9 @@ export function createDummyMemoryDBProvider(
             const tagLower = tag.toLowerCase()
             result = result.filter((p) =>
                 (p.tags ?? []).some(
-                    (t) => t.slug.toLowerCase() === tagLower || t.name.toLowerCase() === tagLower
+                    (t) =>
+                        t.slug.toLowerCase() === tagLower ||
+                        t.name.toLowerCase() === tagLower
                 )
             )
         }
@@ -188,7 +190,9 @@ export function createDummyMemoryDBProvider(
         if (query && query.trim().length > 0) {
             const q = normalizeQuery(query)
             result = result.filter((p) => {
-                const hay = [p.title, p.excerpt, p.content].join("\n").toLowerCase()
+                const hay = [p.title, p.excerpt, p.content]
+                    .join("\n")
+                    .toLowerCase()
                 return hay.includes(q)
             })
         }
@@ -197,7 +201,10 @@ export function createDummyMemoryDBProvider(
             result = result.filter((p) => p.published === published)
         }
 
-        return result.slice(offset, offset + limit)
+        if (typeof limit === "number") {
+            return result.slice(offset, offset + limit)
+        }
+        return result.slice(offset)
     }
 
     return {

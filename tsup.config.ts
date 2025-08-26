@@ -6,7 +6,9 @@ export default defineConfig((env) => {
         entry: {
             index: "./src/index.ts",
             client: "./src/client.ts",
-            server: "./src/server.ts"
+            server: "./src/server.ts",
+            "server/api": "./src/server/api.ts",
+            "server/sitemap": "./src/server/sitemap.ts"
         },
         format: ["esm", "cjs"],
         splitting: true,

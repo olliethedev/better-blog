@@ -12,7 +12,7 @@ Can be served by any web standard compatible server (like Bun, node, nextjs, sve
 Create `app/api/posts/[...all]/route.ts`:
 
 ```ts
-import { createBlogApiRouter } from "better-blog/server"
+import { createBlogApiRouter } from "better-blog/server/api"
 import { createDemoMemoryDBProvider } from "better-blog"
 
 // simple in-memory provider for demo purposes, replace with your own provider

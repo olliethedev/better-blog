@@ -12,6 +12,7 @@
     "nextjs-app-router",
     "react-router",
     "api-routes",
+    "sitemap",
     "overrides"
   ]
 }

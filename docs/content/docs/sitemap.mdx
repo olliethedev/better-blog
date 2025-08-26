@@ -1,0 +1,64 @@
+---
+title: Sitemap generation
+description: Generate SEO-friendly sitemaps for your Better Blog routes.
+---
+
+### Generate a sitemap for your blog
+
+Use the server sitemap helper to generate a framework-friendly sitemap for your blog routes. It produces entries for the blog index, each post, and tag pages.
+
+#### API
+
+```ts
+import { createBlogSitemap } from 'better-blog/server/sitemap'
+
+type Sitemap = Array<{
+  url: string
+  lastModified?: string | Date
+  changeFrequency?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never'
+  priority?: number
+  alternates?: { languages?: Record<string, string | string[]> }
+}>
+
+await createBlogSitemap({
+  data,            // BlogDataProvider
+  url: 'https://example.com',
+  basePath: '/posts' // optional, defaults to '/posts'
+})
+```
+
+#### Next.js App Router example
+
+Create `app/sitemap.ts`:
+
+```ts
+import type { MetadataRoute } from 'next'
+import { blogConfig } from '@/lib/blog-data-provider'
+import { createBlogSitemap } from 'better-blog/server/sitemap'
+
+const BASE_URL = 'https://www.better-blog.com'
+
+// In Next.js sitemap.js is a special Route Handler that is cached by default unless it uses a Dynamic API or dynamic config option.
+export const dynamic = 'force-dynamic'
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const sitemap = await createBlogSitemap({
+    data: blogConfig,
+    url: BASE_URL,
+    basePath: '/blog',
+  })
+  return [
+    {
+      url: BASE_URL,
+      lastModified: new Date(),
+    },
+    ...sitemap,
+  ]
+}
+```
+
+#### Notes
+
+- Set `basePath` to the public path of your blog (defaults to `/posts`).
+- The generator uses `getAllPosts({ published: true })` and infers tag pages from post tags.
+
