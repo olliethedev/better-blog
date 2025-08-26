@@ -47,7 +47,7 @@ Here’s a proper link: [Visit GitHub](https://github.com)
 
 Here’s an image:  
 
-![Placeholder Image](https://placehold.co/600x400)  
+![Placeholder Image](https://placehold.co/600x400/png)  
 
 ---
 

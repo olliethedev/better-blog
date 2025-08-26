@@ -169,7 +169,7 @@ If you prefer not to ship a client-side `BlogDataProvider`, better-blog can expo
 
 ### 1) Mount the API router (Next.js)
 
-Create `app/api/blog/[...all]/route.ts`:
+Create `app/api/posts/[...all]/route.ts`:
 
 ```ts
 import { createBlogApiRouter } from 'better-blog/server';
@@ -185,7 +185,7 @@ const serverProvider: BlogDataProvider = {
 }
 
 const { handler } = createBlogApiRouter(serverProvider, {
-  basePath: '/api/blog' // must match your route path
+  basePath: '/api/posts' // must match your route path
 });
 
 export const GET = handler;
@@ -195,11 +195,11 @@ export const DELETE = handler;
 ```
 
 Endpoints exposed:
-- `GET /api/blog/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
-- `GET /api/blog/posts/:slug` – fetch one
-- `POST /api/blog/posts` – create
-- `PUT /api/blog/posts/:slug` – update
-- `DELETE /api/blog/posts/:slug` – delete
+- `GET /api/posts/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
+- `GET /api/posts/posts/:slug` – fetch one
+- `POST /api/posts/posts` – create
+- `PUT /api/posts/posts/:slug` – update
+- `DELETE /api/posts/posts/:slug` – delete
 
 All inputs are validated with zod schemas from `src/lib/better-blog/schema/post.ts`.
 
@@ -212,7 +212,7 @@ import { BetterBlogContextProvider } from 'better-blog/client';
 
 <BetterBlogContextProvider
   // clientConfig is optional – defaults to API-backed provider
-  apiBasePath="/api/blog" // must match router basePath
+  apiBasePath="/api/posts" // must match router basePath
 >
   {children}
 </BetterBlogContextProvider>
@@ -443,12 +443,8 @@ MIT
 ---
 
 ## Roadmap (short)
-- post search
-- post details page
-- new post page
-- edit post page
-- drafts list page
-- tag posts lists page
+- finalize page designs
+- blog translations
 - sitemap/robots generation
 - richer metadata helpers
 - data provider adapters (Postgres, Redis, API)

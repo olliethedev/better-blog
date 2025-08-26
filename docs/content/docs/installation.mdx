@@ -3,28 +3,34 @@ title: Installation
 description: Install Better Blog and configure your project
 ---
 
+### Prerequisites
+
+- You must have [shadcn/ui](https://ui.shadcn.com) installed with CSS variables enabled.
+- Configure a [Sonner](https://ui.shadcn.com/docs/components/sonner) `<Toaster />` component for toast notifications.
+- Ensure you have [TailwindCSS](https://tailwindcss.com) `v4` set up and configured correctly.
+
 ### Install the package
 
 ```bash
-pnpm add better-blog @tanstack/react-query
+pnpm add better-blog
 # or
-npm install better-blog @tanstack/react-query
+npm install better-blog
 # or
-yarn add better-blog @tanstack/react-query
+yarn add better-blog
 ```
 
 ### Tailwind CSS content configuration
 
 Better Blog ships utility classes. Configure Tailwind to scan the package.
 
-- Tailwind v4 (in your `globals.css`):
+- [TailwindCSS](https://tailwindcss.com) v4 (in your `globals.css`):
 
 ```css
 /* globals.css */
-@source "../node_modules/better-blog";
+@import "better-blog/css";
 ```
 
-- Tailwind v3 (in your `tailwind.config.{js,ts}`):
+- For [TailwindCSS](https://tailwindcss.com) V3 (Deprecated), add the following `content` to your Tailwind config:
 
 ```ts
 // tailwind.config.ts
@@ -36,10 +42,10 @@ export default {
 };
 ```
 
-### What you get
+### What you can do next
 
-- Route-aware blog router and default pages
-- Strongly typed hooks built on TanStack Query
-- Server adapter for SSR/SSG
-- Override points for UI and loading components
+- Add a route-aware blog router and default pages
+- Add a server adapter for SSR/SSG
+- Use strongly typed hooks built on TanStack Query
+- Customize the UI via override points for UI and loading components
 

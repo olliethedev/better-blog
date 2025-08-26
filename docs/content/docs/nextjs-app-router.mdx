@@ -8,44 +8,62 @@ This renders all blog routes under `/posts/...` with server prefetch + client hy
 #### 1) `app/posts/[[...all]]/page.tsx` (server)
 
 ```tsx
-import { createServerAdapter } from 'better-blog/server';
-import type { BlogDataProvider } from 'better-blog';
-import type { Metadata } from 'next';
-import { getQueryClient } from '@/lib/get-query-client';
+import { BlogDataProvider, getDefaultQueryClient } from "better-blog";
+import { createServerAdapter } from "better-blog/server";
 
+import { Metadata } from "next";
+import { blogConfig } from "@/lib/blog-data-provider";
+
+// Implement your data provider here
 const serverBlogConfig: BlogDataProvider = {
-  async getAllPosts(filter) { /* implement */ return []; },
-  async getPostBySlug(slug) { /* implement */ return null; },
+  ...
 };
 
-const queryClient = getQueryClient();
-const adapter = createServerAdapter(serverBlogConfig, queryClient);
+// Create query client for React Query
+const queryClient = getDefaultQueryClient();
 
-export const generateStaticParams = adapter.generateStaticParams;
-export const generateMetadata: (ctx: { params: Promise<{ all: string[] }> }) => Promise<Metadata> = adapter.generateMetadata as any;
+// Create the server adapter
+const serverAdapter = createServerAdapter(
+  blogConfig,
+  queryClient
+);
 
-export default function Page({ params }: { params: { all?: string[] } }) {
-  return (
-    <adapter.Entry
-      params={Promise.resolve({ all: params.all ?? [] })}
-      queryClient={queryClient}
-    />
-  );
+// Export the required Next.js functions
+export const generateStaticParams = serverAdapter.generateStaticParams;
+export const generateMetadata: (context: {
+  params: Promise<{ all: string[] | undefined }>;
+}) => Promise<Metadata> = async ({ params }) => {
+  const { all } = await params;
+  return serverAdapter.generateMetadata(all?.join("/"));
+};
+
+// Main page component
+export default async function BlogPage({
+  params,
+}: {
+  params: Promise<{ all: string[] | undefined }>;
+}) {
+  const { all } = await params;
+  const { Entry } = serverAdapter;
+
+  return <Entry path={all?.join("/")} queryClient={queryClient} />;
 }
 ```
 
-#### 2) `app/posts/layout.tsx` (server)
+#### 2) `app/posts/[[...all]]/layout.tsx` (server)
 
 ```tsx
-import type { ReactNode } from 'react';
-import { Provider } from '@/components/providers';
+import { ReactNode } from 'react';
+import { Provider } from '@/components/providers'; 
 
-export default function BlogLayout({ children }: { children: ReactNode }) {
+export default function BlogLayout({ 
+  children 
+}: { 
+  children: ReactNode 
+}) {
   return (
     <Provider>
-      <header><nav><a href="/posts">All Posts</a></nav></header>
-      <main>{children}</main>
-      <footer />
+      {children}
     </Provider>
   );
 }
@@ -54,38 +72,68 @@ export default function BlogLayout({ children }: { children: ReactNode }) {
 #### 3) `components/providers.tsx` (client)
 
 ```tsx
-'use client';
-import type { ReactNode } from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
-import Link from 'next/link';
-import Image from 'next/image';
-import { BetterBlogContextProvider } from 'better-blog/client';
-import type { ComponentsContextValue, BlogDataProvider } from 'better-blog';
-import { getQueryClient } from '@/lib/get-query-client';
+"use client";
 
+import { ReactNode } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation"
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { BetterBlogContextProvider } from "better-blog/client";
+import { ComponentsContextValue, getDefaultQueryClient } from "better-blog";
+
+
+// Next.js components to be used in the blog
 const components: ComponentsContextValue = {
-  Link: ({ href, children, className }) => (<Link href={href} className={className}>{children}</Link>),
+  Link: ({ href, children, className }) => (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  ),
   Image: ({ src, alt, className, width, height }) => (
-    <Image src={src} alt={alt} className={className} width={width ?? 800} height={height ?? 400} />
+    <Image
+      src={src}
+      alt={alt}
+      className={className}
+      width={width || 800}
+      height={height || 400}
+    />
   ),
 };
 
-const clientBlogConfig: BlogDataProvider = {
-  async getAllPosts(filter) { /* implement */ return []; },
-  async getPostBySlug(slug) { /* implement */ return null; },
-};
 
 export function Provider({ children }: { children: ReactNode }) {
-  const queryClient = getQueryClient();
+  const queryClient = getDefaultQueryClient();
+  const router = useRouter();
+
   return (
+
     <QueryClientProvider client={queryClient}>
-      <BetterBlogContextProvider clientConfig={clientBlogConfig} components={components}>
+      <BetterBlogContextProvider
+        localization={{
+          BLOG_LIST_TITLE: "Blog Posts",
+        }}
+        components={components}
+        basePath="/posts"
+        adminUiOptions={{
+          canCreate:true,
+          canUpdate:true,
+          canDelete:true
+        }}
+        navigate={router.push}
+        replace={router.replace}
+        uploadImage={async (file) => {
+          console.log("uploadImage", file);
+          // implement your own image upload logic here
+          return "https://placehold.co/400/png";
+        }}
+      >
         {children}
       </BetterBlogContextProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
 ```
-
-Add the [Query Client helper](/core-concepts#tanstack-query-setup) to reuse a single client in the browser.
 
