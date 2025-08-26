@@ -1,101 +1,132 @@
 ---
-title: Next.js App Router
+title: Tanstack Start
 description: SSR/SSG with server prefetch and client hydration
 ---
 
 This renders all blog routes under `/posts/...` with server prefetch + client hydration. Provide separate data providers for server and client.
 
-#### 1) `app/posts/[[...all]]/page.tsx` (server)
-Create the Better Blog server adapter, export Next.js data functions, and render with server prefetch + client hydration.
+#### 1) `src/routes/posts/$.tsx` (server)
+Create the Better Blog server adapter, then render via `Entry` with server prefetch + client hydration.
 
 ```tsx
+import { createFileRoute } from "@tanstack/react-router"
+
 import { BlogDataProvider, getDefaultQueryClient } from "better-blog";
 import { createServerAdapter } from "better-blog/server";
-
-import { Metadata } from "next";
-import { blogConfig } from "@/lib/blog-data-provider";
 
 // Implement your data provider here
 const serverBlogConfig: BlogDataProvider = {
   ...
 };
 
-// Create query client for React Query
 const queryClient = getDefaultQueryClient();
 
 // Create the server adapter
 const serverAdapter = createServerAdapter(
-  blogConfig,
+  serverBlogConfig,
   queryClient
 );
 
-// Export the required Next.js functions
-export const generateStaticParams = serverAdapter.generateStaticParams;
-export const generateMetadata: (context: {
-  params: Promise<{ all: string[] | undefined }>;
-}) => Promise<Metadata> = async ({ params }) => {
-  const { all } = await params;
-  return serverAdapter.generateMetadata(all?.join("/"));
-};
+export const Route = createFileRoute("/posts/$")({
+    component: RouteComponent
+})
 
-// Main page component
-export default async function BlogPage({
-  params,
-}: {
-  params: Promise<{ all: string[] | undefined }>;
-}) {
-  const { all } = await params;
-  const { Entry } = serverAdapter;
+function RouteComponent() {
+    const { _splat } = Route.useParams()
 
-  return <Entry path={all?.join("/")} queryClient={queryClient} />;
+    const { Entry } = serverAdapter;
+
+  return <Entry path={_splat} queryClient={queryClient} />;
 }
 ```
 
-#### 2) `app/posts/[[...all]]/layout.tsx` (server)
-Wrap the route with your `Provider` to supply Query Client, Better Blog context, and router bindings.
+#### 2) `src/routes/__root.tsx`
+Define the root document and wrap your app with `Provider` to supply context.
 
 ```tsx
-import { ReactNode } from 'react';
-import { Provider } from '@/components/providers'; 
+// src/routes/__root.tsx
+/// <reference types="vite/client" />
+import type { ReactNode } from 'react'
+import {
+  Outlet,
+  createRootRoute,
+  HeadContent,
+  Scripts,
+} from '@tanstack/react-router'
+import { Provider } from '@/providers'
 
-export default function BlogLayout({ 
-  children 
-}: { 
-  children: ReactNode 
-}) {
+import appCss from "@/styles/app.css?url"
+
+export const Route = createRootRoute({
+  head: () => ({
+    meta: [
+      {
+        charSet: 'utf-8',
+      },
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1',
+      },
+      {
+        title: 'TanStack Start Starter',
+      },
+    ],
+    links: [
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+    ],
+  }),
+  component: RootComponent,
+})
+
+function RootComponent() {
   return (
-    <Provider>
-      {children}
-    </Provider>
-  );
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
+  )
+}
+
+function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+  return (
+    <html>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <Provider>
+            {children}
+        </Provider>
+        <Scripts />
+      </body>
+    </html>
+  )
 }
 ```
 
-#### 3) `components/providers.tsx` (client)
-Client-side provider wiring Next.js `Link`/`Image`, React Query, navigation helpers, and optional admin UI.
+#### 3) `src/providers.tsx` (client)
+Client-side provider wiring TanStack Router `Link`, React Query, navigation helpers, and optional admin UI.
 
 ```tsx
 "use client";
 
 import { ReactNode } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { useRouter } from "next/navigation"
+import { Link, useRouter } from "@tanstack/react-router"
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BetterBlogContextProvider } from "better-blog/client";
 import { ComponentsContextValue, getDefaultQueryClient } from "better-blog";
 
-
-// Next.js components to be used in the blog
 const components: ComponentsContextValue = {
   Link: ({ href, children, className }) => (
-    <Link href={href} className={className}>
+    <Link to={href} className={className}>
       {children}
     </Link>
   ),
   Image: ({ src, alt, className, width, height }) => (
-    <Image
+    <img
       src={src}
       alt={alt}
       className={className}
@@ -118,15 +149,14 @@ export function Provider({ children }: { children: ReactNode }) {
           BLOG_LIST_TITLE: "Blog Posts",
         }}
         components={components}
-        basePath="/posts"
         adminUiOptions={{
           // implement your own admin ui logic here
           canCreate:true,
           canUpdate:true,
           canDelete:true
         }}
-        navigate={router.push}
-        replace={router.replace}
+        navigate={(href) => router.navigate({ href })}
+        replace={(href) => router.navigate({ href, replace: true })}
         uploadImage={async (file) => {
           console.log("uploadImage", file);
           // implement your own image upload logic here
@@ -140,4 +170,3 @@ export function Provider({ children }: { children: ReactNode }) {
   );
 }
 ```
-

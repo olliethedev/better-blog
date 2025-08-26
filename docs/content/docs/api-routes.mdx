@@ -30,6 +30,39 @@ const { handler } = createBlogApiRouter(provider, {
   export const DELETE = handler;
 ```
 
+Or with TanStack Start, create `src/routes/api/posts/$.ts`:
+
+```ts
+import { createServerFileRoute } from "@tanstack/react-start/server"
+import { createBlogApiRouter } from "better-blog/server/api"
+import { createDemoMemoryDBProvider } from "better-blog"
+
+const provider = createDemoMemoryDBProvider()
+
+const { handler } = createBlogApiRouter(provider, {
+    basePath: '/api/posts', // must match your api route path
+    openapi: {
+        disabled: false,
+    },
+  });
+
+
+export const ServerRoute = createServerFileRoute("/api/posts/$").methods({
+    GET: async ({ request }) => {
+        return handler(request)
+      },
+      POST: async ({ request }) => {
+        return handler(request)
+      },
+      PUT: async ({ request }) => {
+        return handler(request)
+      },
+      DELETE: async ({ request }) => {
+        return handler(request)
+      },
+  })
+```
+
 Endpoints exposed:
 
 - `GET /api/posts/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
