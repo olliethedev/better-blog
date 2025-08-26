@@ -9,6 +9,7 @@ export * from "./lib/better-blog/schema/post"
 //queries
 
 export { createBlogQueries } from "./lib/better-blog/core/queries"
+export { getDefaultQueryClient } from "./lib/better-blog/core/get-query-client"
 
 // providers
 export {

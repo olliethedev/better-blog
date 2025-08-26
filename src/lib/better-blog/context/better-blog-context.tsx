@@ -158,7 +158,7 @@ export function BetterBlogContextProvider({
     navigate = defaultNavigate,
     replace = defaultReplace,
     uploadImage,
-    apiBasePath = "/api/blog"
+    apiBasePath = "/api/posts"
 }: BetterBlogContextProviderProps) {
     function normalizeBasePath(path: string): string {
         const withLeading = path.startsWith("/") ? path : `/${path}`

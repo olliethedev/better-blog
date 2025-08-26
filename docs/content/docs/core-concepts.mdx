@@ -5,9 +5,9 @@ description: How Better Blog is structured and key APIs
 
 ### Package structure
 
-- `better-blog`: shared utilities and types
+- `better-blog`: shared utilities, schemas, types and queries
 - `better-blog/client`: client components (`BlogRouterPage`, `BetterBlogContextProvider`, hooks)
-- `better-blog/server`: server adapters (e.g. `createServerAdapter` for SSR/SSG)
+- `better-blog/server`: server adapters (e.g. `createServerAdapter` for SSR/SSG, `createBlogApiRouter` for API routes)
 
 ### Data provider
 
@@ -15,76 +15,45 @@ You inject a `BlogDataProvider` implementation (CMS, files, API, DB):
 
 ```ts
 export interface BlogDataProvider {
-  getAllPosts: (filter?: { slug?: string; tag?: string; offset?: number; limit?: number }) => Promise<Post[]>;
-  getPostBySlug?: (slug: string) => Promise<Post | null>;
-  // optional create/update/delete for admin flows
-  createPost?: (input: unknown) => Promise<Post>;
-  updatePost?: (slug: string, input: unknown) => Promise<Post>;
-  deletePost?: (slug: string) => Promise<void>;
+  getAllPosts: (filter?: {
+        slug?: string
+        tag?: string
+        offset?: number
+        limit?: number
+        query?: string
+        published?: boolean
+    }) => Promise<Post[]>
+    getPostBySlug?: (slug: string) => Promise<Post | null>
+    createPost?: (input: PostCreateExtendedInput) => Promise<Post>
+    updatePost?: (slug: string, input: PostUpdateExtendedInput) => Promise<Post>
+    deletePost?: (slug: string) => Promise<void>
 }
 ```
 
 ### API surface (most used)
 
-- **Server utilities** (`better-blog`)
-  - `matchRoute(slug?: string[]): RouteMatch`
-  - `generateStaticRoutes(): Array<{ slug: string[] }>`
-  - `generatePostMetadata(post: Post): { title: string; description?: string; image?: string }`
+- **Utilities, Schemas, Types and Queries** (`better-blog`)
+  - shared routing utilities,
+  - zod schemas
+  - types
+  - low level tanstack query functions
 - **Server adapter** (`better-blog/server`)
   - `createServerAdapter(serverConfig: BlogDataProvider, queryClient: QueryClient)` → `{ generateStaticParams, generateMetadata, Entry }`
+  - `createBlogApiRouter(serverConfig: BlogDataProvider, queryClient: QueryClient)` → `{ router }`
 - **Client** (`better-blog/client`)
-  - `BetterBlogContextProvider`, `BlogRouterPage`
-  - Hooks: `usePosts`, `usePost`, `useTagPosts`, `useDrafts`, `useCreatePost`, `useUpdatePost`, `useDeletePost`
+  - `BetterBlogContextProvider`
+  - Hooks: `usePosts`, `useCreatePost`, etc...
+  - Client components: `BlogRouterPage` etc...
 
 ### Architecture (high-level)
 
 - Schema-driven routes and data; minimal state in components
 - Strict client/server separation via dedicated entry points
-- Key modules live under `src/lib/better-blog/*` in this repo
 
-### TanStack Query setup
+### TanStack Query
 
 Why we use it:
 
 - **Caching + de/rehydration**: Server prefetch + client hydration for SEO and zero-flash data
 - **Great DX**: Automatic refetching, pagination support, and easy overrides
-
-Add a small helper to create/reuse a `QueryClient` in both server and browser environments.
-
-Create `lib/get-query-client.ts`:
-
-```ts
-import {
-  QueryClient,
-  defaultShouldDehydrateQuery,
-  isServer,
-} from '@tanstack/react-query';
-
-function makeQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 60 * 1000,
-      },
-      dehydrate: {
-        // Include pending queries in dehydration (useful for Suspense)
-        shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) || query.state.status === 'pending',
-      },
-    },
-  });
-}
-
-let browserQueryClient: QueryClient | undefined = undefined;
-
-export function getQueryClient() {
-  if (isServer) {
-    // Server: always make a new query client
-    return makeQueryClient();
-  }
-  // Browser: reuse a single instance to avoid remounts across Suspense
-  if (!browserQueryClient) browserQueryClient = makeQueryClient();
-  return browserQueryClient;
-}
-```
 

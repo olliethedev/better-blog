@@ -133,7 +133,7 @@ export function createBlogApiRouter(
             deletePost
         },
         {
-            basePath: options?.basePath ?? "/api/blog",
+            basePath: options?.basePath ?? "/api/posts",
             openapi: options?.openapi
         }
     )

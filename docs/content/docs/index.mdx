@@ -16,9 +16,24 @@ import { Rocket, BookOpenCheck, Server, Layers } from "lucide-react";
 - **Drop-in blog in minutes**: One provider + one catch-all route
 - **Fully customizable UI**: Override any page or loading component
 - **Bring your own content source**: Pluggable `BlogDataProvider`
-- **Works anywhere**: Next.js App Router or React Router
+- **Works anywhere**: Use with any modern framework like Next.js or React Router
 - **TypeScript-first**: Strong types across routes, hooks, and providers
 - **SEO-first**: SSR/SSG helpers and hydration-safe rendering
+
+### What you get
+- Route-aware blog router and default pages
+  - `/posts` - list of posts
+  - `/posts/new` - create a new post
+  - `/posts/drafts` - list of drafts
+  - `/posts/:slug` - view a post
+  - `/posts/:slug/edit` - edit a post
+  - `/posts/tag/:tag-slug` - list of posts by tag
+- API routes to serve your blog data (optional)
+  - `GET /api/posts/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
+  - `GET /api/posts/posts/:slug` – fetch one
+  - `POST /api/posts/posts` – create
+  - `PUT /api/posts/posts/:slug` – update
+  - `DELETE /api/posts/:slug` – delete
 
 ## Get started
 
