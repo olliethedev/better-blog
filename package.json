@@ -59,6 +59,16 @@
                 "types": "./dist/server/api.d.cts",
                 "default": "./dist/server/api.cjs"
             }
+        },
+        "./server/sitemap": {
+            "import": {
+                "types": "./dist/server/sitemap.d.ts",
+                "default": "./dist/server/sitemap.js"
+            },
+            "require": {
+                "types": "./dist/server/sitemap.d.cts",
+                "default": "./dist/server/sitemap.cjs"
+            }
         }
     },
     "files": ["src", "dist"],

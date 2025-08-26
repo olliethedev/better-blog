@@ -5,7 +5,7 @@ full: true
 ---
 
 import { Card, Cards } from "fumadocs-ui/components/card";
-import { Rocket, BookOpenCheck, Server, Layers } from "lucide-react";
+import { Rocket, BookOpenCheck, Server, Layers, Router } from "lucide-react";
 
 ## 👋 Welcome to Better Blog
 
@@ -28,12 +28,13 @@ import { Rocket, BookOpenCheck, Server, Layers } from "lucide-react";
   - `/posts/:slug` - view a post
   - `/posts/:slug/edit` - edit a post
   - `/posts/tag/:tag-slug` - list of posts by tag
-- API routes to serve your blog data (optional)
+- API routes to serve your blog data
   - `GET /api/posts/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
   - `GET /api/posts/posts/:slug` – fetch one
   - `POST /api/posts/posts` – create
   - `PUT /api/posts/posts/:slug` – update
   - `DELETE /api/posts/:slug` – delete
+- Sitemap generation
 
 ## Get started
 
@@ -51,19 +52,16 @@ import { Rocket, BookOpenCheck, Server, Layers } from "lucide-react";
     description="SSR/SSG with server prefetch + client hydration."
   />
   <Card
-    title="React Router"
-    href="/react-router"
+    title="Sitemap generation"
+    href="/sitemap"
     icon={<Layers size={20} />}
-    description="Client-side rendering setup using React DOM Router."
+    description="Generate a sitemap for your blog."
   />
   <Card
     title="API routes"
     href="/api-routes"
-    icon={<BookOpenCheck size={20} />}
+    icon={<Router size={20} />}
     description="Ship an API and consume it with the default provider."
   />
 </Cards>
 
----
-
-Looking for concepts and APIs? See [Core concepts](/core-concepts) and [Overriding components](/overrides).

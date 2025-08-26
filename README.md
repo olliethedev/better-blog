@@ -446,8 +446,12 @@ MIT
 ---
 
 ## Roadmap (short)
+- kysely DB data providers (Postgres, MySQL, SQLite)
+- aditional data provider adapters (Prisma, Drizzle, MongoDB)
 - finalize page designs
 - blog translations
-- sitemap/robots generation
-- richer metadata helpers
-- data provider adapters (Postgres, Redis, API)
+- blog post versioning
+- richer metadata helpers (og:image, canonical url, etc.)
+- tanstack start docs
+- remix docs
+- example projects
