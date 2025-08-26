@@ -49,6 +49,16 @@
                 "types": "./dist/server.d.cts",
                 "default": "./dist/server.cjs"
             }
+        },
+        "./server/api": {
+            "import": {
+                "types": "./dist/server/api.d.ts",
+                "default": "./dist/server/api.js"
+            },
+            "require": {
+                "types": "./dist/server/api.d.cts",
+                "default": "./dist/server/api.cjs"
+            }
         }
     },
     "files": ["src", "dist"],

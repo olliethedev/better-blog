@@ -85,30 +85,28 @@ export function createServerAdapter(
   };
 }
 
-export { createBlogApiRouter } from "./api"
-export type { BlogApiRoutes } from "./api"
+ 
 
 async function BlogEntryContent({
-  path,
-  routeMatch,
-  serverConfig,
-  queryClient,
+    path,
+    routeMatch,
+    serverConfig,
+    queryClient
 }: {
-  path?: string;
-  routeMatch: RouteMatch;
-  serverConfig: BlogDataProvider;
-  queryClient: QueryClient;
+    path?: string
+    routeMatch: RouteMatch
+    serverConfig: BlogDataProvider
+    queryClient: QueryClient
 }) {
+    // Prefetch data on the server
+    await prefetchBlogData(routeMatch, serverConfig, queryClient)
 
-  // Prefetch data on the server
-  await prefetchBlogData(routeMatch, serverConfig, queryClient);
+    // Dehydrate the state for hydration on the client
+    const dehydratedState = dehydrate(queryClient)
 
-  // Dehydrate the state for hydration on the client
-  const dehydratedState = dehydrate(queryClient);
-
-  return (
-    <HydrationBoundary state={dehydratedState}>
-        <BlogRouterPage path={path} />
-    </HydrationBoundary>
-  );
+    return (
+        <HydrationBoundary state={dehydratedState}>
+            <BlogRouterPage path={path} />
+        </HydrationBoundary>
+    )
 }

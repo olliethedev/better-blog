@@ -1,10 +1,13 @@
-This repository is a WORK IN PROGRESS.
-Do not use it in production.
-------
-
-## better-blog
+# better-blog
 
 Add a production-ready, SEO-friendly blog to your React app in minutes. better-blog is a framework-agnostic, type-safe router + component set with drop-in setup, SSR/SSG out of the box, and full customization—works with modern frameworks like Next.js App Router and React Router.
+
+---
+
+⚠️ This repository is a WORK IN PROGRESS and is under active development.
+Do not use it in production until it is stable 1.0.0
+
+---
 
 Read the docs at [better-blog.com](https://www.better-blog.com).
 
@@ -172,7 +175,7 @@ If you prefer not to ship a client-side `BlogDataProvider`, better-blog can expo
 Create `app/api/posts/[...all]/route.ts`:
 
 ```ts
-import { createBlogApiRouter } from 'better-blog/server';
+import { createBlogApiRouter } from 'better-blog/server/api';
 import type { BlogDataProvider } from 'better-blog';
 
 // Your server-side provider (DB/CMS/etc.) implementing reads and optional mutations
