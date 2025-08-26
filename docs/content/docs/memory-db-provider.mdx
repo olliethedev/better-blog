@@ -1,0 +1,91 @@
+---
+title: Memory DB provider (dev)
+description: Quick-start data provider for development and demos
+---
+
+Use the in-memory demo provider to get started quickly without a real database. It's great for local development, prototyping, and testing the library's integration before wiring a real database.
+
+### When to use it
+
+- Spin up Better Blog quickly without setting up a DB
+- Demo and prototype routes, UI, and overrides
+- Replace later with your own provider (DB, CMS, API)
+
+### Import
+
+```ts
+import { createDemoMemoryDBProvider } from "better-blog";
+```
+
+This returns a `BlogDataProvider` with seeded demo posts and tags.
+
+### Shared usage pattern
+
+Define the provider once in a shared module (e.g. `src/lib/blog-provider.ts`) and reuse it on the server (SSR adapter) and in API routes.
+
+```ts
+// src/lib/blog-provider.ts
+import { createDemoMemoryDBProvider } from "better-blog";
+
+export const provider = createDemoMemoryDBProvider();
+```
+
+#### Use with server adapter (SSR/SSG)
+
+```ts
+// Example: Next.js App Router (app/posts/[[...all]]/page.tsx)
+import { getDefaultQueryClient } from "better-blog";
+import { createServerAdapter } from "better-blog/server";
+import { provider } from "@/lib/blog-provider";
+
+const queryClient = getDefaultQueryClient();
+const serverAdapter = createServerAdapter(provider, queryClient);
+
+export default function BlogPage() {
+  const { Entry } = serverAdapter;
+  return <Entry queryClient={queryClient} />;
+}
+```
+
+
+#### Use with API routes
+
+See the API routes guide for full details. Minimal example:
+
+```ts
+// Next.js (app/api/posts/[...all]/route.ts)
+import { createBlogApiRouter } from "better-blog/server/api";
+import { provider } from "@/lib/blog-provider";
+
+const { handler } = createBlogApiRouter(provider, {
+  openapi: { disabled: false },
+});
+
+export const GET = handler;
+export const POST = handler;
+export const PUT = handler;
+export const DELETE = handler;
+```
+
+```ts
+// TanStack Start (src/routes/api/posts/$.ts)
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import { createBlogApiRouter } from "better-blog/server/api";
+import { provider } from "@/lib/blog-provider";
+
+const { handler } = createBlogApiRouter(provider, { basePath: "/api/posts" });
+
+export const ServerRoute = createServerFileRoute("/api/posts/$").methods({
+  GET: async ({ request }) => handler(request),
+  POST: async ({ request }) => handler(request),
+  PUT: async ({ request }) => handler(request),
+  DELETE: async ({ request }) => handler(request),
+});
+```
+
+### Notes
+
+- The memory provider is for development only; data resets on server restart.
+- Swap it out for a real `BlogDataProvider` (database, CMS, or API-backed) when ready.
+
+

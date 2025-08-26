@@ -8,10 +8,14 @@
     "index",
     "installation",
     "core-concepts",
-    "---Guides---",
+    "---Integration Guides---",
     "nextjs-app-router",
+    "tanstack-start",
     "react-router",
     "api-routes",
+    "---Data Providers---",
+    "memory-db-provider",
+    "---Advanced---",
     "sitemap",
     "overrides"
   ]
