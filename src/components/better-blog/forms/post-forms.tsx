@@ -245,7 +245,8 @@ const CustomPostCreateSchema = PostCreateSchema.omit({
     createdAt: true,
     updatedAt: true,
     authorId: true,
-    publishedAt: true
+    publishedAt: true,
+    tags: true
 }).extend({
     tagNames: z.string().optional() // TagNames as comma-separated string
 })
@@ -255,7 +256,8 @@ const CustomPostUpdateSchema = PostUpdateSchema.omit({
     createdAt: true,
     updatedAt: true,
     authorId: true,
-    publishedAt: true
+    publishedAt: true,
+    tags: true
 }).extend({
     tagNames: z.string().optional() // TagNames as comma-separated string
 })

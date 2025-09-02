@@ -27,6 +27,15 @@ export interface CreateApiBlogProviderOptions {
     /** Base URL including router basePath, e.g. "/api/posts" (default) */
     baseURL?: string
     /**
+     * Function to get author by id. If not provided, the author will be null.
+     */
+    getAuthor?: BlogDataProvider["getAuthor"]
+    /**
+     * Default locale to use when a method call does not specify one.
+     * @default "en"
+     */
+    defaultLocale?: string
+    /**
      * Optional override used in tests to inject a custom HTTP client creator.
      * Must be compatible with better-call's createClient API.
      */
@@ -40,6 +49,7 @@ export function createApiBlogProvider(
     const client = clientFactory<BlogApiRoutes>({
         baseURL: options?.baseURL ?? "/api/posts"
     })
+    const providerDefaultLocale = options?.defaultLocale ?? "en"
 
     function unwrapData<T>(response: unknown): T {
         // Many HTTP clients return `{ data, status, headers }`.
@@ -60,17 +70,21 @@ export function createApiBlogProvider(
         async getAllPosts(filter) {
             const res = await client("/posts", {
                 method: "GET",
-                query: filter ?? {}
+                query: {
+                    ...(filter ?? {}),
+                    locale: filter?.locale ?? providerDefaultLocale
+                }
             })
             console.log("res", res)
             const parsed = PostSerializedArraySchema.parse(unwrapData(res))
             return parsed.map((p) => revivePost(p))
         },
 
-        async getPostBySlug(slug: string) {
+        async getPostBySlug(slug: string, options?: { locale?: string }) {
             const res = await client("/posts/:slug", {
                 method: "GET",
-                params: { slug }
+                params: { slug },
+                query: { locale: options?.locale ?? providerDefaultLocale }
             })
             const body = unwrapData<unknown | null>(res)
             const parsed = body ? PostSerializedSchema.parse(body) : null

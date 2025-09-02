@@ -8,7 +8,8 @@ export default defineConfig((env) => {
             client: "./src/client.ts",
             server: "./src/server.ts",
             "server/api": "./src/server/api.ts",
-            "server/sitemap": "./src/server/sitemap.ts"
+            "server/sitemap": "./src/server/sitemap.ts",
+            "server/sql": "./src/server/sql.ts"
         },
         format: ["esm", "cjs"],
         splitting: true,

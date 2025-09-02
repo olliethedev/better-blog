@@ -23,8 +23,9 @@ export interface BlogDataProvider {
         limit?: number
         query?: string
         published?: boolean
+        locale?: string
     }) => Promise<Post[]>
-    getPostBySlug?: (slug: string) => Promise<Post | null>
+    getPostBySlug?: (slug: string, options?: { locale?: string }) => Promise<Post | null>
     createPost?: (input: PostCreateExtendedInput) => Promise<Post>
     updatePost?: (slug: string, input: PostUpdateExtendedInput) => Promise<Post>
     deletePost?: (slug: string) => Promise<void>

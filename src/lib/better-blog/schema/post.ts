@@ -13,7 +13,26 @@ export const PostCreateSchema = z.object({
     publishedAt: z.coerce.date().optional(),
     authorId: z.string().optional(),
     createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional()
+    updatedAt: z.coerce.date().optional(),
+    // Allow tags in the create payload
+    tags: z
+        .array(
+            z.union([
+                z.string(),
+                z.object({
+                    tag: z.object({
+                        connectOrCreate: z.object({
+                            where: z.object({ name: z.string() }),
+                            create: z.object({
+                                name: z.string(),
+                                slug: z.string()
+                            })
+                        })
+                    })
+                })
+            ])
+        )
+        .optional()
 })
 
 // Base update schema for Post forms
@@ -29,7 +48,31 @@ export const PostUpdateSchema = z.object({
     publishedAt: z.coerce.date().optional(),
     authorId: z.string().optional(),
     createdAt: z.coerce.date().optional(),
-    updatedAt: z.coerce.date().optional()
+    updatedAt: z.coerce.date().optional(),
+    // Allow tags update operations
+    tags: z
+        .object({
+            deleteMany: z.object({}).optional(),
+            create: z
+                .array(
+                    z.union([
+                        z.string(),
+                        z.object({
+                            tag: z.object({
+                                connectOrCreate: z.object({
+                                    where: z.object({ name: z.string() }),
+                                    create: z.object({
+                                        name: z.string(),
+                                        slug: z.string()
+                                    })
+                                })
+                            })
+                        })
+                    ])
+                )
+                .optional()
+        })
+        .optional()
 })
 
 export type PostCreateInput = z.infer<typeof PostCreateSchema>
@@ -42,7 +85,8 @@ export const PostListQuerySchema = z.object({
     offset: z.coerce.number().int().min(0).optional(),
     limit: z.coerce.number().int().min(1).max(100).optional(),
     query: z.string().optional(),
-    published: z.coerce.boolean().optional()
+    published: z.coerce.boolean().optional(),
+    locale: z.string().optional()
 })
 
 export type PostListQueryInput = z.infer<typeof PostListQuerySchema>
@@ -108,6 +152,6 @@ export type PostCreateExtendedInput = PostCreateInput & {
 export type PostUpdateExtendedInput = PostUpdateInput & {
     tags?: {
         deleteMany?: Record<string, never>
-        create?: Array<TagConnectOrCreate>
+        create?: Array<string | TagConnectOrCreate>
     }
 }

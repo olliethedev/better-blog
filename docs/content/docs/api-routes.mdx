@@ -65,21 +65,27 @@ export const ServerRoute = createServerFileRoute("/api/posts/$").methods({
 
 Endpoints exposed:
 
-- `GET /api/posts/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
-- `GET /api/posts/posts/:slug` – fetch one
+- `GET /api/posts/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`, `published`, `locale`)
+- `GET /api/posts/posts/:slug` – fetch one (supports `locale` via query)
 - `POST /api/posts/posts` – create
 - `PUT /api/posts/posts/:slug` – update
 - `DELETE /api/posts/posts/:slug` – delete
 
-### 2) Use the default API-backed provider (client)
+### Locale support
 
-Omit `clientConfig` to let the provider default to calling the API, or set a custom base path.
+- The API supports a `locale` query param for both list and detail routes.
+- On the client, the API-backed provider is wired through `BetterBlogContextProvider` (not used standalone).
+- You can set a provider-wide `defaultLocale` and optionally override per call via the context’s `clientConfig`.
+
+Usage with context:
 
 ```tsx
-import { BetterBlogContextProvider } from 'better-blog/client';
+import { BetterBlogContextProvider, useBetterBlogContext } from "better-blog/client";
+import { createApiBlogProvider } from "better-blog/core/providers/api-provider";
 
+// Provide API-backed client with a provider-wide default locale
 <BetterBlogContextProvider
-  // clientConfig is optional – defaults to API-backed provider
+  clientConfig={createApiBlogProvider({ baseURL: "/api/posts", defaultLocale: "en" })}
 >
   {children}
 </BetterBlogContextProvider>

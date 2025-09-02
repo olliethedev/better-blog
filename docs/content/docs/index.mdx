@@ -29,8 +29,8 @@ import { Rocket, BookOpenCheck, Server, Layers, Router } from "lucide-react";
   - `/posts/:slug/edit` - edit a post
   - `/posts/tag/:tag-slug` - list of posts by tag
 - API routes to serve your blog data
-  - `GET /api/posts/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`)
-  - `GET /api/posts/posts/:slug` – fetch one
+  - `GET /api/posts/posts` – list (supports `slug`, `tag`, `offset`, `limit`, `query`, `published`, `locale`)
+  - `GET /api/posts/posts/:slug` – fetch one (supports `locale` via query)
   - `POST /api/posts/posts` – create
   - `PUT /api/posts/posts/:slug` – update
   - `DELETE /api/posts/:slug` – delete
