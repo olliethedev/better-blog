@@ -212,14 +212,17 @@ export function createDummyMemoryDBProvider(
             return getAllPostsInternal(filter)
         },
 
-        async getPostBySlug(slug: string) {
+        async getPostBySlug(slug: string, _options?: { locale?: string }) {
             return posts.find((p) => p.slug === slug) ?? null
         },
 
         async createPost(input: PostCreateExtendedInput) {
             const now = new Date()
             const id = input.id ?? generateId()
-            const slug = input.slug && input.slug.trim().length > 0 ? input.slug : slugify(input.title)
+            const slug =
+                input.slug && input.slug.trim().length > 0
+                    ? input.slug
+                    : slugify(input.title)
 
             // Best-effort tag extraction for memory store
             // Support two shapes: direct tags array on input or Prisma-like nested create
@@ -245,7 +248,9 @@ export function createDummyMemoryDBProvider(
                 excerpt: input.excerpt ?? "",
                 image: input.image,
                 published: input.published ?? false,
-                publishedAt: input.published ? input.publishedAt ?? now : undefined,
+                publishedAt: input.published
+                    ? (input.publishedAt ?? now)
+                    : undefined,
                 tags,
                 createdAt: input.createdAt ?? now,
                 updatedAt: input.updatedAt ?? now,
@@ -273,7 +278,8 @@ export function createDummyMemoryDBProvider(
                 // then create adds provided names
                 if (Array.isArray(anyInput.tags.create)) {
                     for (const c of anyInput.tags.create) {
-                        const name: string | undefined = c?.tag?.connectOrCreate?.create?.name
+                        const name: string | undefined =
+                            c?.tag?.connectOrCreate?.create?.name
                         if (name) tagNames.push(name)
                     }
                 }
@@ -288,8 +294,7 @@ export function createDummyMemoryDBProvider(
                 slug: nextSlug,
                 image: input.image ?? existing.image,
                 published: input.published ?? existing.published,
-                publishedAt:
-                    input.publishedAt ?? existing.publishedAt,
+                publishedAt: input.publishedAt ?? existing.publishedAt,
                 tags,
                 updatedAt: input.updatedAt ?? now
             }

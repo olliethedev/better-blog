@@ -1,7 +1,7 @@
 {
     "name": "better-blog",
     "homepage": "https://better-blog.com",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "description": "Better Blog",
     "repository": {
         "type": "git",
@@ -69,6 +69,16 @@
                 "types": "./dist/server/sitemap.d.cts",
                 "default": "./dist/server/sitemap.cjs"
             }
+        },
+        "./server/sql": {
+            "import": {
+                "types": "./dist/server/sql.d.ts",
+                "default": "./dist/server/sql.js"
+            },
+            "require": {
+                "types": "./dist/server/sql.d.cts",
+                "default": "./dist/server/sql.cjs"
+            }
         }
     },
     "files": ["src", "dist"],
@@ -125,6 +135,9 @@
         "@radix-ui/react-use-callback-ref": ">=1.1.0",
         "@radix-ui/react-use-layout-effect": ">=1.1.0",
         "@tanstack/react-query": ">=5.66.0",
+        "@types/better-sqlite3": "^7.6.13",
+        "@types/bun": "^1.2.20",
+        "better-sqlite3": "^11.10.0",
         "class-variance-authority": ">=0.7.0",
         "clsx": ">=2.1.0",
         "cmdk": ">=1.1.0",
@@ -152,6 +165,7 @@
         "@lukemorales/query-key-factory": "^1.3.4",
         "@milkdown/crepe": "^7.15.3",
         "@milkdown/kit": "^7.15.3",
-        "better-call": "^1.0.14"
+        "better-call": "^1.0.14",
+        "kysely": "^0.28.5"
     }
 }

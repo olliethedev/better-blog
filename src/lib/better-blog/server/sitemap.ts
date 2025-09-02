@@ -60,6 +60,7 @@ function getPostLastModified(post: Post): Date | undefined {
 }
 
 export async function createBlogSitemap(config: CreateBlogSitemapConfig): Promise<Sitemap> {
+    // TODO: add localization support
     const origin = normalizeOrigin(config.url)
     const base = normalizeBasePath(config.basePath)
 

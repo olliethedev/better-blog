@@ -7,7 +7,12 @@
         "defaultBranch": "main"
     },
     "files": {
-        "ignore": ["./src/components/ui/**", "./docs/**"]
+        "ignore": [
+            "./src/components/ui/**",
+            "./docs/**",
+            "./src/lib/better-blog/core/providers/sql/bun-sqlite-dialect.ts",
+            "./src/lib/better-blog/core/providers/sql/node-sqlite-dialect.ts"
+        ]
     },
     "formatter": {
         "indentStyle": "space",

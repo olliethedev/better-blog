@@ -1,4 +1,5 @@
 import { createEndpoint, createRouter } from "better-call"
+import { z } from "zod"
 import type { BlogDataProvider, Post } from "../core/types"
 import {
     PostCreateSchema,
@@ -46,7 +47,10 @@ export function createBlogApiRouter(
     const getPost = createEndpoint(
         "/posts/:slug",
         {
-            method: "GET"
+            method: "GET",
+            query: z.object({
+                locale: z.string().optional()
+            })
         },
         async (ctx) => {
             const slug = ctx.params.slug
@@ -54,10 +58,15 @@ export function createBlogApiRouter(
                 throw ctx.error(400, { message: "slug is required" })
             }
             const post: Post | null =
-                (await provider.getPostBySlug?.(slug)) ??
-                (await provider.getAllPosts?.({ slug }))?.find(
-                    (p) => p.slug === slug
-                ) ??
+                (await provider.getPostBySlug?.(slug, {
+                    locale: ctx.query?.locale
+                })) ??
+                (
+                    await provider.getAllPosts?.({
+                        slug,
+                        locale: ctx.query?.locale
+                    })
+                )?.find((p) => p.slug === slug) ??
                 null
             if (!post) {
                 throw ctx.error(404, { message: "Post not found" })

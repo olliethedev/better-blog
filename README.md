@@ -446,12 +446,13 @@ MIT
 ---
 
 ## Roadmap (short)
-- kysely DB data providers (Postgres, MySQL, SQLite)
-- aditional data provider adapters (Prisma, Drizzle, MongoDB)
-- finalize page designs
-- blog translations
-- blog post versioning
+- additional data provider adapters (Prisma, Drizzle)
+- localizations support in sitemap generation
+- finalize page designs + admin ui
+- blog ui translations
 - richer metadata helpers (og:image, canonical url, etc.)
+- core component overrides (Card, Heading, MarkdownEditor, MarkdownRenderer, etc.)
 - tanstack start docs
 - remix docs
 - example projects
+- export page components via shadcn registry
