@@ -4,23 +4,16 @@ import { sql } from "kysely"
 import type { BlogDataProvider } from "../../types"
 import type { KyselyDatabaseType } from "./dialect"
 
-interface KyselyAdapterConfig {
+import type { ColumnType } from "kysely"
+import type { StorageDataProviderConfig } from "../types"
+
+export interface KyselyAdapterConfig extends StorageDataProviderConfig {
     /**
      * Database type.
      */
     type?: KyselyDatabaseType
-    /**
-     * Function to get author by id. If not provided, the author will be null.
-     */
-    getAuthor?: BlogDataProvider["getAuthor"]
-    /**
-     * Default locale to use when a method call does not specify one.
-     * @default "en"
-     */
-    defaultLocale?: string
 }
 
-import type { ColumnType } from "kysely"
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
     ? ColumnType<S, I | undefined, U>
     : ColumnType<T, T | undefined, T>

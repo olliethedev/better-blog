@@ -9,7 +9,8 @@ export default defineConfig((env) => {
             server: "./src/server.ts",
             "server/api": "./src/server/api.ts",
             "server/sitemap": "./src/server/sitemap.ts",
-            "server/sql": "./src/server/sql.ts"
+            "server/sql": "./src/server/sql.ts",
+            "server/prisma": "./src/server/prisma.ts"
         },
         format: ["esm", "cjs"],
         splitting: true,
