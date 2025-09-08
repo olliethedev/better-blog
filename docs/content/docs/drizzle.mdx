@@ -1,6 +1,166 @@
 ---
 title: Drizzle
-description: Providers backed by Drizzle ORM
+description: Provider backed by Drizzle ORM
 ---
 
-### Coming soon
+### Drizzle
+
+Better Blog can be used with Drizzle ORM and a PostgreSQL database.
+
+### Environment Variables
+
+```bash
+POSTGRES_URL=
+```
+
+### Installation
+
+```bash
+pnpm add drizzle-orm postgres
+pnpm add -D drizzle-kit
+```
+
+### Schema
+Update your schema to match the one below:
+
+```ts
+import {
+  timestamp,
+  pgTable,
+  text,
+  primaryKey,
+  integer,
+  uuid,
+  index,
+  uniqueIndex
+} from "drizzle-orm/pg-core"
+import postgres from "postgres"
+import { drizzle } from "drizzle-orm/postgres-js"
+import { relations } from "drizzle-orm"
+
+const connectionString = process.env.POSTGRES_URL || 'postgres://postgres:postgres@localhost:5432/kysely_experiment_1'
+const pool = postgres(connectionString, { max: 1 })
+ 
+export const db = drizzle(pool)
+
+// Post table
+export const posts = pgTable("Post", {
+  id: uuid('id').primaryKey().defaultRandom(),
+  authorId: text('authorId'),
+  defaultLocale: text('defaultLocale').notNull().default('en'),
+  title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
+  excerpt: text('excerpt').notNull(),
+  content: text('content').notNull(),
+  image: text('image'),
+  version: integer('version').notNull().default(1),
+  status: text('status').notNull().default('DRAFT'),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt', { withTimezone: true }).notNull().defaultNow()
+}, (table) => [
+  index('post_author_id_idx').on(table.authorId),
+  index('post_status_updated_at_idx').on(table.status, table.updatedAt)
+])
+
+// Tag table
+export const tags = pgTable("Tag", {
+  id: uuid('id').primaryKey().defaultRandom(),
+  defaultLocale: text('defaultLocale').notNull().default('en'),
+  name: text('name').notNull(),
+  slug: text('slug').notNull().unique(),
+  createdAt: timestamp('createdAt', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt', { withTimezone: true }).notNull().defaultNow()
+})
+
+// PostI18n table
+export const postI18n = pgTable("PostI18n", {
+  id: uuid('id').primaryKey().defaultRandom(),
+  postId: uuid('postId').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  locale: text('locale').notNull(),
+  title: text('title').notNull(),
+  slug: text('slug').notNull(),
+  excerpt: text('excerpt').notNull(),
+  content: text('content').notNull()
+}, (table) => [
+  index('post_i18n_locale_idx').on(table.locale),
+  uniqueIndex('post_i18n_post_id_locale_unique').on(table.postId, table.locale),
+  uniqueIndex('post_i18n_locale_slug_unique').on(table.locale, table.slug)
+])
+
+// TagI18n table
+export const tagI18n = pgTable("TagI18n", {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tagId: uuid('tagId').notNull().references(() => tags.id, { onDelete: 'cascade' }),
+  locale: text('locale').notNull(),
+  name: text('name').notNull(),
+  slug: text('slug').notNull()
+}, (table) => [
+  index('tag_i18n_locale_idx').on(table.locale),
+  uniqueIndex('tag_i18n_tag_id_locale_unique').on(table.tagId, table.locale),
+  uniqueIndex('tag_i18n_locale_slug_unique').on(table.locale, table.slug)
+])
+
+// PostTag junction table
+export const postTags = pgTable("PostTag", {
+  postId: uuid('postId').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  tagId: uuid('tagId').notNull().references(() => tags.id, { onDelete: 'cascade' })
+}, (table) => [
+  primaryKey({ columns: [table.postId, table.tagId] }),
+  index('post_tag_tag_id_idx').on(table.tagId)
+])
+
+// Relations
+export const postsRelations = relations(posts, ({ many }) => ({
+  i18n: many(postI18n),
+  tags: many(postTags)
+}))
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+  i18n: many(tagI18n),
+  posts: many(postTags)
+}))
+
+export const postI18nRelations = relations(postI18n, ({ one }) => ({
+  post: one(posts, {
+    fields: [postI18n.postId],
+    references: [posts.id]
+  })
+}))
+
+export const tagI18nRelations = relations(tagI18n, ({ one }) => ({
+  tag: one(tags, {
+    fields: [tagI18n.tagId],
+    references: [tags.id]
+  })
+}))
+
+export const postTagsRelations = relations(postTags, ({ one }) => ({
+  post: one(posts, {
+    fields: [postTags.postId],
+    references: [posts.id]
+  }),
+  tag: one(tags, {
+    fields: [postTags.tagId],
+    references: [tags.id]
+  })
+}))
+```
+
+### Example usage
+
+```ts
+// lib/blog-data-provider.ts
+
+import { createDrizzleProvider } from "better-blog/server/drizzle"
+import { db } from "./drizzle"
+import { sql } from "drizzle-orm"
+
+export function createBlogDataProvider() {
+    return createDrizzleProvider({
+        drizzle: db,
+        sql
+    })
+}
+```
+
+Full documentation on how to manage migrations with Drizzle can be found at the Drizzle Kit [Migrations page](https://orm.drizzle.team/kit-docs/overview#running-migrations).
