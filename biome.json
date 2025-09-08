@@ -12,7 +12,8 @@
             "./docs/**",
             "./src/lib/better-blog/core/providers/sql/bun-sqlite-dialect.ts",
             "./src/lib/better-blog/core/providers/sql/node-sqlite-dialect.ts",
-            "./src/lib/better-blog/core/providers/prisma-provider.ts"
+            "./src/lib/better-blog/core/providers/prisma-provider.ts",
+            "./src/lib/better-blog/core/providers/drizzle-provider.ts"
         ]
     },
     "formatter": {

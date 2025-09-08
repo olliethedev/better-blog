@@ -1,7 +1,7 @@
 {
     "name": "better-blog",
     "homepage": "https://better-blog.com",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "description": "Better Blog",
     "repository": {
         "type": "git",
@@ -88,6 +88,16 @@
             "require": {
                 "types": "./dist/server/prisma.d.cts",
                 "default": "./dist/server/prisma.cjs"
+            }
+        },
+        "./server/drizzle": {
+            "import": {
+                "types": "./dist/server/drizzle.d.ts",
+                "default": "./dist/server/drizzle.js"
+            },
+            "require": {
+                "types": "./dist/server/drizzle.d.cts",
+                "default": "./dist/server/drizzle.cjs"
             }
         }
     },
