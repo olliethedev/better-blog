@@ -74,7 +74,10 @@ function PostFormBody<T extends CommonPostFormValues>({
     const namePublished = "published" as FieldPath<T>
     return (
         <Form {...form}>
-            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+                className="w-full space-y-4"
+                onSubmit={form.handleSubmit(onSubmit)}
+            >
                 {errorMessage && (
                     <div className="rounded-md border border-red-200 bg-red-50 p-3 text-red-600 text-sm">
                         {errorMessage}
@@ -342,17 +345,15 @@ const AddPostFormComponent = ({ onClose, onSuccess }: AddPostFormProps) => {
     })
 
     return (
-        <div>
-            <PostFormBody
-                form={form}
-                onSubmit={onSubmit}
-                submitLabel={isCreatingPost ? "Creating..." : "Create Post"}
-                onCancel={onClose}
-                disabled={isCreatingPost || featuredImageUploading}
-                errorMessage={createPostError?.message}
-                setFeaturedImageUploading={setFeaturedImageUploading}
-            />
-        </div>
+        <PostFormBody
+            form={form}
+            onSubmit={onSubmit}
+            submitLabel={isCreatingPost ? "Creating..." : "Create Post"}
+            onCancel={onClose}
+            disabled={isCreatingPost || featuredImageUploading}
+            errorMessage={createPostError?.message}
+            setFeaturedImageUploading={setFeaturedImageUploading}
+        />
     )
 }
 
