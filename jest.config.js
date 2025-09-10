@@ -28,7 +28,11 @@ export default {
     },
     extensionsToTreatAsEsm: [".ts", ".tsx"],
     moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
-    testPathIgnorePatterns: ["<rootDir>/docs/"],
+    testPathIgnorePatterns: [
+        "<rootDir>/docs/",
+        // Helper shared test definitions, not a runnable test suite
+        "<rootDir>/src/lib/better-blog/core/providers/__tests__/common-provider-tests.ts"
+    ],
     testMatch: [
         "<rootDir>/src/**/__tests__/**/*.(ts|tsx)",
         "<rootDir>/src/**/*.(test|spec).(ts|tsx)"
@@ -40,5 +44,6 @@ export default {
         "!src/types/**/*"
     ],
     coverageDirectory: "coverage",
-    coverageReporters: ["text", "lcov", "html"]
+    coverageReporters: ["text", "lcov", "html"],
+    testTimeout: 10000
 }

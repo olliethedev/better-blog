@@ -1,4 +1,4 @@
-import { slugify } from "@/lib/format-utils"
+import { slugify } from "../../../format-utils"
 import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../../schema/post"
 import type { BlogDataProvider, Post, Tag } from "../types"
 
@@ -146,13 +146,22 @@ export function createDummyMemoryDBProvider(
         : []
 
     function upsertTagsFromNames(names: string[]): Tag[] {
-        const uniqueNames = Array.from(
-            new Set(names.map((n) => n.toLowerCase().trim()).filter(Boolean))
-        )
-        return uniqueNames.map((name, idx) => ({
-            id: `t_${name}_${idx}`,
-            name,
-            slug: slugify(name)
+        const seenLowerNameToOriginal = new Map<string, string>()
+        for (const rawName of names) {
+            const trimmed = (rawName ?? "").trim()
+            if (!trimmed) continue
+            const lower = trimmed.toLowerCase()
+            if (!seenLowerNameToOriginal.has(lower)) {
+                // Preserve the original casing of the first occurrence
+                seenLowerNameToOriginal.set(lower, trimmed)
+            }
+        }
+
+        const originalNames = Array.from(seenLowerNameToOriginal.values())
+        return originalNames.map((originalName, idx) => ({
+            id: `t_${slugify(originalName)}_${idx}`,
+            name: originalName,
+            slug: slugify(originalName)
         }))
     }
 
@@ -240,6 +249,12 @@ export function createDummyMemoryDBProvider(
                 tags = upsertTagsFromNames(tagNames)
             }
 
+            const anyInputForAuthor = input as PostCreateExtendedInput & {
+                author?: { id?: string; name?: string; image?: string }
+            }
+
+            const providedAuthor = anyInputForAuthor.author
+
             const newPost: Post = {
                 id,
                 slug,
@@ -254,7 +269,14 @@ export function createDummyMemoryDBProvider(
                 tags,
                 createdAt: input.createdAt ?? now,
                 updatedAt: input.updatedAt ?? now,
-                author: { id: input.authorId ?? "author_1", name: "Author" }
+                author: {
+                    id:
+                        providedAuthor?.id ??
+                        input.authorId ??
+                        generateId("author"),
+                    name: providedAuthor?.name ?? "Author",
+                    image: providedAuthor?.image
+                }
             }
 
             posts.unshift(newPost)
@@ -336,46 +358,31 @@ export function createDemoMemoryDBProvider(): BlogDataProvider {
         const name = tagNames[i % tagNames.length]
         const tag = { id: String(i + 1), name, slug: slugify(name) }
         const isDraft = idx % 5 === 0 // every 5th post is a draft
+        const titles = [
+            "Hello World",
+            "React Tips",
+            "CSS Basics",
+            "JS Arrays",
+            "Git Basics",
+            "Node Express",
+            "Database Tips",
+            "TypeScript Intro",
+            "Testing Basics",
+            "Deployment",
+            "Docker Basics",
+            "GraphQL Intro",
+            "Performance Tuning",
+            "Security Checklist",
+            "Dev Tooling"
+        ]
         return {
             id: String(idx),
-            slug: slugify(
-                [
-                    "hello-world",
-                    "react-tips",
-                    "css-basics",
-                    "js-arrays",
-                    "git-basics",
-                    "node-express",
-                    "database-tips",
-                    "typescript-intro",
-                    "testing-basics",
-                    "deployment",
-                    "docker-basics",
-                    "graphql-intro",
-                    "performance-tuning",
-                    "security-checklist",
-                    "dev-tooling"
-                ][i]
-            ),
-            title: [
-                "Hello World",
-                "React Tips",
-                "CSS Basics",
-                "JS Arrays",
-                "Git Basics",
-                "Node Express",
-                "Database Tips",
-                "TypeScript Intro",
-                "Testing Basics",
-                "Deployment",
-                "Docker Basics",
-                "GraphQL Intro",
-                "Performance Tuning",
-                "Security Checklist",
-                "Dev Tooling"
-            ][i],
+            slug: slugify(titles[i]),
+            title: titles[i],
             content:
-                i===0?FULL_MARKDOWN:"This is a sample post for demo purposes. It contains enough text to be searchable.",
+                i === 0
+                    ? FULL_MARKDOWN
+                    : "This is a sample post for demo purposes. It contains enough text to be searchable.",
             excerpt: "Sample excerpt for demo post.",
             published: !isDraft,
             publishedAt: isDraft ? undefined : date,
