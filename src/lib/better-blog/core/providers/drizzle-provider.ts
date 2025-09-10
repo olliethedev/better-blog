@@ -297,12 +297,14 @@ export function createDrizzleProvider(
             // Some drizzle drivers expose .transaction(cb), others .transaction(async (tx) => {})
             // Use a generic approach: prefer function form with callback
             await drizzle.transaction(async (tx: AnyDb) => {
+                const createdAt = input.createdAt ?? null
+                const updatedAt = input.updatedAt ?? null
                 // Insert post
                 const insertRes = await tx.execute(SQLTag`
                     insert into "Post" (
-                        "authorId", "defaultLocale", title, slug, excerpt, content, image, status, "updatedAt"
+                        "authorId", "defaultLocale", title, slug, excerpt, content, image, status, "createdAt", "updatedAt"
                     ) values (
-                        ${input.authorId ?? null}, ${"en"}, ${input.title}, ${baseSlug}, ${input.excerpt ?? ""}, ${input.content}, ${input.image ?? null}, ${input.published ? "PUBLISHED" : "DRAFT"}, now()
+                        ${input.authorId ?? null}, ${"en"}, ${input.title}, ${baseSlug}, ${input.excerpt ?? ""}, ${input.content}, ${input.image ?? null}, ${input.published ? "PUBLISHED" : "DRAFT"}, ${createdAt ? SQLTag`${createdAt}` : SQLTag`now()`}, ${updatedAt ? SQLTag`${updatedAt}` : SQLTag`now()`}
                     ) returning id
                 `)
                 const inserted = firstRowFromExecute<{ id: string }>(insertRes)
@@ -407,6 +409,7 @@ export function createDrizzleProvider(
                             : "DRAFT"
                         : existing.status
 
+                const updatedAt = input.updatedAt ?? null
                 await tx.execute(SQLTag`
                     update "Post" set
                       title = ${input.title},
@@ -415,7 +418,7 @@ export function createDrizzleProvider(
                       slug = ${computedNextSlug},
                       image = ${input.image ?? existing.image},
                       status = ${nextStatus},
-                      "updatedAt" = now(),
+                      "updatedAt" = ${updatedAt ? SQLTag`${updatedAt}` : SQLTag`now()`},
                       version = coalesce(version, 1) + 1
                     where id = ${existing.id}
                 `)

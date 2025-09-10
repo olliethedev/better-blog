@@ -25,7 +25,7 @@ export type Post = {
     tags: Tag[]
     createdAt: Date
     updatedAt: Date
-    author: Author
+    author: Author | null
 }
 
 import type {
@@ -53,7 +53,11 @@ export interface BlogDataProvider {
     createPost?: (input: PostCreateExtendedInput) => Promise<Post>
     updatePost?: (slug: string, input: PostUpdateExtendedInput) => Promise<Post>
     deletePost?: (slug: string) => Promise<void>
+}
+
+export interface BlogDataProviderConfig {
     getAuthor?: (id: string) => Promise<Author | null>
+    defaultLocale?: string
 }
 
 // Combined configuration
@@ -81,10 +85,6 @@ export interface BlogMetadata {
   description?: string;
   image?: string;
 }
-
-
-
-
 
 export interface ComponentsContextValue {
   Link: React.ComponentType<{

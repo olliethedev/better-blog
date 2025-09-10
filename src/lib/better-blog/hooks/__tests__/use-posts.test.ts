@@ -7,7 +7,7 @@ import { usePostSearch, usePosts } from "../index"
 
 describe("usePosts", () => {
     test("loads first page and paginates", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = await createDemoMemoryDBProvider()
         const wrapper = createWrapper(provider)
         const { result } = renderHook(() => usePosts({ limit: 10 }), {
             wrapper
@@ -24,7 +24,7 @@ describe("usePosts", () => {
     })
 
     test("handles empty query parameter correctly", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = await createDemoMemoryDBProvider()
         const wrapper = createWrapper(provider)
         const queryClient = new QueryClient()
 
@@ -59,7 +59,7 @@ describe("usePosts", () => {
     })
 
     test("generates consistent query keys", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = await createDemoMemoryDBProvider()
         const queries = createBlogQueries(provider)
 
         // Test various scenarios to ensure query keys are consistent
@@ -87,7 +87,7 @@ describe("usePosts", () => {
 
 describe("usePostSearch", () => {
     test("handles empty search query correctly", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = await createDemoMemoryDBProvider()
         const wrapper = createWrapper(provider)
 
         const { result } = renderHook(
@@ -103,7 +103,7 @@ describe("usePostSearch", () => {
     })
 
     test("returns search results with valid query", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = await createDemoMemoryDBProvider()
         const wrapper = createWrapper(provider)
 
         const { result } = renderHook(

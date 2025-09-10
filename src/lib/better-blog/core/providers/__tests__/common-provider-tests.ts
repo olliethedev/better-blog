@@ -431,14 +431,14 @@ export function commonProviderTests(
         it("should apply defaults for slug, id, and excerpt on create", async () => {
             const title = "Defaults Title"
             const content = "Defaults content"
-            const excerpt = "Defaults excerpt"
             const published = false
+            const excerpt = ""
 
             const created = await provider.createPost({
                 title,
                 content,
-                excerpt,
-                published
+                published,
+                excerpt
             } satisfies PostCreateExtendedInput)
 
             expect(created).toBeDefined()
@@ -509,7 +509,39 @@ export function commonProviderTests(
             ).rejects.toThrow("Post not found")
         })
 
-        it.todo("should persist only author id; name/image resolved via getAuthor()")
+        it("should persist only author id; name/image resolved via getAuthor()", async () => {
+            const authorId = "author-xyz"
+
+            const created = await provider.createPost!({
+                title: "Author resolution test",
+                content: "Body",
+                excerpt: "",
+                authorId,
+                published: false
+            } satisfies PostCreateExtendedInput)
+
+            expect(created.authorId).toBe(authorId)
+            expect(created.author).toBeDefined()
+            expect(created.author).toEqual(
+                expect.objectContaining({
+                    id: authorId,
+                    name: "olliethedev",
+                    image: "https://avatars.githubusercontent.com/u/123456789?v=4"
+                })
+            )
+
+            const fetched = await provider.getPostBySlug!(created.slug)
+            expect(fetched).not.toBeNull()
+            if (!fetched) return
+            expect(fetched.authorId).toBe(authorId)
+            expect(fetched.author).toEqual(
+                expect.objectContaining({
+                    id: authorId,
+                    name: "olliethedev",
+                    image: "https://avatars.githubusercontent.com/u/123456789?v=4"
+                })
+            )
+        })
 
     })
 }
@@ -526,13 +558,29 @@ function tagStringToTagCreate(tagString: string): TagConnectOrCreate {
 }
 
 function comparePostShapes(expected: Post, actual: Post): void {
+    // Compare core shape excluding author fields that are resolved externally
+    const {
+        author: _ignoredAuthor,
+        tags: expectedTags,
+        ...expectedRest
+    } = expected
+
     expect(actual).toMatchObject({
-        ...expected,
-        author: { ...expected.author, id: expect.any(String) },
+        ...expectedRest,
+        id: expect.any(String),
         tags: expect.arrayContaining(
-            expected.tags.map(({ id: _ignore, ...rest }) =>
+            expectedTags.map(({ id: _ignore, ...rest }) =>
                 expect.objectContaining(rest)
             )
         )
     })
+
+    if (actual.author === null) {
+        // Validate author presence is external and only id is required when present
+        expect(actual.author).toBeNull()
+    } else {
+        expect(actual.author).toEqual(
+            expect.objectContaining({ id: expect.any(String) })
+        )
+    }
 }

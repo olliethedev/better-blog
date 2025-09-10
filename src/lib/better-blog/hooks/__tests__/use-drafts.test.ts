@@ -5,7 +5,7 @@ import { useDrafts } from "../index"
 
 describe("useDrafts", () => {
     test("filters unpublished and paginates", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = await createDemoMemoryDBProvider()
         const wrapper = createWrapper(provider)
         const { result } = renderHook(() => useDrafts(), { wrapper })
         await waitFor(() => expect(result.current.isLoading).toBe(false))

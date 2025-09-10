@@ -247,6 +247,8 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
 
         createPost: async (input: PostCreateExtendedInput) => {
             const now = new Date()
+            const createdAt = input.createdAt ?? now
+            const updatedAt = input.updatedAt ?? now
             const baseSlug = (input.slug && input.slug.trim().length > 0) ? input.slug : slugify(input.title)
 
             const created = await (db as any).$transaction(async (tx: any) => {
@@ -260,7 +262,8 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                         content: input.content,
                         image: input.image ?? null,
                         status: (input.published ?? false) ? "PUBLISHED" : "DRAFT",
-                        updatedAt: now
+                        createdAt,
+                        updatedAt
                     },
                     select: { id: true }
                 })
@@ -305,6 +308,7 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
 
         updatePost: async (slug: string, input: PostUpdateExtendedInput) => {
             const now = new Date()
+            const nextUpdatedAt = input.updatedAt ?? now
 
             const updated = await (db as any).$transaction(async (tx: any) => {
                 const existing = (tx.post?.findUnique
@@ -326,7 +330,7 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                         slug: nextSlug,
                         image: input.image ?? existing.image,
                         status: nextStatus,
-                        updatedAt: now,
+                        updatedAt: nextUpdatedAt,
                         version: (existing.version ?? 1) + 1
                     }
                 })

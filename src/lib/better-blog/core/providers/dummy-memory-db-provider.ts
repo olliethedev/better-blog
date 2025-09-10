@@ -1,6 +1,11 @@
 import { slugify } from "../../../format-utils"
 import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../../schema/post"
-import type { BlogDataProvider, Post, Tag } from "../types"
+import type {
+    BlogDataProvider,
+    BlogDataProviderConfig,
+    Post,
+    Tag
+} from "../types"
 
 const FULL_MARKDOWN = `
 
@@ -139,7 +144,7 @@ type UpdateTagsInput = {
 }
 
 export function createDummyMemoryDBProvider(
-    options?: CreateDummyMemoryDBProviderOptions
+    options?: CreateDummyMemoryDBProviderOptions & BlogDataProviderConfig
 ): BlogDataProvider {
     const posts: Post[] = Array.isArray(options?.seedPosts)
         ? [...options.seedPosts]
@@ -249,11 +254,8 @@ export function createDummyMemoryDBProvider(
                 tags = upsertTagsFromNames(tagNames)
             }
 
-            const anyInputForAuthor = input as PostCreateExtendedInput & {
-                author?: { id?: string; name?: string; image?: string }
-            }
-
-            const providedAuthor = anyInputForAuthor.author
+            const author =
+                (await options?.getAuthor?.(input.authorId ?? "")) ?? null
 
             const newPost: Post = {
                 id,
@@ -263,20 +265,15 @@ export function createDummyMemoryDBProvider(
                 excerpt: input.excerpt ?? "",
                 image: input.image,
                 published: input.published ?? false,
-                publishedAt: input.published
-                    ? (input.publishedAt ?? now)
-                    : undefined,
+                publishedAt:
+                    (input.published ?? false)
+                        ? (input.updatedAt ?? now)
+                        : undefined,
                 tags,
                 createdAt: input.createdAt ?? now,
                 updatedAt: input.updatedAt ?? now,
-                author: {
-                    id:
-                        providedAuthor?.id ??
-                        input.authorId ??
-                        generateId("author"),
-                    name: providedAuthor?.name ?? "Author",
-                    image: providedAuthor?.image
-                }
+                authorId: input.authorId,
+                author: author
             }
 
             posts.unshift(newPost)
@@ -316,7 +313,10 @@ export function createDummyMemoryDBProvider(
                 slug: nextSlug,
                 image: input.image ?? existing.image,
                 published: input.published ?? existing.published,
-                publishedAt: input.publishedAt ?? existing.publishedAt,
+                publishedAt:
+                    (input.published ?? existing.published)
+                        ? (input.updatedAt ?? now)
+                        : undefined,
                 tags,
                 updatedAt: input.updatedAt ?? now
             }
@@ -333,7 +333,9 @@ export function createDummyMemoryDBProvider(
 }
 
 // Convenience: a pre-seeded provider using demo posts, for quick prototyping
-export function createDemoMemoryDBProvider(): BlogDataProvider {
+export async function createDemoMemoryDBProvider(
+    options?: BlogDataProviderConfig
+): Promise<BlogDataProvider> {
     const tagNames = [
         "Intro",
         "React",
@@ -351,6 +353,10 @@ export function createDemoMemoryDBProvider(): BlogDataProvider {
         "Security",
         "Tooling"
     ]
+
+    const authorId = "1"
+
+    const author = (await options?.getAuthor?.(authorId)) ?? null
 
     const posts: Post[] = Array.from({ length: 15 }, (_, i) => {
         const idx = i + 1
@@ -389,11 +395,12 @@ export function createDemoMemoryDBProvider(): BlogDataProvider {
             tags: [tag],
             createdAt: date,
             updatedAt: date,
-            author: { id: "1", name: "John Doe" }
+            authorId: authorId,
+            author: author ?? { id: authorId, name: "Author" }
         }
     })
 
-    return createDummyMemoryDBProvider({ seedPosts: posts })
+    return createDummyMemoryDBProvider({ seedPosts: posts, ...options })
 }
 
 
