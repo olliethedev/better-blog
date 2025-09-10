@@ -13,7 +13,9 @@
         "prepublishOnly": "rm -rf dist && turbo build",
         "test": "jest",
         "test:watch": "jest --watch",
-        "test:coverage": "jest --coverage"
+        "test:coverage": "jest --coverage",
+        "prisma:test:generate": "prisma generate --schema src/lib/better-blog/core/providers/__tests__/prisma/schema.prisma",
+        "prisma:test:push": "mkdir -p .db && prisma db push --force-reset --schema src/lib/better-blog/core/providers/__tests__/prisma/schema.prisma"
     },
     "type": "module",
     "main": "./dist/index.cjs",
@@ -111,6 +113,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
+        "@prisma/client": "^5.22.0",
         "@tailwindcss/typography": "^0.5.16",
         "@testing-library/jest-dom": "^6.6.4",
         "@testing-library/react": "^16.3.0",
@@ -123,14 +126,15 @@
         "esbuild-plugin-preserve-directives": "^0.0.11",
         "jest": "^30.0.5",
         "jest-environment-jsdom": "^30.0.5",
+        "pg": "^8.12.0",
+        "prisma": "^5.22.0",
         "tailwindcss-animate": "^1.0.7",
         "ts-jest": "^29.4.0",
         "tsc-watch": "^7.1.1",
         "tsup": "^8.5.0",
         "tsx": "^4.20.3",
         "turbo": "^2.5.5",
-        "typescript": "^5.8.3",
-        "pg": "^8.12.0"
+        "typescript": "^5.8.3"
     },
     "peerDependencies": {
         "@hookform/resolvers": ">=5.0.0",
@@ -183,7 +187,12 @@
     },
     "pnpm": {
         "overrides": {},
-        "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"]
+        "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"],
+        "ignoredBuiltDependencies": [
+            "@prisma/client",
+            "@prisma/engines",
+            "prisma"
+        ]
     },
     "packageManager": "pnpm@10.12.1",
     "dependencies": {

@@ -9,9 +9,8 @@ import type {
 import type { KyselyDatabaseType } from "./dialect"
 
 import type { ColumnType } from "kysely"
-import type { StorageDataProviderConfig } from "../types"
 
-export interface KyselyAdapterConfig extends StorageDataProviderConfig {
+export interface KyselyAdapterConfig extends BlogDataProviderConfig {
     /**
      * Database type.
      */
@@ -80,7 +79,7 @@ export type DBSchema = {
 
 export const kyselyAdapter = (
     db: Kysely<DBSchema>,
-    config?: KyselyAdapterConfig & BlogDataProviderConfig
+    config?: KyselyAdapterConfig
 ) => {
     const providerDefaultLocale = config?.defaultLocale ?? "en"
 

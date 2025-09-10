@@ -1,6 +1,6 @@
 
-import type { StorageDataProviderConfig } from "./types"
-import type { BlogDataProvider, PostCreateExtendedInput, PostUpdateExtendedInput } from "../types"
+
+import type { BlogDataProvider, BlogDataProviderConfig, PostCreateExtendedInput, PostUpdateExtendedInput } from "../types"
 import { slugify } from "@/lib/format-utils"
 
 // biome-ignore lint/suspicious/noEmptyInterface: Library consumer provides PrismaClient
@@ -33,7 +33,7 @@ interface PrismaClientInternal {
 	}
 }
 
-export interface PrismaProviderConfig extends StorageDataProviderConfig {
+export interface PrismaProviderConfig extends BlogDataProviderConfig {
     prisma: PrismaClient
 }
 
@@ -99,6 +99,7 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
 
         return {
             id: post.id as string,
+            authorId: (post.authorId as string | null) ?? undefined,
             slug: (loc?.slug ?? post.slug) as string,
             title: (loc?.title ?? post.title) as string,
             content: (loc?.content ?? post.content) as string,
@@ -123,7 +124,7 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
             published,
             locale = providerDefaultLocale
         }: { slug?: string; tag?: string; offset?: number; limit?: number; query?: string; published?: boolean; locale?: string } = {}) => {
-            const lowerQuery = (query ?? "").toLowerCase().trim()
+            const q = (query ?? "").trim()
 
             const where: any = {
                 AND: [] as any[]
@@ -143,14 +144,15 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
             }
 
             if (tag) {
+                const normalizedTag = slugify(tag)
                 where.AND.push({
                     tags: {
                         some: {
                             tag: {
                                 OR: [
-                                    { slug: tag },
+                                    { slug: normalizedTag },
                                     { name: tag },
-                                    { i18n: { some: { locale, OR: [{ slug: tag }, { name: tag }] } } }
+                                    { i18n: { some: { locale, OR: [{ slug: normalizedTag }, { name: tag }] } } }
                                 ]
                             }
                         }
@@ -158,21 +160,20 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                 })
             }
 
-            if (lowerQuery.length > 0) {
-                // Search across base and localized fields
+            if (q.length > 0) {
                 where.AND.push({
                     OR: [
-                        { title: { contains: lowerQuery, mode: "insensitive" } },
-                        { excerpt: { contains: lowerQuery, mode: "insensitive" } },
-                        { content: { contains: lowerQuery, mode: "insensitive" } },
+                        { title: { contains: q } },
+                        { excerpt: { contains: q } },
+                        { content: { contains: q } },
                         {
                             i18n: {
                                 some: {
                                     locale,
                                     OR: [
-                                        { title: { contains: lowerQuery, mode: "insensitive" } },
-                                        { excerpt: { contains: lowerQuery, mode: "insensitive" } },
-                                        { content: { contains: lowerQuery, mode: "insensitive" } }
+                                        { title: { contains: q } },
+                                        { excerpt: { contains: q } },
+                                        { content: { contains: q } }
                                     ]
                                 }
                             }
@@ -221,6 +222,7 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
 
                     return {
                         id: p.id as string,
+                        authorId: (p.authorId as string | null) ?? undefined,
                         slug: (loc?.slug ?? p.slug) as string,
                         title: (loc?.title ?? p.title) as string,
                         content: (loc?.content ?? p.content) as string,
@@ -365,7 +367,14 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                                 select: { id: true }
                             })).id
 
-                            await tx.postTag.create({ data: { postId: existing.id, tagId } })
+                            // Avoid duplicate connections if already linked
+                            const existingLink = (tx.postTag?.findUnique
+                                ? await tx.postTag.findUnique({ where: { postId_tagId: { postId: existing.id, tagId } } })
+                                : await tx.postTag.findFirst({ where: { postId: existing.id, tagId } })
+                            )
+                            if (!existingLink) {
+                                await tx.postTag.create({ data: { postId: existing.id, tagId } })
+                            }
                         }
                     }
                 }
