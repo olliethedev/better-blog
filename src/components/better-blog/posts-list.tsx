@@ -1,7 +1,10 @@
-import { useBetterBlogContext } from "../../lib/better-blog/context/better-blog-context"
+import {
+    useBetterBlogContext,
+    useComponents
+} from "../../lib/better-blog/context/better-blog-context"
 import type { Post } from "../../lib/better-blog/core/types"
 import { Button } from "../ui/button"
-import { PostCard } from "./post-card"
+import { EmptyList } from "./empty-list"
 import SearchInput from "./search-input"
 
 interface PostsListProps {
@@ -18,12 +21,13 @@ export function PostsList({
     isLoadingMore
 }: PostsListProps) {
     const { localization } = useBetterBlogContext()
+    const { PostCard } = useComponents()
     if (posts.length === 0) {
-        return <div>{localization.BLOG_LIST_EMPTY}</div>
+        return <EmptyList message={localization.BLOG_LIST_EMPTY} />
     }
 
     return (
-        <div className="space-y-6">
+        <div className="w-full space-y-6">
             <div className="flex justify-center pb-6">
                 <SearchInput
                     placeholder={localization.BLOG_LIST_SEARCH_PLACEHOLDER}

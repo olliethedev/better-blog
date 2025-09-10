@@ -1,5 +1,7 @@
 "use client"
 
+import { PostCard } from "@/components/better-blog/post-card"
+import { PostCardSkeleton } from "@/components/better-blog/post-card-skeleton"
 import React, { useMemo } from "react"
 import {
     type BlogLocalization,
@@ -7,7 +9,7 @@ import {
 } from "../../../localization/blog-localization"
 import type { PageComponentOverrides } from "../core/client-components"
 import { createApiBlogProvider } from "../core/providers/api-provider"
-import type { BlogDataProvider } from "../core/types"
+import type { BlogDataProvider, Post } from "../core/types"
 
 export interface ComponentsContextValue {
     Link: React.ComponentType<{
@@ -22,6 +24,10 @@ export interface ComponentsContextValue {
         width?: number
         height?: number
     }>
+    PostCard: React.ComponentType<{
+        post: Post
+    }>
+    PostCardSkeleton: React.ComponentType
 }
 
 const defaultNavigate = (href: string) => {
@@ -49,7 +55,9 @@ const defaultComponents: ComponentsContextValue = {
             height={height}
             {...props}
         />
-    )
+    ),
+    PostCard: ({ post }) => <PostCard post={post} />,
+    PostCardSkeleton: () => <PostCardSkeleton />
 }
 
 export interface BetterBlogContextValue {
@@ -58,10 +66,11 @@ export interface BetterBlogContextValue {
     pageOverrides?: PageComponentOverrides
     basePath: string
     localization: BlogLocalization
-    adminUiOptions?: AdminUiOptions
+    adminOptions?: AdminOptions
     navigate: typeof defaultNavigate
     replace: typeof defaultReplace
     uploadImage: (file: File) => Promise<string>
+    showAttribution: boolean
 }
 
 const BetterBlogContext = React.createContext<BetterBlogContextValue | null>(
@@ -115,21 +124,21 @@ export function buildPath(
 }
 
 // Admin UI permissions/options
-export interface AdminUiOptions {
+export interface AdminOptions {
     canCreate: boolean
     canUpdate: boolean
     canDelete: boolean
 }
 
-const defaultAdminUiOptions: AdminUiOptions = {
+const defaultAdminOptions: AdminOptions = {
     canCreate: false,
     canUpdate: false,
     canDelete: false
 }
 
-export function useAdminUiOptions(): AdminUiOptions {
-    const { adminUiOptions } = useBetterBlogContext()
-    return { ...defaultAdminUiOptions, ...(adminUiOptions ?? {}) }
+export function useAdminOptions(): AdminOptions {
+    const { adminOptions } = useBetterBlogContext()
+    return { ...defaultAdminOptions, ...(adminOptions ?? {}) }
 }
 
 export interface BetterBlogContextProviderProps {
@@ -138,13 +147,15 @@ export interface BetterBlogContextProviderProps {
     pageOverrides?: PageComponentOverrides
     basePath?: string // defaults to "/posts"
     localization?: Partial<BlogLocalization>
-    adminUiOptions?: Partial<AdminUiOptions>
+    adminOptions?: Partial<AdminOptions>
     children: React.ReactNode
     navigate?: typeof defaultNavigate
     replace?: typeof defaultReplace
     uploadImage: (file: File) => Promise<string>
     /** Base path for the API router; used if no clientConfig is provided */
     apiBasePath?: string
+    /** Whether to show the attribution link in the footer */
+    showAttribution?: boolean
 }
 
 export function BetterBlogContextProvider({
@@ -153,12 +164,13 @@ export function BetterBlogContextProvider({
     pageOverrides,
     basePath = "/posts",
     localization: localizationProp,
-    adminUiOptions,
+    adminOptions,
     children,
     navigate = defaultNavigate,
     replace = defaultReplace,
     uploadImage,
-    apiBasePath = "/api/posts"
+    apiBasePath = "/api/posts",
+    showAttribution = true
 }: BetterBlogContextProviderProps) {
     function normalizeBasePath(path: string): string {
         const withLeading = path.startsWith("/") ? path : `/${path}`
@@ -181,12 +193,13 @@ export function BetterBlogContextProvider({
         pageOverrides,
         basePath: normalizeBasePath(basePath),
         localization,
-        adminUiOptions: adminUiOptions
-            ? { ...defaultAdminUiOptions, ...adminUiOptions }
-            : defaultAdminUiOptions,
+        adminOptions: adminOptions
+            ? { ...defaultAdminOptions, ...adminOptions }
+            : defaultAdminOptions,
         navigate,
         replace,
-        uploadImage
+        uploadImage,
+        showAttribution
     }
 
     return (

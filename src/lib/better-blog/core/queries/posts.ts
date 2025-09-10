@@ -5,6 +5,7 @@ export interface PostsListParams {
     tag?: string
     query?: string
     limit?: number
+    published?: boolean
 }
 
 export function createPostsQueries(provider: BlogDataProvider) {
@@ -21,7 +22,7 @@ export function createPostsQueries(provider: BlogDataProvider) {
                             ? undefined
                             : params?.query,
                     limit: params?.limit ?? 10,
-                    published: true
+                    published: params?.published ?? true
                 }
             ],
             queryFn: async ({ pageParam }: { pageParam?: number }) => {
@@ -30,7 +31,7 @@ export function createPostsQueries(provider: BlogDataProvider) {
                     query: params?.query,
                     offset: pageParam ?? 0,
                     limit: params?.limit ?? 10,
-                    published: true
+                    published: params?.published ?? true
                 })
             }
         }),

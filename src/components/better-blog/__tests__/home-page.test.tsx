@@ -255,9 +255,7 @@ describe("HomePage", () => {
         render(<HomePageComponent />, { wrapper })
 
         await waitFor(() => {
-            expect(
-                screen.getByText("There are no published posts at the moment.")
-            ).toBeInTheDocument()
+            expect(screen.getByText("There are no posts here yet.")).toBeInTheDocument()
         })
 
         // Should not show load more button

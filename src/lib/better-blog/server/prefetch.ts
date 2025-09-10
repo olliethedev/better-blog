@@ -14,7 +14,7 @@ export async function prefetchBlogData(
 
     switch (routeMatch.type) {
         case "home": {
-            const base = queries.posts.list({ limit: 10 })
+            const base = queries.posts.list({ limit: 10, published: true })
             await queryClient.prefetchInfiniteQuery({
                 ...base,
                 initialPageParam: 0,

@@ -1,23 +1,23 @@
-import type React from 'react';
-import type { RouteMatch } from './types';
+import type React from "react"
 import { resolveComponent, resolveLoadingComponent } from './client-components';
 import type { PageComponentOverrides } from './client-components';
+import type { RouteMatch } from "./types"
 
 /**
  * Resolves the component and loading component for a given route match
  * This keeps RouteMatch pure while using client-side component mappings
  */
 export function resolveRouteComponents(
-  routeMatch: RouteMatch,
-  overrides?: PageComponentOverrides
+    routeMatch: RouteMatch,
+    overrides?: PageComponentOverrides
 ): {
-  Component?: React.ComponentType;
-  LoadingComponent?: React.ComponentType<Record<string, never>>;
+    Component?: React.ComponentType
+    LoadingComponent?: React.ComponentType
 } {
-  return {
-    Component: resolveComponent(routeMatch.type, overrides),
-    LoadingComponent: resolveLoadingComponent(routeMatch.type, overrides)
-  };
+    return {
+        Component: resolveComponent(routeMatch.type, overrides),
+        LoadingComponent: resolveLoadingComponent(routeMatch.type, overrides)
+    }
 }
 
 /**
