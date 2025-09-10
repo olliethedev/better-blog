@@ -8,7 +8,7 @@ import type {
     PostUpdateExtendedInput
 } from "../../schema/post"
 import type { BlogApiRoutes } from "../../server/api"
-import type { BlogDataProvider, Post } from "../types"
+import type { BlogDataProvider, BlogDataProviderConfig, Post } from "../types"
 
 function revivePost(raw: ReturnType<typeof PostSerializedSchema.parse>): Post {
     const r = raw
@@ -23,18 +23,10 @@ function revivePost(raw: ReturnType<typeof PostSerializedSchema.parse>): Post {
     }
 }
 
-export interface CreateApiBlogProviderOptions {
+export interface CreateApiBlogProviderOptions extends BlogDataProviderConfig {
     /** Base URL including router basePath, e.g. "/api/posts" (default) */
     baseURL?: string
-    /**
-     * Function to get author by id. If not provided, the author will be null.
-     */
-    getAuthor?: BlogDataProvider["getAuthor"]
-    /**
-     * Default locale to use when a method call does not specify one.
-     * @default "en"
-     */
-    defaultLocale?: string
+
     /**
      * Optional override used in tests to inject a custom HTTP client creator.
      * Must be compatible with better-call's createClient API.

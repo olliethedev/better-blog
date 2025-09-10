@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:.db/dev.db"
+}
+
+model Post {
+  id              String     @id @default(uuid())
+  authorId        String?
+
+  defaultLocale   String     @default("en")
+  title           String
+  slug            String     @unique
+  excerpt         String
+  content         String
+  image           String?
+
+  version         Int        @default(1)
+  status          String     @default("DRAFT")
+
+  i18n            PostI18n[]
+  tags            PostTag[]
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([authorId])
+  @@index([status, updatedAt])
+}
+
+model PostI18n {
+  id              String   @id @default(uuid())
+  postId          String
+  locale          String
+
+  title           String
+  slug            String
+  excerpt         String
+  content         String
+
+  post            Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, locale])
+  @@unique([locale, slug])
+  @@index([locale])
+}
+
+model Tag {
+  id            String     @id @default(uuid())
+  defaultLocale String     @default("en")
+  name          String
+  slug          String     @unique
+
+  i18n          TagI18n[]
+  posts         PostTag[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model TagI18n {
+  id       String  @id @default(uuid())
+  tagId    String
+  locale   String
+  name     String
+  slug     String
+
+  tag      Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([tagId, locale])
+  @@unique([locale, slug])
+  @@index([locale])
+}
+
+model PostTag {
+  postId   String
+  tagId    String
+
+  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@index([tagId])
+}
+
+

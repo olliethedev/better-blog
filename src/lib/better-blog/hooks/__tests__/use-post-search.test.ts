@@ -6,7 +6,7 @@ import { usePostSearch } from "../index"
 
 describe("usePostSearch", () => {
     test("handles search debouncing correctly", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = await createDemoMemoryDBProvider()
         // Create a fresh query client for each test to avoid cache interactions
         const queryClient = new QueryClient({
             defaultOptions: { queries: { retry: false } }
@@ -52,7 +52,7 @@ describe("usePostSearch", () => {
     })
 
     test("preserves last successful results during loading", async () => {
-        const provider = createDemoMemoryDBProvider()
+        const provider = await createDemoMemoryDBProvider()
         // Create a fresh query client for each test to avoid cache interactions
         const queryClient = new QueryClient({
             defaultOptions: { queries: { retry: false } }

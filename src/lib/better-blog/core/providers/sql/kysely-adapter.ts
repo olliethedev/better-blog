@@ -1,13 +1,16 @@
 import { slugify } from "@/lib/format-utils"
 import type { Kysely } from "kysely"
 import { sql } from "kysely"
-import type { BlogDataProvider } from "../../types"
+import type {
+    BlogDataProvider,
+    BlogDataProviderConfig,
+    PostCreateExtendedInput
+} from "../../types"
 import type { KyselyDatabaseType } from "./dialect"
 
 import type { ColumnType } from "kysely"
-import type { StorageDataProviderConfig } from "../types"
 
-export interface KyselyAdapterConfig extends StorageDataProviderConfig {
+export interface KyselyAdapterConfig extends BlogDataProviderConfig {
     /**
      * Database type.
      */
@@ -84,7 +87,9 @@ export const kyselyAdapter = (
         const rows = await db
             .selectFrom("Post as p")
             .leftJoin("PostI18n as pi", (join) =>
-                join.onRef("pi.postId", "=", "p.id").on("pi.locale", "=", locale),
+                join
+                    .onRef("pi.postId", "=", "p.id")
+                    .on("pi.locale", "=", locale)
             )
             .select((eb) => [
                 "p.id as id",
@@ -95,19 +100,21 @@ export const kyselyAdapter = (
                 "p.status as status",
                 "p.image as image",
                 sql<string>`coalesce(${eb.ref("pi.title")}, ${eb.ref("p.title")})`.as(
-                    "title",
+                    "title"
                 ),
                 sql<string>`coalesce(${eb.ref("pi.slug")}, ${eb.ref("p.slug")})`.as(
-                    "slug",
+                    "slug"
                 ),
                 sql<string>`coalesce(${eb.ref("pi.excerpt")}, ${eb.ref(
-                    "p.excerpt",
+                    "p.excerpt"
                 )})`.as("excerpt"),
                 sql<string>`coalesce(${eb.ref("pi.content")}, ${eb.ref(
-                    "p.content",
-                )})`.as("content"),
+                    "p.content"
+                )})`.as("content")
             ])
-            .where((eb) => eb.or([eb("pi.slug", "=", theSlug), eb("p.slug", "=", theSlug)]))
+            .where((eb) =>
+                eb.or([eb("pi.slug", "=", theSlug), eb("p.slug", "=", theSlug)])
+            )
             .limit(1)
             .execute()
 
@@ -118,31 +125,33 @@ export const kyselyAdapter = (
             .selectFrom("PostTag as pt")
             .innerJoin("Tag as t", "t.id", "pt.tagId")
             .leftJoin("TagI18n as ti", (join) =>
-                join.onRef("ti.tagId", "=", "t.id").on("ti.locale", "=", locale),
+                join.onRef("ti.tagId", "=", "t.id").on("ti.locale", "=", locale)
             )
             .select((eb) => [
                 "pt.postId as postId",
                 "t.id as id",
                 sql<string>`coalesce(${eb.ref("ti.name")}, ${eb.ref("t.name")})`.as(
-                    "name",
+                    "name"
                 ),
                 sql<string>`coalesce(${eb.ref("ti.slug")}, ${eb.ref("t.slug")})`.as(
-                    "slug",
-                ),
+                    "slug"
+                )
             ])
             .where("pt.postId", "=", row.id)
             .execute()
 
         const getAuthor = config?.getAuthor
         const isPublished = row.status === PostStatus.PUBLISHED
-        const author =
-            (row.authorId && getAuthor ? await getAuthor(row.authorId) : null) ?? {
-                id: row.authorId ?? "",
-                name: "Unknown",
-            }
+        const author = (row.authorId && getAuthor
+            ? await getAuthor(row.authorId)
+            : null) ?? {
+            id: row.authorId ?? "",
+            name: "Unknown"
+        }
 
         return {
             id: row.id,
+            authorId: row.authorId ?? undefined,
             slug: row.slug,
             title: row.title,
             content: row.content,
@@ -150,10 +159,14 @@ export const kyselyAdapter = (
             image: row.image ?? undefined,
             published: isPublished,
             publishedAt: isPublished ? (row.updatedAt as Date) : undefined,
-            tags: tagRows.map((t) => ({ id: t.id, name: t.name, slug: t.slug })),
+            tags: tagRows.map((t) => ({
+                id: t.id,
+                name: t.name,
+                slug: t.slug
+            })),
             createdAt: row.createdAt as Date,
             updatedAt: row.updatedAt as Date,
-            author,
+            author
         }
     }
 
@@ -186,26 +199,23 @@ export const kyselyAdapter = (
                     "p.status as status",
                     "p.image as image",
                     sql<string>`coalesce(${eb.ref("pi.title")}, ${eb.ref(
-                        "p.title",
+                        "p.title"
                     )})`.as("title"),
                     sql<string>`coalesce(${eb.ref("pi.slug")}, ${eb.ref(
-                        "p.slug",
+                        "p.slug"
                     )})`.as("slug"),
                     sql<string>`coalesce(${eb.ref("pi.excerpt")}, ${eb.ref(
-                        "p.excerpt",
+                        "p.excerpt"
                     )})`.as("excerpt"),
                     sql<string>`coalesce(${eb.ref("pi.content")}, ${eb.ref(
-                        "p.content",
-                    )})`.as("content"),
+                        "p.content"
+                    )})`.as("content")
                 ])
                 .orderBy("p.createdAt", "desc")
 
             if (slug) {
                 baseQuery = baseQuery.where((eb) =>
-                    eb.or([
-                        eb("pi.slug", "=", slug),
-                        eb("p.slug", "=", slug),
-                    ]),
+                    eb.or([eb("pi.slug", "=", slug), eb("p.slug", "=", slug)])
                 )
             }
 
@@ -213,26 +223,31 @@ export const kyselyAdapter = (
                 baseQuery = baseQuery.where(
                     "p.status",
                     "=",
-                    published ? PostStatus.PUBLISHED : PostStatus.DRAFT,
+                    published ? PostStatus.PUBLISHED : PostStatus.DRAFT
                 )
             }
 
             if (tag) {
+                const tagLower = tag.toLowerCase()
                 baseQuery = baseQuery
                     .innerJoin("PostTag as pt", "pt.postId", "p.id")
                     .innerJoin("Tag as t", "t.id", "pt.tagId")
                     .leftJoin("TagI18n as ti_match", (join) =>
                         join
                             .onRef("ti_match.tagId", "=", "t.id")
-                            .on("ti_match.locale", "=", locale),
+                            .on("ti_match.locale", "=", locale)
                     )
                     // Match localized tag slug first, then fallback to base slug or name
                     .where((eb) =>
                         eb.or([
-                            eb("ti_match.slug", "=", tag),
-                            eb("t.slug", "=", tag),
-                            eb("t.name", "=", tag),
-                        ]),
+                            eb(
+                                sql`lower(${eb.ref("ti_match.slug")})`,
+                                "=",
+                                tagLower
+                            ),
+                            eb(sql`lower(${eb.ref("t.slug")})`, "=", tagLower),
+                            eb(sql`lower(${eb.ref("t.name")})`, "=", tagLower)
+                        ])
                     )
             }
 
@@ -242,26 +257,26 @@ export const kyselyAdapter = (
                     eb.or([
                         eb(
                             sql`lower(coalesce(${eb.ref("pi.title")}, ${eb.ref(
-                                "p.title",
+                                "p.title"
                             )}))`,
                             "like",
-                            like,
+                            like
                         ),
                         eb(
                             sql`lower(coalesce(${eb.ref(
-                                "pi.excerpt",
+                                "pi.excerpt"
                             )}, ${eb.ref("p.excerpt")}))`,
                             "like",
-                            like,
+                            like
                         ),
                         eb(
                             sql`lower(coalesce(${eb.ref(
-                                "pi.content",
+                                "pi.content"
                             )}, ${eb.ref("p.content")}))`,
                             "like",
-                            like,
-                        ),
-                    ]),
+                            like
+                        )
+                    ])
                 )
             }
 
@@ -285,22 +300,25 @@ export const kyselyAdapter = (
                 .leftJoin("TagI18n as ti", (join) =>
                     join
                         .onRef("ti.tagId", "=", "t.id")
-                        .on("ti.locale", "=", locale),
+                        .on("ti.locale", "=", locale)
                 )
                 .select((eb) => [
                     "pt.postId as postId",
                     "t.id as id",
                     sql<string>`coalesce(${eb.ref("ti.name")}, ${eb.ref(
-                        "t.name",
+                        "t.name"
                     )})`.as("name"),
                     sql<string>`coalesce(${eb.ref("ti.slug")}, ${eb.ref(
-                        "t.slug",
-                    )})`.as("slug"),
+                        "t.slug"
+                    )})`.as("slug")
                 ])
                 .where("pt.postId", "in", postIds)
                 .execute()
 
-            const postIdToTags = new Map<string, { id: string; name: string; slug: string }[]>()
+            const postIdToTags = new Map<
+                string,
+                { id: string; name: string; slug: string }[]
+            >()
             for (const tr of tagRows) {
                 const list = postIdToTags.get(tr.postId) ?? []
                 list.push({ id: tr.id, name: tr.name, slug: tr.slug })
@@ -313,26 +331,30 @@ export const kyselyAdapter = (
             const posts = await Promise.all(
                 rows.map(async (r) => {
                     const isPublished = r.status === PostStatus.PUBLISHED
-                    const author =
-                        (r.authorId && getAuthor ? await getAuthor(r.authorId) : null) ?? {
-                            id: r.authorId ?? "",
-                            name: "Unknown",
-                        }
+                    const author = (r.authorId && getAuthor
+                        ? await getAuthor(r.authorId)
+                        : null) ?? {
+                        id: r.authorId ?? "",
+                        name: "Unknown"
+                    }
                     return {
                         id: r.id,
+                        authorId: r.authorId ?? undefined,
                         slug: r.slug,
                         title: r.title,
                         content: r.content,
                         excerpt: r.excerpt,
                         image: r.image ?? undefined,
                         published: isPublished,
-                        publishedAt: isPublished ? (r.updatedAt as Date) : undefined,
+                        publishedAt: isPublished
+                            ? (r.updatedAt as Date)
+                            : undefined,
                         tags: postIdToTags.get(r.id) ?? [],
                         createdAt: r.createdAt as Date,
                         updatedAt: r.updatedAt as Date,
-                        author,
+                        author
                     }
-                }),
+                })
             )
 
             return posts
@@ -344,11 +366,14 @@ export const kyselyAdapter = (
             return post ?? null
         },
 
-        createPost: async (input) => {
+        createPost: async (input: PostCreateExtendedInput) => {
             const now = new Date()
-            const baseSlug = (input.slug && input.slug.trim().length > 0)
-                ? input.slug
-                : slugify(input.title)
+            const createdAt = input.createdAt ?? now
+            const updatedAt = input.updatedAt ?? now
+            const baseSlug =
+                input.slug && input.slug.trim().length > 0
+                    ? input.slug
+                    : slugify(input.title)
 
             await db.transaction().execute(async (trx) => {
                 const inserted = await trx
@@ -361,36 +386,55 @@ export const kyselyAdapter = (
                         excerpt: input.excerpt ?? "",
                         content: input.content,
                         image: input.image ?? null,
-                        status: (input.published ?? false)
-                            ? PostStatus.PUBLISHED
-                            : PostStatus.DRAFT,
-                        updatedAt: now,
+                        status:
+                            (input.published ?? false)
+                                ? PostStatus.PUBLISHED
+                                : PostStatus.DRAFT,
+                        createdAt: createdAt,
+                        updatedAt: updatedAt
                     })
                     .returning(["id"]) // supported on PG; ignored on some dialects
                     .executeTakeFirst()
 
-                const postId = inserted?.id
-                    ?? (await trx
-                        .selectFrom("Post")
-                        .select(["id"])
-                        .where("slug", "=", baseSlug)
-                        .executeTakeFirst())?.id
+                const postId =
+                    inserted?.id ??
+                    (
+                        await trx
+                            .selectFrom("Post")
+                            .select(["id"])
+                            .where("slug", "=", baseSlug)
+                            .executeTakeFirst()
+                    )?.id
                 if (!postId) {
                     throw new Error("Failed to resolve created post id")
                 }
 
                 // Handle tags if provided (string names or connectOrCreate)
-                const maybeTags = (input as unknown as {
-                    tags?: Array<
-                        string | { tag?: { connectOrCreate?: { where?: { name?: string }; create?: { name?: string; slug?: string } } } }
-                    >
-                }).tags
+                const maybeTags = (
+                    input as unknown as {
+                        tags?: Array<
+                            | string
+                            | {
+                                  tag?: {
+                                      connectOrCreate?: {
+                                          where?: { name?: string }
+                                          create?: {
+                                              name?: string
+                                              slug?: string
+                                          }
+                                      }
+                                  }
+                              }
+                        >
+                    }
+                ).tags
 
                 if (Array.isArray(maybeTags) && maybeTags.length > 0) {
                     for (const item of maybeTags) {
-                        const tagName = typeof item === "string"
-                            ? item
-                            : item?.tag?.connectOrCreate?.create?.name
+                        const tagName =
+                            typeof item === "string"
+                                ? item
+                                : item?.tag?.connectOrCreate?.create?.name
                         if (!tagName) continue
                         const tagSlug = slugify(tagName)
 
@@ -408,19 +452,24 @@ export const kyselyAdapter = (
                                     defaultLocale: "en",
                                     name: tagName,
                                     slug: tagSlug,
-                                    updatedAt: now,
+                                    updatedAt: now
                                 })
                                 .returning(["id"]) // supported on PG; ignored on some dialects
                                 .executeTakeFirst()
 
-                            const tagId = insertedTag?.id
-                                ?? (await trx
-                                    .selectFrom("Tag")
-                                    .select(["id"])
-                                    .where("slug", "=", tagSlug)
-                                    .executeTakeFirst())?.id
+                            const tagId =
+                                insertedTag?.id ??
+                                (
+                                    await trx
+                                        .selectFrom("Tag")
+                                        .select(["id"])
+                                        .where("slug", "=", tagSlug)
+                                        .executeTakeFirst()
+                                )?.id
                             if (!tagId) {
-                                throw new Error("Failed to resolve created tag id")
+                                throw new Error(
+                                    "Failed to resolve created tag id"
+                                )
                             }
                             tag = { id: tagId, name: tagName, slug: tagSlug }
                         }
@@ -442,8 +491,11 @@ export const kyselyAdapter = (
 
         updatePost: async (slug, input) => {
             const now = new Date()
+            const nextUpdatedAt = input.updatedAt ?? now
 
-            return await db.transaction().execute(async (trx) => {
+            let finalSlug = ""
+
+            await db.transaction().execute(async (trx) => {
                 const existing = await trx
                     .selectFrom("Post")
                     .selectAll()
@@ -471,19 +523,30 @@ export const kyselyAdapter = (
                         slug: nextSlug,
                         image: input.image ?? existing.image,
                         status: nextStatus,
-                        updatedAt: now,
-                        version: (existing.version ?? 1) + 1,
+                        updatedAt: nextUpdatedAt,
+                        version: (existing.version ?? 1) + 1
                     })
                     .where("id", "=", existing.id)
                     .execute()
 
                 // Handle tags reset/create when provided
-                const tagOps = (input as unknown as {
-                    tags?: {
-                        deleteMany?: Record<string, never>
-                        create?: Array<{ tag?: { connectOrCreate?: { create?: { name?: string; slug?: string } } } }>
+                const tagOps = (
+                    input as unknown as {
+                        tags?: {
+                            deleteMany?: Record<string, never>
+                            create?: Array<{
+                                tag?: {
+                                    connectOrCreate?: {
+                                        create?: {
+                                            name?: string
+                                            slug?: string
+                                        }
+                                    }
+                                }
+                            }>
+                        }
                     }
-                }).tags
+                ).tags
 
                 if (tagOps) {
                     if (tagOps.deleteMany) {
@@ -493,14 +556,18 @@ export const kyselyAdapter = (
                             .execute()
                     }
 
-                    if (Array.isArray(tagOps.create) && tagOps.create.length > 0) {
+                    if (
+                        Array.isArray(tagOps.create) &&
+                        tagOps.create.length > 0
+                    ) {
                         for (const c of tagOps.create) {
-                            const tagName = c?.tag?.connectOrCreate?.create?.name
+                            const tagName =
+                                c?.tag?.connectOrCreate?.create?.name
                             if (!tagName) continue
                             const tagSlug = slugify(tagName)
                             let tag = await trx
                                 .selectFrom("Tag")
-                                .select(["id", "name", "slug"]) 
+                                .select(["id", "name", "slug"])
                                 .where("slug", "=", tagSlug)
                                 .executeTakeFirst()
                             if (!tag) {
@@ -510,33 +577,59 @@ export const kyselyAdapter = (
                                         defaultLocale: "en",
                                         name: tagName,
                                         slug: tagSlug,
-                                        updatedAt: now,
+                                        updatedAt: now
                                     })
                                     .returning(["id"]) // supported on PG; ignored on some dialects
                                     .executeTakeFirst()
-                                const tagId = insertedTag?.id
-                                    ?? (await trx
-                                        .selectFrom("Tag")
-                                        .select(["id"])
-                                        .where("slug", "=", tagSlug)
-                                        .executeTakeFirst())?.id
+                                const tagId =
+                                    insertedTag?.id ??
+                                    (
+                                        await trx
+                                            .selectFrom("Tag")
+                                            .select(["id"])
+                                            .where("slug", "=", tagSlug)
+                                            .executeTakeFirst()
+                                    )?.id
                                 if (!tagId) {
-                                    throw new Error("Failed to resolve created tag id")
+                                    throw new Error(
+                                        "Failed to resolve created tag id"
+                                    )
                                 }
-                                tag = { id: tagId, name: tagName, slug: tagSlug }
+                                tag = {
+                                    id: tagId,
+                                    name: tagName,
+                                    slug: tagSlug
+                                }
                             }
-                            await trx
-                                .insertInto("PostTag")
-                                .values({ postId: existing.id, tagId: tag.id })
-                                .execute()
+                            // Avoid duplicate PostTag entries
+                            const existingLink = await trx
+                                .selectFrom("PostTag")
+                                .select("postId")
+                                .where((eb) =>
+                                    eb.and([
+                                        eb("postId", "=", existing.id),
+                                        eb("tagId", "=", tag.id)
+                                    ])
+                                )
+                                .executeTakeFirst()
+                            if (!existingLink) {
+                                await trx
+                                    .insertInto("PostTag")
+                                    .values({
+                                        postId: existing.id,
+                                        tagId: tag.id
+                                    })
+                                    .execute()
+                            }
                         }
                     }
                 }
 
-                const updated = await fetchOneBySlug(nextSlug, "en")
-                if (!updated) throw new Error("Failed to update post")
-                return updated
+                finalSlug = nextSlug
             })
+            const updated = await fetchOneBySlug(finalSlug, "en")
+            if (!updated) throw new Error("Failed to update post")
+            return updated
         },
 
         deletePost: async (slug) => {
@@ -556,10 +649,7 @@ export const kyselyAdapter = (
                     .deleteFrom("PostI18n")
                     .where("postId", "=", p.id)
                     .execute()
-                await trx
-                    .deleteFrom("Post")
-                    .where("id", "=", p.id)
-                    .execute()
+                await trx.deleteFrom("Post").where("id", "=", p.id).execute()
             })
         }
     })

@@ -7,7 +7,7 @@ import { usePostSearch, usePosts as usePosts2 } from "../index"
 
 describe("Query key consistency", () => {
     test("usePosts and usePostSearch use compatible query keys", async () => {
-        const provider = createDemoMemoryDBProvider2()
+        const provider = await createDemoMemoryDBProvider2()
         // Create a fresh query client to control the test environment
         const queryClient = new QueryClient({
             defaultOptions: { queries: { retry: false } }
@@ -71,8 +71,8 @@ describe("Query key consistency", () => {
         expect(remountResult.current.posts).toHaveLength(10)
     })
 
-    test("query key generation is consistent", () => {
-        const provider = createDemoMemoryDBProvider2()
+    test("query key generation is consistent", async () => {
+        const provider = await createDemoMemoryDBProvider2()
         const queries = createBlogQueries2(provider)
 
         // Test all combinations of query key generation

@@ -1,9 +1,9 @@
 import type {
     BlogDataProvider,
+    BlogDataProviderConfig,
     PostCreateExtendedInput,
     PostUpdateExtendedInput
 } from "../types"
-import type { StorageDataProviderConfig } from "./types"
 
 // Very loose typing on purpose: consumer's Drizzle client is external to this lib
 // biome-ignore lint/suspicious/noEmptyInterface: Library consumer provides Drizzle DB client
@@ -12,7 +12,7 @@ interface DrizzleDb {}
 // biome-ignore lint/suspicious/noExplicitAny: external type
 type AnyDb = any
 
-export interface DrizzleProviderConfig extends StorageDataProviderConfig {
+export interface DrizzleProviderConfig extends BlogDataProviderConfig {
     drizzle: DrizzleDb
     // Optional: consumer may pass their `sql` tag from drizzle-orm
     // biome-ignore lint/suspicious/noExplicitAny: external type
@@ -127,6 +127,7 @@ export function createDrizzleProvider(
         const updatedAt = coerceDate(row.updatedAt)
 
         return {
+            authorId: (row.authorId as string | null) ?? undefined,
             id: row.id as string,
             slug: row.slug as string,
             title: row.title as string,
@@ -171,7 +172,9 @@ export function createDrizzleProvider(
             if (tag) {
                 // Join tag tables and filter by localized slug first then base slug/name
                 whereParts.push(SQLTag`(
-                    ti_match.slug = ${tag} or t.slug = ${tag} or t.name = ${tag}
+                    lower(coalesce(ti_match.slug, '')) = lower(${tag}) or
+                    lower(t.slug) = lower(${tag}) or
+                    lower(t.name) = lower(${tag})
                 )`)
             }
             if (lowerQuery.length > 0) {
@@ -257,6 +260,7 @@ export function createDrizzleProvider(
                     const createdAt = coerceDate(r.createdAt)
                     const updatedAt = coerceDate(r.updatedAt)
                     return {
+                        authorId: (r.authorId as string | null) ?? undefined,
                         id: r.id as string,
                         slug: r.slug as string,
                         title: r.title as string,
@@ -297,12 +301,14 @@ export function createDrizzleProvider(
             // Some drizzle drivers expose .transaction(cb), others .transaction(async (tx) => {})
             // Use a generic approach: prefer function form with callback
             await drizzle.transaction(async (tx: AnyDb) => {
+                const createdAt = input.createdAt ?? null
+                const updatedAt = input.updatedAt ?? null
                 // Insert post
                 const insertRes = await tx.execute(SQLTag`
                     insert into "Post" (
-                        "authorId", "defaultLocale", title, slug, excerpt, content, image, status, "updatedAt"
+                        "authorId", "defaultLocale", title, slug, excerpt, content, image, status, "createdAt", "updatedAt"
                     ) values (
-                        ${input.authorId ?? null}, ${"en"}, ${input.title}, ${baseSlug}, ${input.excerpt ?? ""}, ${input.content}, ${input.image ?? null}, ${input.published ? "PUBLISHED" : "DRAFT"}, now()
+                        ${input.authorId ?? null}, ${"en"}, ${input.title}, ${baseSlug}, ${input.excerpt ?? ""}, ${input.content}, ${input.image ?? null}, ${input.published ? "PUBLISHED" : "DRAFT"}, ${createdAt ? SQLTag`${createdAt}` : SQLTag`now()`}, ${updatedAt ? SQLTag`${updatedAt}` : SQLTag`now()`}
                     ) returning id
                 `)
                 const inserted = firstRowFromExecute<{ id: string }>(insertRes)
@@ -374,6 +380,7 @@ export function createDrizzleProvider(
 
                         await tx.execute(SQLTag`
                             insert into "PostTag" ("postId", "tagId") values (${postId}, ${tagRow.id})
+                            on conflict ("postId", "tagId") do nothing
                         `)
                     }
                 }
@@ -407,6 +414,7 @@ export function createDrizzleProvider(
                             : "DRAFT"
                         : existing.status
 
+                const updatedAt = input.updatedAt ?? null
                 await tx.execute(SQLTag`
                     update "Post" set
                       title = ${input.title},
@@ -415,7 +423,7 @@ export function createDrizzleProvider(
                       slug = ${computedNextSlug},
                       image = ${input.image ?? existing.image},
                       status = ${nextStatus},
-                      "updatedAt" = now(),
+                      "updatedAt" = ${updatedAt ? SQLTag`${updatedAt}` : SQLTag`now()`},
                       version = coalesce(version, 1) + 1
                     where id = ${existing.id}
                 `)
@@ -486,6 +494,7 @@ export function createDrizzleProvider(
 
                             await tx.execute(SQLTag`
                                 insert into "PostTag" ("postId", "tagId") values (${existing.id}, ${tagRow.id})
+                                on conflict ("postId", "tagId") do nothing
                             `)
                         }
                     }
