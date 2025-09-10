@@ -34,4 +34,7 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+      - name: Stop Docker Containers
+        run: docker compose down
+
 

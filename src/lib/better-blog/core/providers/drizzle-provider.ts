@@ -127,6 +127,7 @@ export function createDrizzleProvider(
         const updatedAt = coerceDate(row.updatedAt)
 
         return {
+            authorId: (row.authorId as string | null) ?? undefined,
             id: row.id as string,
             slug: row.slug as string,
             title: row.title as string,
@@ -171,7 +172,9 @@ export function createDrizzleProvider(
             if (tag) {
                 // Join tag tables and filter by localized slug first then base slug/name
                 whereParts.push(SQLTag`(
-                    ti_match.slug = ${tag} or t.slug = ${tag} or t.name = ${tag}
+                    lower(coalesce(ti_match.slug, '')) = lower(${tag}) or
+                    lower(t.slug) = lower(${tag}) or
+                    lower(t.name) = lower(${tag})
                 )`)
             }
             if (lowerQuery.length > 0) {
@@ -257,6 +260,7 @@ export function createDrizzleProvider(
                     const createdAt = coerceDate(r.createdAt)
                     const updatedAt = coerceDate(r.updatedAt)
                     return {
+                        authorId: (r.authorId as string | null) ?? undefined,
                         id: r.id as string,
                         slug: r.slug as string,
                         title: r.title as string,
@@ -376,6 +380,7 @@ export function createDrizzleProvider(
 
                         await tx.execute(SQLTag`
                             insert into "PostTag" ("postId", "tagId") values (${postId}, ${tagRow.id})
+                            on conflict ("postId", "tagId") do nothing
                         `)
                     }
                 }
@@ -489,6 +494,7 @@ export function createDrizzleProvider(
 
                             await tx.execute(SQLTag`
                                 insert into "PostTag" ("postId", "tagId") values (${existing.id}, ${tagRow.id})
+                                on conflict ("postId", "tagId") do nothing
                             `)
                         }
                     }

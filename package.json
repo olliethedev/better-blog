@@ -8,6 +8,7 @@
         "url": "https://github.com/olliethedev/better-blog"
     },
     "scripts": {
+        "pretest": "pnpm prisma:test:generate",
         "build": "tsup --clean --dts  && cp src/style.css dist/style.css",
         "dev": "tsup --watch --onSuccess \"yalc publish --push\"",
         "prepublishOnly": "rm -rf dist && turbo build",
@@ -123,9 +124,11 @@
         "@types/pg": "^8.11.10",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
+        "drizzle-orm": "^0.36.0",
         "esbuild-plugin-preserve-directives": "^0.0.11",
         "jest": "^30.0.5",
         "jest-environment-jsdom": "^30.0.5",
+        "kysely": "^0.28.5",
         "pg": "^8.12.0",
         "prisma": "^5.22.0",
         "tailwindcss-animate": "^1.0.7",
