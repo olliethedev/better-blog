@@ -12,9 +12,9 @@
         "build": "tsup --clean --dts  && cp src/style.css dist/style.css",
         "dev": "tsup --watch --onSuccess \"yalc publish --push\"",
         "prepublishOnly": "rm -rf dist && turbo build",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:coverage": "jest --coverage",
+        "test": "jest --runInBand",
+        "test:watch": "jest --watch --runInBand",
+        "test:coverage": "jest --coverage --runInBand",
         "prisma:test:generate": "prisma generate --schema src/lib/better-blog/core/providers/__tests__/prisma/schema.prisma",
         "prisma:test:push": "mkdir -p .db && prisma db push --force-reset --schema src/lib/better-blog/core/providers/__tests__/prisma/schema.prisma"
     },

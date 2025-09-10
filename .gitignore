@@ -15,3 +15,5 @@
 /.tsup
 /.vscode
 .vercel
+
+/.db

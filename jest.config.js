@@ -49,5 +49,6 @@ export default {
     ],
     coverageDirectory: "coverage",
     coverageReporters: ["text", "lcov", "html"],
+    maxWorkers: 1,
     testTimeout: 10000
 }
