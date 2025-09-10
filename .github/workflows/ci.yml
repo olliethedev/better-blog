@@ -25,6 +25,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Start Docker Containers
+        run: |
+          docker compose up -d
+          # Wait for services to be ready
+          sleep 20
+
       - name: Run tests
         run: pnpm test
 
