@@ -16,4 +16,4 @@
 /.vscode
 .vercel
 
-/.db
+dev.db
