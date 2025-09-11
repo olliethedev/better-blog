@@ -20,6 +20,7 @@
     "drizzle",
     "---[Wrench]Advanced---",
     "sitemap",
-    "overrides"
+    "overrides",
+    "api-reference"
   ]
 }

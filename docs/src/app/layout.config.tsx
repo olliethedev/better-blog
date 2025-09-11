@@ -1,4 +1,5 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
+import { Twitter } from "lucide-react";
 import { FaBook } from "react-icons/fa";
 import { IoBookSharp } from "react-icons/io5";
 
@@ -19,4 +20,13 @@ export const baseOptions: BaseLayoutProps = {
     url:"https://www.better-blog.com"
   },
   // see https://fumadocs.dev/docs/ui/navigation/links
+  links: [
+    {
+      url: "https://x.com/olliethedev",
+      text: "Twitter",
+      type: "icon",
+      icon: <Twitter />,
+      external: true
+  },
+  ]
 };

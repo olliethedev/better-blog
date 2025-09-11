@@ -7,7 +7,11 @@ import {
 } from "fumadocs-ui/page";
 import { notFound } from "next/navigation";
 import { createRelativeLink } from "fumadocs-ui/mdx";
+import { createGenerator } from "fumadocs-typescript"
+import { AutoTypeTable } from "fumadocs-typescript/ui"
 import { getMDXComponents } from "@/mdx-components";
+
+const generator = createGenerator()
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -27,6 +31,9 @@ export default async function Page(props: {
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths
             a: createRelativeLink(source, page),
+            AutoTypeTable: (props) => (
+              <AutoTypeTable {...props} generator={generator} />
+          ),
           })}
         />
       </DocsBody>

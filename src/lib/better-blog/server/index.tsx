@@ -10,14 +10,36 @@ import type { BlogDataProvider, RouteMatch } from "../core/types"
 import { generatePostMetadata } from "../core/utils"
 import { prefetchBlogData } from "./prefetch"
 
+/**
+ * The server adapter returned by {@link createServerAdapter} for SSR/SSG frameworks.
+ */
 export interface BetterBlogServerAdapter {
+    /**
+     * Return the list of all dynamic route params for static generation.
+     * Useful for frameworks like Next.js `generateStaticParams`.
+     */
     generateStaticParams: () => Array<{ all: string[] }>
+    /**
+     * Generate page metadata for the given path. Will attempt to fetch post data
+     * for post routes to produce rich metadata, and otherwise falls back to
+     * route-based defaults.
+     */
     generateMetadata: (
         path?: string
     ) => Promise<{ title: string; description?: string }>
+    /**
+     * Server entry component that prefetches data and renders the routed page
+     * within a React Query hydration boundary.
+     */
     Entry: React.ComponentType<{
+        /** Optional path string like "posts/my-post" (no leading slash). */
         path?: string
+        /** React Query client instance used for prefetch/dehydrate. */
         queryClient: QueryClient
+        /**
+         * Optional overrides for server-side loading components rendered while
+         * the page is being prepared.
+         */
         loadingComponentOverrides?: Pick<
             PageComponentOverrides,
             | "HomeLoadingComponent"
@@ -30,6 +52,16 @@ export interface BetterBlogServerAdapter {
     }>
 }
 
+/**
+ * Create a server adapter to integrate Better Blog with SSR/SSG frameworks.
+ *
+ * It provides helpers to generate static params, produce metadata, and a server
+ * entry that prefetches data and hydrates state for the client.
+ *
+ * @param serverConfig Data provider used on the server to read blog data
+ * @param queryClient React Query client instance for prefetching and dehydrating
+ * @returns A {@link BetterBlogServerAdapter}
+ */
 export function createServerAdapter(
     serverConfig: BlogDataProvider,
     queryClient: QueryClient

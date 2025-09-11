@@ -1,5 +1,5 @@
 // Specialized hooks for better-blog data operations
-"use client";
+"use client"
 
 import {
     useInfiniteQuery,
@@ -91,7 +91,7 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
     const { clientConfig } = useBetterBlogContext()
     const { tag, limit = 10, enabled = true, query } = options
     const queries = createBlogQueries(clientConfig)
-    
+
     const queryParams = {
         tag,
         limit,
@@ -262,7 +262,7 @@ export function usePostSearch({
     const shouldSearch = enabled && (query?.trim().length ?? 0) > 0
 
     const lastResultsRef = useRef<Post[]>([])
-    
+
     // Only enable the query when there is an actual search term
     // This prevents empty searches from using the base posts query
     const { posts, isLoading, error, refetch } = usePosts({
@@ -270,7 +270,7 @@ export function usePostSearch({
         limit,
         enabled: shouldSearch && debouncedQuery.trim() !== ""
     })
-    
+
     // If search is disabled or query is empty, always return empty results
     const effectivePosts = shouldSearch ? posts : []
 
@@ -383,3 +383,11 @@ export function useDeletePost() {
         }
     })
 }
+
+// ==========================================================================
+// PUBLIC RESULT TYPES FOR MUTATION HOOKS
+// ==========================================================================
+
+export type UseCreatePostResult = ReturnType<typeof useCreatePost>
+export type UseUpdatePostResult = ReturnType<typeof useUpdatePost>
+export type UseDeletePostResult = ReturnType<typeof useDeletePost>

@@ -1,0 +1,12 @@
+{
+    "title": "API Reference",
+    "icon": "Braces",
+    "pages": [
+        "hooks",
+        "blog-data-provider",
+        "better-blog-context-provider",
+        "create-server-adapter",
+        "api"
+    ],
+    "defaultOpen": false
+}

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { baseOptions } from "@/app/layout.config";
 import { source } from "@/lib/source";
 import { LargeSearchToggle } from "fumadocs-ui/components/layout/search-toggle";
+import { CustomSidebarFolder } from "@/components/custom-sidebar-folder";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -47,7 +48,11 @@ export default function Layout({ children }: { children: ReactNode }) {
             };
           },
         },
+        components:{
+          Folder: CustomSidebarFolder,
+        }
       }}
+      
     >
       {children}
     </DocsLayout>
