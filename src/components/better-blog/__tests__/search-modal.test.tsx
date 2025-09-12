@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import type React from "react"
-import { BetterBlogContextProvider } from "../../../lib/better-blog/context/better-blog-context"
+import { BlogProvider } from "../../../lib/better-blog/context/better-blog-context"
 import type {
     BlogDataProvider,
     Post
@@ -87,14 +87,14 @@ const createTestWrapper = (
 
     const TestWrapper = ({ children }: { children: React.ReactNode }) => (
         <QueryClientProvider client={client}>
-            <BetterBlogContextProvider
-                clientConfig={provider}
+            <BlogProvider
+                dataProvider={provider}
                 uploadImage={async () => ""}
                 basePath="/blog"
                 navigate={navigate || jest.fn()}
             >
                 {children}
-            </BetterBlogContextProvider>
+            </BlogProvider>
         </QueryClientProvider>
     )
     return TestWrapper

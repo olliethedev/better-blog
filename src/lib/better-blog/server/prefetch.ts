@@ -2,17 +2,18 @@
 // NO "use client" directive - can be called from server components
 
 import type { QueryClient } from '@tanstack/react-query';
-import { createBlogQueries } from "../core/queries"
+import { createBlogQueryKeys } from "../core/queries"
 import type { BlogDataProvider, RouteMatch } from "../core/types"
 
-export async function prefetchBlogData(
-    routeMatch: RouteMatch,
-    serverConfig: BlogDataProvider,
+export async function prefetchBlogData(options: {
+    match: RouteMatch
+    provider: BlogDataProvider
     queryClient: QueryClient
-): Promise<void> {
-    const queries = createBlogQueries(serverConfig)
+}): Promise<void> {
+    const { match, provider, queryClient } = options
+    const queries = createBlogQueryKeys(provider)
 
-    switch (routeMatch.type) {
+    switch (match.type) {
         case "home": {
             const base = queries.posts.list({ limit: 10, published: true })
             await queryClient.prefetchInfiniteQuery({
@@ -23,7 +24,7 @@ export async function prefetchBlogData(
             return
         }
         case "tag": {
-            const tag = routeMatch.params?.tag
+            const tag = match.params?.tag
             if (!tag) return
             const base = queries.posts.list({ tag, limit: 10 })
             await queryClient.prefetchInfiniteQuery({
@@ -35,7 +36,7 @@ export async function prefetchBlogData(
         }
         case "post":
         case "edit": {
-            const slug = routeMatch.params?.slug
+            const slug = match.params?.slug
             if (!slug) return
             const base = queries.posts.detail(slug)
             await queryClient.prefetchQuery({

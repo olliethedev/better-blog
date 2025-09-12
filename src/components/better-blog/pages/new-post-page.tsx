@@ -1,12 +1,12 @@
 "use client";
 
-import { useBetterBlogContext } from "../../../lib/better-blog/context/better-blog-context"
+import { useBlogContext } from "../../../lib/better-blog/context/better-blog-context"
 import { AddPostForm } from "../forms/post-forms"
 import { PageHeader } from "../page-header"
 import { PageWrapper } from "./page-wrapper"
 
 export function NewPostPageComponent() {
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
     return (
         <PageWrapper className="gap-6">
             <PageHeader

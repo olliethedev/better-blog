@@ -2,7 +2,7 @@ import { QueryClient } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
 import { createWrapper } from "../../../../test/utils"
 import { createDemoMemoryDBProvider } from "../../../better-blog/core/providers/dummy-memory-db-provider"
-import { createBlogQueries } from "../../core/queries"
+import { createBlogQueryKeys } from "../../core/queries"
 import { usePostSearch, usePosts } from "../index"
 
 describe("usePosts", () => {
@@ -60,7 +60,7 @@ describe("usePosts", () => {
 
     test("generates consistent query keys", async () => {
         const provider = await createDemoMemoryDBProvider()
-        const queries = createBlogQueries(provider)
+        const queries = createBlogQueryKeys(provider)
 
         // Test various scenarios to ensure query keys are consistent
         const noQueryKey = queries.posts.list({ limit: 10 }).queryKey

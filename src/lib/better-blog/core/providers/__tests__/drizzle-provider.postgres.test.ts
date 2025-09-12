@@ -52,7 +52,11 @@ beforeAll(async () => {
 
     // Initialize a Drizzle client on the same Pool and build the provider
     const drizzleDb = drizzleNodePostgres(pool)
-    provider = createDrizzleProvider({ drizzle: drizzleDb as unknown as object, sql: drizzleSql, getAuthor })
+    provider = await createDrizzleProvider({
+        drizzle: drizzleDb as unknown as object,
+        sql: drizzleSql,
+        getAuthor
+    })
 }, 30000)
 
 afterAll(async () => {

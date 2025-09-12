@@ -10,7 +10,7 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import {
-    useBetterBlogContext,
+    useBlogContext,
     useBlogPath,
     useComponents
 } from "@/lib/better-blog/context/better-blog-context"
@@ -25,7 +25,7 @@ export function PostCard({
     post: Post
 }) {
     const { Link, Image } = useComponents()
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
     const blogPath = useBlogPath
     const publishedDate = post.publishedAt || post.createdAt
 

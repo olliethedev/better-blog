@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE } from "@/lib/constants"
 import type {
     BlogDataProvider,
     BlogDataProviderConfig,
@@ -12,7 +13,7 @@ interface DrizzleDb {}
 // biome-ignore lint/suspicious/noExplicitAny: external type
 type AnyDb = any
 
-export interface DrizzleProviderConfig extends BlogDataProviderConfig {
+export interface DrizzleProviderOptions extends BlogDataProviderConfig {
     drizzle: DrizzleDb
     // Optional: consumer may pass their `sql` tag from drizzle-orm
     // biome-ignore lint/suspicious/noExplicitAny: external type
@@ -63,18 +64,18 @@ function coerceDate(value: unknown): Date {
     return Number.isNaN(d.getTime()) ? new Date() : d
 }
 
-export function createDrizzleProvider(
-    config: DrizzleProviderConfig
-): BlogDataProvider {
+export async function createDrizzleProvider(
+    options: DrizzleProviderOptions
+): Promise<BlogDataProvider> {
     const {
         drizzle: drizzleClient,
-        defaultLocale: providerDefaultLocale = "en",
+        defaultLocale: providerDefaultLocale = DEFAULT_LOCALE,
         getAuthor
-    } = config
+    } = options
     const drizzle = drizzleClient as unknown as AnyDb
     // Prefer consumer-provided drizzle `sql` 
     // biome-ignore lint/suspicious/noExplicitAny: external type
-    const SQLTag = (config as any).sql as any
+    const SQLTag = (options as any).sql as any
 
     async function fetchOneBySlug(theSlug: string, locale: string) {
         // Base post with locale-aware fields via PostI18n
@@ -308,7 +309,7 @@ export function createDrizzleProvider(
                     insert into "Post" (
                         "authorId", "defaultLocale", title, slug, excerpt, content, image, status, "createdAt", "updatedAt"
                     ) values (
-                        ${input.authorId ?? null}, ${"en"}, ${input.title}, ${baseSlug}, ${input.excerpt ?? ""}, ${input.content}, ${input.image ?? null}, ${input.published ? "PUBLISHED" : "DRAFT"}, ${createdAt ? SQLTag`${createdAt}` : SQLTag`now()`}, ${updatedAt ? SQLTag`${updatedAt}` : SQLTag`now()`}
+                        ${input.authorId ?? null}, ${DEFAULT_LOCALE}, ${input.title}, ${baseSlug}, ${input.excerpt ?? ""}, ${input.content}, ${input.image ?? null}, ${input.published ? "PUBLISHED" : "DRAFT"}, ${createdAt ? SQLTag`${createdAt}` : SQLTag`now()`}, ${updatedAt ? SQLTag`${updatedAt}` : SQLTag`now()`}
                     ) returning id
                 `)
                 const inserted = firstRowFromExecute<{ id: string }>(insertRes)
@@ -361,7 +362,7 @@ export function createDrizzleProvider(
                         if (!tagRow) {
                             const insTagRes = await tx.execute(SQLTag`
                                 insert into "Tag" ("defaultLocale", name, slug, "updatedAt")
-                                values (${"en"}, ${tagName}, ${tagSlug}, now())
+                                values (${DEFAULT_LOCALE}, ${tagName}, ${tagSlug}, now())
                                 returning id
                             `)
                             tagRow = firstRowFromExecute<{ id: string }>(insTagRes)
@@ -386,7 +387,7 @@ export function createDrizzleProvider(
                 }
             })
 
-            const post = await fetchOneBySlug(baseSlug, "en")
+            const post = await fetchOneBySlug(baseSlug, DEFAULT_LOCALE)
             if (!post) throw new Error("Failed to create post")
             return post
         },
@@ -475,7 +476,7 @@ export function createDrizzleProvider(
                             if (!tagRow) {
                                 const insTagRes = await tx.execute(SQLTag`
                                     insert into "Tag" ("defaultLocale", name, slug, "updatedAt")
-                                    values (${"en"}, ${tagName}, ${tagSlug}, now())
+                                    values (${DEFAULT_LOCALE}, ${tagName}, ${tagSlug}, now())
                                     returning id
                                 `)
                                 tagRow = firstRowFromExecute<{ id: string }>(insTagRes)
@@ -503,7 +504,7 @@ export function createDrizzleProvider(
                 return computedNextSlug
             })
 
-            const updated = await fetchOneBySlug(nextSlug, "en")
+            const updated = await fetchOneBySlug(nextSlug, DEFAULT_LOCALE)
             if (!updated) throw new Error("Failed to update post")
             return updated
         },

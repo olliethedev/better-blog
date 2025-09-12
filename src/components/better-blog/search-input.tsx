@@ -3,7 +3,7 @@
 import * as React from "react"
 import {
     buildPath,
-    useBetterBlogContext
+    useBlogContext
 } from "../../lib/better-blog/context/better-blog-context"
 import { usePostSearch } from "../../lib/better-blog/hooks"
 import { stripHtml, stripMarkdown } from "../../lib/format-utils"
@@ -66,7 +66,7 @@ export function SearchInput({
     buttonText,
     emptyMessage
 }: SearchInputProps) {
-    const { navigate, basePath } = useBetterBlogContext()
+    const { navigate, basePath } = useBlogContext()
     const [currentQuery, setCurrentQuery] = React.useState("")
 
     const { data: searchResults = [], isLoading } = usePostSearch({

@@ -21,8 +21,8 @@ type Sitemap = Array<{
 }>
 
 await createBlogSitemap({
-  data,            // BlogDataProvider
-  url: 'https://example.com',
+  provider,
+  baseURL: 'https://example.com',
   basePath: '/posts' // optional, defaults to '/posts'
 })
 ```
@@ -33,7 +33,7 @@ Create `app/sitemap.ts`:
 
 ```ts
 import type { MetadataRoute } from 'next'
-import { blogConfig } from '@/lib/blog-data-provider'
+import { dataProvider } from '@/lib/blog-data-provider'
 import { createBlogSitemap } from 'better-blog/server/sitemap'
 
 const BASE_URL = 'https://www.better-blog.com'
@@ -43,8 +43,8 @@ export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const sitemap = await createBlogSitemap({
-    data: blogConfig,
-    url: BASE_URL,
+    provider: dataProvider,
+    baseURL: BASE_URL,
     basePath: '/blog',
   })
   return [

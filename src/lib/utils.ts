@@ -74,3 +74,36 @@ export function throttle<Args extends unknown[]>(
         flush: () => void
     }
 }
+
+export function normalizeBasePath(path: string): string {
+    const withLeading = path.startsWith("/") ? path : `/${path}`
+    return withLeading !== "/" && withLeading.endsWith("/")
+        ? withLeading.slice(0, -1)
+        : withLeading
+}
+
+export function normalizeBaseURL(url: string): string {
+    let normalizedURL = url
+    // if does not start with http:// or https://, add http://
+    if (
+        !normalizedURL.startsWith("http://") &&
+        !normalizedURL.startsWith("https://")
+    ) {
+        normalizedURL = `http://${url}`
+    }
+    // remove trailing slash if it exists
+    if (normalizedURL.endsWith("/")) {
+        normalizedURL = normalizedURL.slice(0, -1)
+    }
+    return normalizedURL
+}
+
+export function joinPaths(...segments: string[]): string {
+    const cleaned = segments
+        .filter((s) => s != null && s !== "")
+        .map((s, i) => (i === 0 ? s.replace(/\/$/, "") : s.replace(/^\//, "")))
+    const joined = cleaned.join("/")
+    return joined.startsWith("http")
+        ? joined
+        : `/${joined}`.replace(/\/+/g, "/")
+}

@@ -2,14 +2,14 @@ import type { BlogDataProvider, BlogDataProviderConfig } from "../../types"
 import { type SQLDatabaseOptions, createKyselyAdapter } from "./dialect"
 import { kyselyAdapter } from "./kysely-adapter"
 
-export type SQLProviderConfig = BlogDataProviderConfig & {
+export type SQLProviderOptions = BlogDataProviderConfig & {
     database: SQLDatabaseOptions
 }
 
 export async function createSQLProvider(
-    config: SQLProviderConfig
+    options: SQLProviderOptions
 ): Promise<BlogDataProvider> {
-    const { database, ...rest } = config
+    const { database, ...rest } = options
     if (!database) {
         throw new Error("Database is required")
     }

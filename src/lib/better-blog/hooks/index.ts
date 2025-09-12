@@ -10,8 +10,8 @@ import {
 import type { InfiniteData } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
 import { useDebounce } from "../../../hooks/use-debounce"
-import { useBetterBlogContext } from "../context/better-blog-context"
-import { createBlogQueries } from "../core/queries"
+import { useBlogContext } from "../context/better-blog-context"
+import { createBlogQueryKeys } from "../core/queries"
 import type { Post, Tag } from "../core/types"
 import type {
     PostCreateExtendedInput,
@@ -88,9 +88,9 @@ export interface UseDraftsResult {
  * Hook for fetching paginated posts with load more functionality
  */
 export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
-    const { clientConfig } = useBetterBlogContext()
+    const { dataProvider } = useBlogContext()
     const { tag, limit = 10, enabled = true, query } = options
-    const queries = createBlogQueries(clientConfig)
+    const queries = createBlogQueryKeys(dataProvider)
 
     const queryParams = {
         tag,
@@ -116,7 +116,7 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
             if (posts.length < limit) return undefined
             return allPages.length * limit
         },
-        enabled: enabled && !!clientConfig,
+        enabled: enabled && !!dataProvider,
         retry: false,
         refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,
@@ -142,8 +142,8 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
  * Hook for fetching a single post by slug
  */
 export function usePost(slug?: string): UsePostResult {
-    const { clientConfig } = useBetterBlogContext()
-    const queries = createBlogQueries(clientConfig)
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
 
     const basePost = queries.posts.detail(slug ?? "")
     const { data, isLoading, error, refetch } = useQuery<
@@ -153,7 +153,7 @@ export function usePost(slug?: string): UsePostResult {
         typeof basePost.queryKey
     >({
         ...basePost,
-        enabled: !!clientConfig && !!slug,
+        enabled: !!dataProvider && !!slug,
         retry: false,
         refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,
@@ -179,13 +179,13 @@ export function useTagPosts(tag?: string): UsePostsResult {
  * Hook for fetching all unique tags across posts
  */
 export function useTags(): UseTagsResult {
-    const { clientConfig } = useBetterBlogContext()
-    const queries = createBlogQueries(clientConfig)
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
 
     const baseTags = queries.tags.list
     const { data, isLoading, error, refetch } = useQuery({
         ...baseTags,
-        enabled: !!clientConfig,
+        enabled: !!dataProvider,
         retry: false,
         refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,
@@ -204,8 +204,8 @@ export function useTags(): UseTagsResult {
  * Hook for fetching draft posts with pagination
  */
 export function useDrafts(): UseDraftsResult {
-    const { clientConfig } = useBetterBlogContext()
-    const queries = createBlogQueries(clientConfig)
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
 
     const baseDrafts = queries.drafts.list({ limit: 10 })
 
@@ -225,7 +225,7 @@ export function useDrafts(): UseDraftsResult {
             if (posts.length < 10) return undefined
             return allPages.length * 10
         },
-        enabled: !!clientConfig,
+        enabled: !!dataProvider,
         retry: false,
         refetchOnWindowFocus: false,
         staleTime: 1000 * 60 * 5,
@@ -311,15 +311,15 @@ export function usePostSearch({
  */
 export function useCreatePost() {
     const queryClient = useQueryClient()
-    const { clientConfig } = useBetterBlogContext()
-    const queries = createBlogQueries(clientConfig)
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
 
     return useMutation({
         mutationFn: async (postData: PostCreateExtendedInput) => {
-            if (!clientConfig?.createPost) {
+            if (!dataProvider?.createPost) {
                 throw new Error("Create post not supported by provider")
             }
-            return await clientConfig.createPost(postData)
+            return await dataProvider.createPost(postData)
         },
         onSuccess: () => {
             // Invalidate relevant queries
@@ -336,18 +336,18 @@ export function useCreatePost() {
  */
 export function useUpdatePost() {
     const queryClient = useQueryClient()
-    const { clientConfig } = useBetterBlogContext()
-    const queries = createBlogQueries(clientConfig)
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
 
     return useMutation({
         mutationFn: async ({
             slug,
             data
         }: { slug: string; data: PostUpdateExtendedInput }) => {
-            if (!clientConfig?.updatePost) {
+            if (!dataProvider?.updatePost) {
                 throw new Error("Update post not supported by provider")
             }
-            return await clientConfig.updatePost(slug, data)
+            return await dataProvider.updatePost(slug, data)
         },
         onSuccess: (_, { slug }) => {
             // Invalidate relevant queries
@@ -364,15 +364,15 @@ export function useUpdatePost() {
  */
 export function useDeletePost() {
     const queryClient = useQueryClient()
-    const { clientConfig } = useBetterBlogContext()
-    const queries = createBlogQueries(clientConfig)
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
 
     return useMutation({
         mutationFn: async (slug: string) => {
-            if (!clientConfig?.deletePost) {
+            if (!dataProvider?.deletePost) {
                 throw new Error("Delete post not supported by provider")
             }
-            await clientConfig.deletePost(slug)
+            await dataProvider.deletePost(slug)
         },
         onSuccess: () => {
             // Invalidate all post-related queries

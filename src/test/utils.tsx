@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import type React from "react"
-import { BetterBlogContextProvider } from "../lib/better-blog/context/better-blog-context"
+import { BlogProvider } from "../lib/better-blog/context/better-blog-context"
 import type { BlogDataProvider } from "../lib/better-blog/core/types"
 
 export function createWrapper(
@@ -16,12 +16,12 @@ export function createWrapper(
     return function Wrapper({ children }: { children: React.ReactNode }) {
         return (
             <QueryClientProvider client={queryClient}>
-                <BetterBlogContextProvider
-                    clientConfig={provider}
+                <BlogProvider
+                    dataProvider={provider}
                     uploadImage={async () => ""}
                 >
                     {children}
-                </BetterBlogContextProvider>
+                </BlogProvider>
             </QueryClientProvider>
         )
     }
