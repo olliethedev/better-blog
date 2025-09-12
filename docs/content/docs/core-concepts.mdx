@@ -39,8 +39,8 @@ export interface BlogDataProvider {
   - zod schemas
   - types
 - **Server adapter** (`better-blog/server`)
-  - `createBlogServerAdapter(serverConfig: BlogDataProvider, queryClient: QueryClient)` → `{ generateStaticParams, generateMetadata, BlogServerRouter }`
-  - `createBlogApiRouter(serverConfig: BlogDataProvider, queryClient: QueryClient)` → `{ router }`
+  - `createBlogServerAdapter({ provider: BlogDataProvider, queryClient: QueryClient })` → `{ generateStaticParams, generateMetadata, BlogServerRouter }`
+  - `createBlogApiRouter({ provider: BlogDataProvider, basePath?: string, openapi?: ... })` → `{ router }`
 - **Client** (`better-blog/client`)
   - `BlogProvider`
   - Hooks: `usePosts`, `useCreatePost`, etc...

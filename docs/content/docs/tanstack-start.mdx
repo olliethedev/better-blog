@@ -22,10 +22,10 @@ const serverBlogConfig: BlogDataProvider = {
 const queryClient = getOrCreateQueryClient();
 
 // Create the server adapter
-const serverAdapter = createBlogServerAdapter(
-  serverBlogConfig,
-  queryClient
-);
+const serverAdapter = createBlogServerAdapter({
+  provider: serverBlogConfig,
+  queryClient,
+});
 
 export const Route = createFileRoute("/posts/$")({
     component: RouteComponent

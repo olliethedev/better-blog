@@ -111,14 +111,14 @@ We can also add multiple annotations like this.[^2]
 `
 
 export function commonProviderTests(
-    createProvider: () => BlogDataProvider
+    createProvider: () => BlogDataProvider | Promise<BlogDataProvider>
 ): void {
     describe("Common BlogDataProvider tests", () => {
         let provider: Required<BlogDataProvider>
         let testPosts: Post[] = []
 
-        beforeAll(() => {
-            provider = createProvider() as Required<BlogDataProvider>
+        beforeAll(async () => {
+            provider = (await createProvider()) as Required<BlogDataProvider>
 
             const tagNames = [
                 "Intro",
@@ -281,13 +281,17 @@ export function commonProviderTests(
             expect(bySlug.length).toBe(1)
             expect(bySlug[0]?.slug).toBe(target.slug)
 
-            const byNameCase = await provider.getAllPosts({ tag: tagName.toUpperCase() })
+            const byNameCase = await provider.getAllPosts({
+                tag: tagName.toUpperCase()
+            })
             expect(byNameCase.length).toBe(1)
             expect(byNameCase[0]?.slug).toBe(target.slug)
         })
 
         it("should filter by query across title/excerpt/content (case-insensitive)", async () => {
-            const markdownQuery = await provider.getAllPosts({ query: "markdown" })
+            const markdownQuery = await provider.getAllPosts({
+                query: "markdown"
+            })
             expect(markdownQuery.length).toBe(1)
             expect(markdownQuery[0]?.slug).toBe(testPosts[0].slug)
 
@@ -326,13 +330,20 @@ export function commonProviderTests(
 
             const firstFive = await provider.getAllPosts({ limit: 5 })
             expect(firstFive.length).toBe(5)
-            expect(firstFive.map((p) => p.slug)).toEqual(expectedOrder.slice(0, 5))
+            expect(firstFive.map((p) => p.slug)).toEqual(
+                expectedOrder.slice(0, 5)
+            )
 
             const nextFive = await provider.getAllPosts({ offset: 5, limit: 5 })
             expect(nextFive.length).toBe(5)
-            expect(nextFive.map((p) => p.slug)).toEqual(expectedOrder.slice(5, 10))
+            expect(nextFive.map((p) => p.slug)).toEqual(
+                expectedOrder.slice(5, 10)
+            )
 
-            const beyond = await provider.getAllPosts({ offset: 100, limit: 10 })
+            const beyond = await provider.getAllPosts({
+                offset: 100,
+                limit: 10
+            })
             expect(beyond.length).toBe(0)
         })
 
@@ -346,26 +357,43 @@ export function commonProviderTests(
                 })
                 .map((p) => p.slug)
 
-            const topThree = await provider.getAllPosts({ published: true, limit: 3 })
+            const topThree = await provider.getAllPosts({
+                published: true,
+                limit: 3
+            })
             expect(topThree.length).toBe(3)
-            expect(topThree.map((p) => p.slug)).toEqual(publishedOrdered.slice(0, 3))
+            expect(topThree.map((p) => p.slug)).toEqual(
+                publishedOrdered.slice(0, 3)
+            )
 
-            const nextTwo = await provider.getAllPosts({ published: true, offset: 3, limit: 2 })
+            const nextTwo = await provider.getAllPosts({
+                published: true,
+                offset: 3,
+                limit: 2
+            })
             expect(nextTwo.length).toBe(2)
-            expect(nextTwo.map((p) => p.slug)).toEqual(publishedOrdered.slice(3, 5))
+            expect(nextTwo.map((p) => p.slug)).toEqual(
+                publishedOrdered.slice(3, 5)
+            )
         })
 
         it("should combine slug with published filter correctly", async () => {
             const draftPost = testPosts[14]
 
-            const none = await provider.getAllPosts({ slug: draftPost.slug, published: true })
+            const none = await provider.getAllPosts({
+                slug: draftPost.slug,
+                published: true
+            })
             expect(none.length).toBe(0)
 
-            const one = await provider.getAllPosts({ slug: draftPost.slug, published: false })
+            const one = await provider.getAllPosts({
+                slug: draftPost.slug,
+                published: false
+            })
             expect(one.length).toBe(1)
             expect(one[0]?.slug).toBe(draftPost.slug)
         })
-        
+
         it("should update an existing post's tags and validate tag counts", async () => {
             // Choose a post that is not tagged with React initially
             const target = testPosts[2] // e.g., CSS
@@ -373,10 +401,14 @@ export function commonProviderTests(
             const newTagToAdd = "NewTopic"
 
             // Baseline counts
-            const beforeExistingTagCount = (await provider.getAllPosts({ tag: existingTagToAdd })).length
+            const beforeExistingTagCount = (
+                await provider.getAllPosts({ tag: existingTagToAdd })
+            ).length
             expect(beforeExistingTagCount).toBe(1)
 
-            const beforeNewTagCount = (await provider.getAllPosts({ tag: newTagToAdd })).length
+            const beforeNewTagCount = (
+                await provider.getAllPosts({ tag: newTagToAdd })
+            ).length
             expect(beforeNewTagCount).toBe(0)
 
             // Perform update: keep original tag, add existing (React) and brand new tag
@@ -396,17 +428,25 @@ export function commonProviderTests(
 
             expect(updated).toBeDefined()
             expect(updated.tags.map((t) => t.name)).toEqual(
-                expect.arrayContaining([target.tags[0].name, existingTagToAdd, newTagToAdd])
+                expect.arrayContaining([
+                    target.tags[0].name,
+                    existingTagToAdd,
+                    newTagToAdd
+                ])
             )
 
             // Tag counts should reflect the update
-            const afterExistingTagCount = (await provider.getAllPosts({ tag: existingTagToAdd })).length
+            const afterExistingTagCount = (
+                await provider.getAllPosts({ tag: existingTagToAdd })
+            ).length
             expect(afterExistingTagCount).toBe(beforeExistingTagCount + 1)
 
-            const afterNewTagCount = (await provider.getAllPosts({ tag: newTagToAdd })).length
+            const afterNewTagCount = (
+                await provider.getAllPosts({ tag: newTagToAdd })
+            ).length
             expect(afterNewTagCount).toBe(beforeNewTagCount + 1)
         })
-        
+
         it("should delete a post by slug and make it unavailable", async () => {
             const target = testPosts[5]
             // ensure it exists
@@ -425,9 +465,11 @@ export function commonProviderTests(
         it("should be idempotent when deleting a non-existent post", async () => {
             // delete same slug again should not throw
             const target = testPosts[5]
-            await expect(provider.deletePost?.(target.slug)).resolves.toBeUndefined()
+            await expect(
+                provider.deletePost?.(target.slug)
+            ).resolves.toBeUndefined()
         })
-        
+
         it("should apply defaults for slug, id, and excerpt on create", async () => {
             const title = "Defaults Title"
             const content = "Defaults content"
@@ -463,7 +505,9 @@ export function commonProviderTests(
         it("should return same post by slug regardless of locale option", async () => {
             const target = testPosts[0]
             const base = await provider.getPostBySlug(target.slug)
-            const withLocale = await provider.getPostBySlug(target.slug, { locale: "x" })
+            const withLocale = await provider.getPostBySlug(target.slug, {
+                locale: "x"
+            })
             expect(withLocale).toEqual(base)
         })
 
@@ -542,7 +586,6 @@ export function commonProviderTests(
                 })
             )
         })
-
     })
 }
 

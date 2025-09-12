@@ -52,20 +52,25 @@ export interface BlogServerAdapter {
     }>
 }
 
+export interface CreateBlogServerAdapterOptions {
+    provider: BlogDataProvider
+    queryClient: QueryClient
+}
+
 /**
  * Create a server adapter to integrate Better Blog with SSR/SSG frameworks.
  *
  * It provides helpers to generate static params, produce metadata, and a server
  * entry that prefetches data and hydrates state for the client.
  *
- * @param serverConfig Data provider used on the server to read blog data
- * @param queryClient React Query client instance for prefetching and dehydrating
+ * @param options.provider Data provider used on the server to read blog data
+ * @param options.queryClient React Query client instance for prefetching and dehydrating
  * @returns A {@link BlogServerAdapter}
  */
 export function createBlogServerAdapter(
-    serverConfig: BlogDataProvider,
-    queryClient: QueryClient
+    options: CreateBlogServerAdapterOptions
 ): BlogServerAdapter {
+    const { provider: serverConfig, queryClient } = options
     return {
         generateStaticParams() {
             const staticRoutes = generateStaticRoutes()
@@ -144,7 +149,11 @@ async function BlogServerRouterContent({
     queryClient: QueryClient
 }) {
     // Prefetch data on the server
-    await prefetchBlogData(routeMatch, serverConfig, queryClient)
+    await prefetchBlogData({
+        match: routeMatch,
+        provider: serverConfig,
+        queryClient
+    })
 
     // Dehydrate the state for hydration on the client
     const dehydratedState = dehydrate(queryClient)

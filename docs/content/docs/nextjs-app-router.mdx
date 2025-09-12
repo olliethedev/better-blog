@@ -20,10 +20,10 @@ import { blogProvider } from "@/lib/blog-data-provider";
 const queryClient = getOrCreateQueryClient();
 
 // Create the server adapter
-const serverAdapter = createBlogServerAdapter(
-  blogProvider,
-  queryClient
-);
+const serverAdapter = createBlogServerAdapter({
+  provider: blogProvider,
+  queryClient,
+});
 
 // Export the required Next.js functions
 export const generateStaticParams = serverAdapter.generateStaticParams;

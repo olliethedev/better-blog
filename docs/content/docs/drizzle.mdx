@@ -155,11 +155,11 @@ import { createDrizzleProvider } from "better-blog/server/drizzle"
 import { db } from "./drizzle"
 import { sql } from "drizzle-orm"
 
-export function createBlogDataProvider() {
-    return createDrizzleProvider({
-        drizzle: db,
-        sql
-    })
+export async function createBlogDataProvider() {
+  return createDrizzleProvider({
+    drizzle: db,
+    sql,
+  })
 }
 ```
 

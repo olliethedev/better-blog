@@ -27,7 +27,7 @@ Define the provider once in a shared module (e.g. `src/lib/blog-provider.ts`) an
 // src/lib/blog-provider.ts
 import { createDemoMemoryDBProvider } from "better-blog";
 
-export const provider = createDemoMemoryDBProvider();
+export const provider = await createDemoMemoryDBProvider();
 ```
 
 #### Use with server adapter (SSR/SSG)
@@ -39,7 +39,7 @@ import { createBlogServerAdapter } from "better-blog/server";
 import { provider } from "@/lib/blog-provider";
 
 const queryClient = getOrCreateQueryClient();
-const serverAdapter = createBlogServerAdapter(provider, queryClient);
+const serverAdapter = createBlogServerAdapter({ provider, queryClient });
 
 export default function BlogPage() {
   const { BlogServerRouter } = serverAdapter;
@@ -57,9 +57,7 @@ See the API routes guide for full details. Minimal example:
 import { createBlogApiRouter } from "better-blog/server/api";
 import { provider } from "@/lib/blog-provider";
 
-const { handler } = createBlogApiRouter(provider, {
-  openapi: { disabled: false },
-});
+const { handler } = createBlogApiRouter({ provider, openapi: { disabled: false } });
 
 export const GET = handler;
 export const POST = handler;
@@ -73,7 +71,7 @@ import { createServerFileRoute } from "@tanstack/react-start/server";
 import { createBlogApiRouter } from "better-blog/server/api";
 import { provider } from "@/lib/blog-provider";
 
-const { handler } = createBlogApiRouter(provider, { basePath: "/api/posts" });
+const { handler } = createBlogApiRouter({ provider, basePath: "/api/posts" });
 
 export const ServerRoute = createServerFileRoute("/api/posts/$").methods({
   GET: async ({ request }) => handler(request),

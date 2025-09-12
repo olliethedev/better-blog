@@ -13,7 +13,7 @@ interface DrizzleDb {}
 // biome-ignore lint/suspicious/noExplicitAny: external type
 type AnyDb = any
 
-export interface DrizzleProviderConfig extends BlogDataProviderConfig {
+export interface DrizzleProviderOptions extends BlogDataProviderConfig {
     drizzle: DrizzleDb
     // Optional: consumer may pass their `sql` tag from drizzle-orm
     // biome-ignore lint/suspicious/noExplicitAny: external type
@@ -64,18 +64,18 @@ function coerceDate(value: unknown): Date {
     return Number.isNaN(d.getTime()) ? new Date() : d
 }
 
-export function createDrizzleProvider(
-    config: DrizzleProviderConfig
-): BlogDataProvider {
+export async function createDrizzleProvider(
+    options: DrizzleProviderOptions
+): Promise<BlogDataProvider> {
     const {
         drizzle: drizzleClient,
         defaultLocale: providerDefaultLocale = DEFAULT_LOCALE,
         getAuthor
-    } = config
+    } = options
     const drizzle = drizzleClient as unknown as AnyDb
     // Prefer consumer-provided drizzle `sql` 
     // biome-ignore lint/suspicious/noExplicitAny: external type
-    const SQLTag = (config as any).sql as any
+    const SQLTag = (options as any).sql as any
 
     async function fetchOneBySlug(theSlug: string, locale: string) {
         // Base post with locale-aware fields via PostI18n

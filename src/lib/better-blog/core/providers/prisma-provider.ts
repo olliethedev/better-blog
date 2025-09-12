@@ -34,12 +34,12 @@ interface PrismaClientInternal {
 	}
 }
 
-export interface PrismaProviderConfig extends BlogDataProviderConfig {
+export interface PrismaProviderOptions extends BlogDataProviderConfig {
     prisma: PrismaClient
 }
 
-export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProvider {
-    const { prisma, defaultLocale: providerDefaultLocale = DEFAULT_LOCALE, getAuthor } = config
+export async function createPrismaProvider(options: PrismaProviderOptions): Promise<BlogDataProvider> {
+    const { prisma, defaultLocale: providerDefaultLocale = DEFAULT_LOCALE, getAuthor } = options
     const db = prisma as unknown as PrismaClientInternal
 
     async function fetchOneBySlug(theSlug: string, locale: string) {

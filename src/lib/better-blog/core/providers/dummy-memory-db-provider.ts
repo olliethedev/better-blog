@@ -143,9 +143,9 @@ type UpdateTagsInput = {
     }
 }
 
-export function createDummyMemoryDBProvider(
+export async function createDummyMemoryDBProvider(
     options?: CreateDummyMemoryDBProviderOptions & BlogDataProviderConfig
-): BlogDataProvider {
+): Promise<BlogDataProvider> {
     const posts: Post[] = Array.isArray(options?.seedPosts)
         ? [...options.seedPosts]
         : []
@@ -221,7 +221,7 @@ export function createDummyMemoryDBProvider(
         return result.slice(offset)
     }
 
-    return {
+    const provider: BlogDataProvider = {
         async getAllPosts(filter) {
             return getAllPostsInternal(filter)
         },
@@ -330,6 +330,7 @@ export function createDummyMemoryDBProvider(
             if (idx !== -1) posts.splice(idx, 1)
         }
     }
+    return provider
 }
 
 // Convenience: a pre-seeded provider using demo posts, for quick prototyping

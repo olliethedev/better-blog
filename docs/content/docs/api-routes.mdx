@@ -16,13 +16,12 @@ import { createBlogApiRouter } from "better-blog/server/api"
 import { createDemoMemoryDBProvider } from "better-blog"
 
 // simple in-memory provider for demo purposes, replace with your own provider
-const provider = createDemoMemoryDBProvider()
+const provider = await createDemoMemoryDBProvider()
 
-const { handler } = createBlogApiRouter(provider, {
-    openapi: {
-        disabled: false,
-    },
-  });
+const { handler } = createBlogApiRouter({
+  provider,
+  openapi: { disabled: false },
+});
   
   export const GET = handler;
   export const POST = handler;
@@ -37,14 +36,13 @@ import { createServerFileRoute } from "@tanstack/react-start/server"
 import { createBlogApiRouter } from "better-blog/server/api"
 import { createDemoMemoryDBProvider } from "better-blog"
 
-const provider = createDemoMemoryDBProvider()
+const provider = await createDemoMemoryDBProvider()
 
-const { handler } = createBlogApiRouter(provider, {
-    basePath: '/api/posts', // must match your api route path
-    openapi: {
-        disabled: false,
-    },
-  });
+const { handler } = createBlogApiRouter({
+  provider,
+  basePath: '/api/posts', // must match your api route path
+  openapi: { disabled: false },
+});
 
 
 export const ServerRoute = createServerFileRoute("/api/posts/$").methods({

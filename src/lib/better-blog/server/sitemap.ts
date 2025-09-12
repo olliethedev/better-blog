@@ -457,13 +457,14 @@ function getPostLastModified(post: Post): Date | undefined {
 }
 
 export async function createBlogSitemap(
-    config: BlogSitemapOptions
+    options: BlogSitemapOptions
 ): Promise<Sitemap> {
     // TODO: add localization support
-    const origin = normalizeBaseURL(config.baseURL)
-    const base = normalizeBasePath(config.basePath ?? DEFAULT_PAGES_BASE_PATH)
+    const origin = normalizeBaseURL(options.baseURL)
+    const base = normalizeBasePath(options.basePath ?? DEFAULT_PAGES_BASE_PATH)
 
-    const posts = (await config.provider.getAllPosts({ published: true })) ?? []
+    const posts =
+        (await options.provider.getAllPosts({ published: true })) ?? []
 
     // Home/index page under the blog base path
     const latestPostDate = posts
