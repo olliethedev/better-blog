@@ -2,16 +2,18 @@
 
 import { PostCard } from "@/components/better-blog/post-card"
 import { PostCardSkeleton } from "@/components/better-blog/post-card-skeleton"
+import { DEFAULT_API_BASE_PATH, DEFAULT_PAGES_BASE_PATH } from "@/lib/constants"
 import React, { useMemo } from "react"
 import {
     type BlogLocalization,
     blogLocalization
 } from "../../../localization/blog-localization"
+import { normalizeBasePath } from "../../utils"
 import type { PageComponentOverrides } from "../core/client-components"
-import { createApiBlogProvider } from "../core/providers/api-provider"
+import { createBlogApiProvider } from "../core/providers/api-provider"
 import type { BlogDataProvider, Post } from "../core/types"
 
-export interface ComponentsContextValue {
+interface BlogComponents {
     /**
      * Component used to navigate to a different URL.
      * Useful to integrate with router frameworks that have their own `Link`.
@@ -44,6 +46,8 @@ export interface ComponentsContextValue {
     PostCardSkeleton: React.ComponentType
 }
 
+export type BlogUIComponents = Partial<BlogComponents>
+
 const defaultNavigate = (href: string) => {
     window.location.href = href
 }
@@ -53,7 +57,7 @@ const defaultReplace = (href: string) => {
 }
 
 // Default implementations using standard HTML elements
-const defaultComponents: ComponentsContextValue = {
+const defaultUIComponents: BlogComponents = {
     Link: ({ href, children, className, ...props }) => (
         <a href={href} className={className} {...props}>
             {children}
@@ -74,23 +78,23 @@ const defaultComponents: ComponentsContextValue = {
     PostCardSkeleton: () => <PostCardSkeleton />
 }
 
-export interface BetterBlogContextValue {
+export interface BlogContextType {
     /**
      * Client used to load and mutate blog data.
      * When not provided in the provider, an API client is created from `apiBasePath`.
      */
-    clientConfig: BlogDataProvider
+    dataProvider: BlogDataProvider
     /**
      * Set of UI building-block components used throughout the blog UI.
      */
-    components: ComponentsContextValue
+    components: BlogComponents
     /**
      * Optional page-level component overrides (e.g., swapping list/detail implementations).
      */
     pageOverrides?: PageComponentOverrides
     /**
      * Base path for blog pages (used to build blog URLs).
-     * @default "/posts"
+     * @default {@link DEFAULT_PAGES_BASE_PATH}
      */
     basePath: string
     /**
@@ -100,7 +104,7 @@ export interface BetterBlogContextValue {
     /**
      * Admin UI permission flags; merged with defaults where unspecified.
      */
-    adminOptions?: AdminOptions
+    adminPermissions?: AdminPermissions
     /**
      * Imperative navigation function for pushing a new URL.
      * Defaults to `window.location.href = href` in the browser.
@@ -122,32 +126,28 @@ export interface BetterBlogContextValue {
     showAttribution: boolean
 }
 
-const BetterBlogContext = React.createContext<BetterBlogContextValue | null>(
-    null
-)
+const BlogContext = React.createContext<BlogContextType | null>(null)
 
-export function useBetterBlogContext(): BetterBlogContextValue {
-    const context = React.useContext(BetterBlogContext)
+export function useBlogContext(): BlogContextType {
+    const context = React.useContext(BlogContext)
     if (!context) {
-        throw new Error(
-            "useBetterBlogContext must be used within a BetterBlogContextProvider"
-        )
+        throw new Error("useBlogContext must be used within a BlogProvider")
     }
     return context
 }
 
-export function useComponents(): ComponentsContextValue {
-    const { components } = useBetterBlogContext()
+export function useComponents(): BlogComponents {
+    const { components } = useBlogContext()
     return components
 }
 
 export function usePageOverrides(): PageComponentOverrides | undefined {
-    const { pageOverrides } = useBetterBlogContext()
+    const { pageOverrides } = useBlogContext()
     return pageOverrides
 }
 
 export function useBasePath(): string {
-    const { basePath } = useBetterBlogContext()
+    const { basePath } = useBlogContext()
     return basePath
 }
 
@@ -173,7 +173,7 @@ export function buildPath(
 }
 
 // Admin UI permissions/options
-export interface AdminOptions {
+export interface AdminPermissions {
     /** Allow creating new posts */
     canCreate: boolean
     /** Allow updating existing posts */
@@ -182,34 +182,34 @@ export interface AdminOptions {
     canDelete: boolean
 }
 
-const defaultAdminOptions: AdminOptions = {
+const defaultAdminPermissions: AdminPermissions = {
     canCreate: false,
     canUpdate: false,
     canDelete: false
 }
 
-export function useAdminOptions(): AdminOptions {
-    const { adminOptions } = useBetterBlogContext()
-    return { ...defaultAdminOptions, ...(adminOptions ?? {}) }
+export function useAdminPermissions(): AdminPermissions {
+    const { adminPermissions } = useBlogContext()
+    return { ...defaultAdminPermissions, ...(adminPermissions ?? {}) }
 }
 
-export interface BetterBlogContextProviderProps {
+export interface BlogProviderProps {
     /**
      * Data provider used to fetch and mutate blog data.
      * If omitted, a default API provider is created using `apiBasePath`.
      */
-    clientConfig?: BlogDataProvider
+    dataProvider?: BlogDataProvider
     /**
      * Overrides for internal UI components; falls back to standard HTML elements.
      */
-    components?: Partial<ComponentsContextValue>
+    components?: BlogUIComponents
     /**
      * Optional page-level component overrides (swap list/detail page components).
      */
     pageOverrides?: PageComponentOverrides
     /**
      * Base path for blog pages (used to build blog URLs)
-     * @default "/posts"
+     * @default {@link DEFAULT_PAGES_BASE_PATH}
      */
     basePath?: string
     /**
@@ -219,7 +219,7 @@ export interface BetterBlogContextProviderProps {
     /**
      * Partial admin permission flags; merged with built-in defaults.
      */
-    adminOptions?: Partial<AdminOptions>
+    adminPermissions?: Partial<AdminPermissions>
     /**
      * Children that will have access to the blog context.
      */
@@ -239,55 +239,58 @@ export interface BetterBlogContextProviderProps {
      */
     uploadImage: (file: File) => Promise<string>
     /**
-     * Base path for the API router; used if no `clientConfig` is provided.
-     * @default "/api/posts"
+     * Base path for the API router; used if no `dataProvider` is provided.
+     * @default {@link DEFAULT_API_BASE_PATH}
      */
     apiBasePath?: string
+    /**
+     * Base URL for the API router; used if no `dataProvider` is provided. Provide if your API is on a different domain.
+     */
+    apiBaseURL?: string
     /**
      * Whether to show the attribution link in the footer.
      * @default true
      */
+
     showAttribution?: boolean
 }
 
-export function BetterBlogContextProvider({
-    clientConfig,
-    components = defaultComponents,
+export function BlogProvider({
+    dataProvider,
+    components = defaultUIComponents,
     pageOverrides,
-    basePath = "/posts",
+    basePath = DEFAULT_PAGES_BASE_PATH,
     localization: localizationProp,
-    adminOptions,
+    adminPermissions,
     children,
     navigate = defaultNavigate,
     replace = defaultReplace,
     uploadImage,
-    apiBasePath = "/api/posts",
+    apiBasePath = DEFAULT_API_BASE_PATH,
+    apiBaseURL,
     showAttribution = true
-}: BetterBlogContextProviderProps) {
-    function normalizeBasePath(path: string): string {
-        const withLeading = path.startsWith("/") ? path : `/${path}`
-        return withLeading !== "/" && withLeading.endsWith("/")
-            ? withLeading.slice(0, -1)
-            : withLeading
-    }
-
+}: BlogProviderProps) {
     const localization = useMemo(() => {
         return { ...blogLocalization, ...localizationProp } as BlogLocalization
     }, [localizationProp])
 
-    const contextValue: BetterBlogContextValue = {
-        clientConfig:
-            clientConfig ?? createApiBlogProvider({ baseURL: apiBasePath }),
+    const contextValue: BlogContextType = {
+        dataProvider:
+            dataProvider ??
+            createBlogApiProvider({
+                baseURL: apiBaseURL,
+                basePath: apiBasePath
+            }),
         components: {
-            ...defaultComponents,
+            ...defaultUIComponents,
             ...components
         },
         pageOverrides,
         basePath: normalizeBasePath(basePath),
         localization,
-        adminOptions: adminOptions
-            ? { ...defaultAdminOptions, ...adminOptions }
-            : defaultAdminOptions,
+        adminPermissions: adminPermissions
+            ? { ...defaultAdminPermissions, ...adminPermissions }
+            : defaultAdminPermissions,
         navigate,
         replace,
         uploadImage,
@@ -295,8 +298,8 @@ export function BetterBlogContextProvider({
     }
 
     return (
-        <BetterBlogContext.Provider value={contextValue}>
+        <BlogContext.Provider value={contextValue}>
             {children}
-        </BetterBlogContext.Provider>
+        </BlogContext.Provider>
     )
 }

@@ -7,7 +7,7 @@ import {
     FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useBetterBlogContext } from "@/lib/better-blog/context/better-blog-context"
+import { useBlogContext } from "@/lib/better-blog/context/better-blog-context"
 import { useComponents } from "@/lib/better-blog/context/better-blog-context"
 import { Loader2, Upload } from "lucide-react"
 import { useRef, useState } from "react"
@@ -27,7 +27,7 @@ export function FeaturedImageField({
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [isUploading, setIsUploading] = useState(false)
 
-    const { uploadImage } = useBetterBlogContext()
+    const { uploadImage } = useBlogContext()
     const { Image } = useComponents()
 
     const handleImageUpload = async (

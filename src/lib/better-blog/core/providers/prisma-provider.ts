@@ -1,5 +1,6 @@
 
 
+import { DEFAULT_LOCALE } from "@/lib/constants"
 import type { BlogDataProvider, BlogDataProviderConfig, PostCreateExtendedInput, PostUpdateExtendedInput } from "../types"
 import { slugify } from "@/lib/format-utils"
 
@@ -38,7 +39,7 @@ export interface PrismaProviderConfig extends BlogDataProviderConfig {
 }
 
 export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProvider {
-    const { prisma, defaultLocale: providerDefaultLocale = "en", getAuthor } = config
+    const { prisma, defaultLocale: providerDefaultLocale = DEFAULT_LOCALE, getAuthor } = config
     const db = prisma as unknown as PrismaClientInternal
 
     async function fetchOneBySlug(theSlug: string, locale: string) {
@@ -257,7 +258,7 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                 const inserted = await tx.post.create({
                     data: {
                         authorId: input.authorId ?? null,
-                        defaultLocale: "en",
+                        defaultLocale: DEFAULT_LOCALE,
                         title: input.title,
                         slug: baseSlug,
                         excerpt: input.excerpt ?? "",
@@ -284,14 +285,14 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                             ? tx.tag.upsert({
                                 where: { slug: tagSlug },
                                 update: {},
-                                create: { defaultLocale: "en", name: tagName, slug: tagSlug, updatedAt: now },
+                                create: { defaultLocale: DEFAULT_LOCALE, name: tagName, slug: tagSlug, updatedAt: now },
                                 select: { id: true }
                             })
                             : tx.tag.findFirst({ where: { slug: tagSlug }, select: { id: true } })
                         )
 
                         const tagId = tag?.id ?? (await tx.tag.create({
-                            data: { defaultLocale: "en", name: tagName, slug: tagSlug, updatedAt: now },
+                            data: { defaultLocale: DEFAULT_LOCALE, name: tagName, slug: tagSlug, updatedAt: now },
                             select: { id: true }
                         })).id
 
@@ -303,7 +304,7 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                 return postId
             })
 
-            const post = await fetchOneBySlug(baseSlug, "en")
+            const post = await fetchOneBySlug(baseSlug, DEFAULT_LOCALE)
             if (!post) throw new Error("Failed to create post")
             return post
         },
@@ -357,13 +358,13 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                                 ? tx.tag.upsert({
                                     where: { slug: tagSlug },
                                     update: {},
-                                    create: { defaultLocale: "en", name: tagName, slug: tagSlug, updatedAt: now },
+                                    create: { defaultLocale: DEFAULT_LOCALE, name: tagName, slug: tagSlug, updatedAt: now },
                                     select: { id: true }
                                 })
                                 : tx.tag.findFirst({ where: { slug: tagSlug }, select: { id: true } })
                             )
                             const tagId = tag?.id ?? (await tx.tag.create({
-                                data: { defaultLocale: "en", name: tagName, slug: tagSlug, updatedAt: now },
+                                data: { defaultLocale: DEFAULT_LOCALE, name: tagName, slug: tagSlug, updatedAt: now },
                                 select: { id: true }
                             })).id
 
@@ -382,7 +383,7 @@ export function createPrismaProvider(config: PrismaProviderConfig): BlogDataProv
                 return nextSlug
             })
 
-            const post = await fetchOneBySlug(updated, "en")
+            const post = await fetchOneBySlug(updated, DEFAULT_LOCALE)
             if (!post) throw new Error("Failed to update post")
             return post
         },

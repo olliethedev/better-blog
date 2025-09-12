@@ -8,6 +8,7 @@ import type {
 } from "../../types"
 import type { KyselyDatabaseType } from "./dialect"
 
+import { DEFAULT_LOCALE } from "@/lib/constants"
 import type { ColumnType } from "kysely"
 
 export interface KyselyAdapterConfig extends BlogDataProviderConfig {
@@ -81,7 +82,7 @@ export const kyselyAdapter = (
     db: Kysely<DBSchema>,
     config?: KyselyAdapterConfig
 ) => {
-    const providerDefaultLocale = config?.defaultLocale ?? "en"
+    const providerDefaultLocale = config?.defaultLocale ?? DEFAULT_LOCALE
 
     async function fetchOneBySlug(theSlug: string, locale: string) {
         const rows = await db
@@ -380,7 +381,7 @@ export const kyselyAdapter = (
                     .insertInto("Post")
                     .values({
                         authorId: input.authorId ?? null,
-                        defaultLocale: "en",
+                        defaultLocale: DEFAULT_LOCALE,
                         title: input.title,
                         slug: baseSlug,
                         excerpt: input.excerpt ?? "",
@@ -449,7 +450,7 @@ export const kyselyAdapter = (
                             const insertedTag = await trx
                                 .insertInto("Tag")
                                 .values({
-                                    defaultLocale: "en",
+                                    defaultLocale: DEFAULT_LOCALE,
                                     name: tagName,
                                     slug: tagSlug,
                                     updatedAt: now
@@ -484,7 +485,7 @@ export const kyselyAdapter = (
             })
 
             // Return the freshly created post via the normal path
-            const created = await fetchOneBySlug(baseSlug, "en")
+            const created = await fetchOneBySlug(baseSlug, DEFAULT_LOCALE)
             if (!created) throw new Error("Failed to create post")
             return created
         },
@@ -574,7 +575,7 @@ export const kyselyAdapter = (
                                 const insertedTag = await trx
                                     .insertInto("Tag")
                                     .values({
-                                        defaultLocale: "en",
+                                        defaultLocale: DEFAULT_LOCALE,
                                         name: tagName,
                                         slug: tagSlug,
                                         updatedAt: now
@@ -627,7 +628,7 @@ export const kyselyAdapter = (
 
                 finalSlug = nextSlug
             })
-            const updated = await fetchOneBySlug(finalSlug, "en")
+            const updated = await fetchOneBySlug(finalSlug, DEFAULT_LOCALE)
             if (!updated) throw new Error("Failed to update post")
             return updated
         },

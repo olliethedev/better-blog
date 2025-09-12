@@ -5,14 +5,14 @@ import { PageHeader } from "@/components/better-blog/page-header"
 import { PageWrapper } from "@/components/better-blog/pages/page-wrapper"
 import { PostsList } from "@/components/better-blog/posts-list"
 
-import { useBetterBlogContext } from "@/lib/better-blog/context/better-blog-context"
+import { useBlogContext } from "@/lib/better-blog/context/better-blog-context"
 import { usePosts } from "@/lib/better-blog/hooks"
 import { ErrorPlaceholder } from "../error-placeholder"
 
 export function HomePageComponent() {
     const { posts, isLoading, error, loadMore, hasMore, isLoadingMore } =
         usePosts({})
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
 
     if (isLoading) return <PostsLoading />
 

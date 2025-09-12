@@ -6,8 +6,8 @@ description: How Better Blog is structured and key APIs
 ### Package structure
 
 - `better-blog`: shared utilities, schemas, types and queries
-- `better-blog/client`: client components (`BlogRouterPage`, `BetterBlogContextProvider`, hooks)
-- `better-blog/server`: server adapters (e.g. `createServerAdapter` for SSR/SSG)
+- `better-blog/client`: client components (`BlogPageRouter`, `BlogProvider`, hooks)
+- `better-blog/server`: server adapters (e.g. `createBlogServerAdapter` for SSR/SSG)
 - `better-blog/server/api`: API router utilities (e.g. `createBlogApiRouter`)
 
 ### Data provider
@@ -35,17 +35,16 @@ export interface BlogDataProvider {
 ### API surface (most used)
 
 - **Utilities, Schemas, Types and Queries** (`better-blog`)
-  - shared routing utilities,
+  - shared utilities,
   - zod schemas
   - types
-  - low level tanstack query functions
 - **Server adapter** (`better-blog/server`)
-  - `createServerAdapter(serverConfig: BlogDataProvider, queryClient: QueryClient)` → `{ generateStaticParams, generateMetadata, Entry }`
+  - `createBlogServerAdapter(serverConfig: BlogDataProvider, queryClient: QueryClient)` → `{ generateStaticParams, generateMetadata, BlogServerRouter }`
   - `createBlogApiRouter(serverConfig: BlogDataProvider, queryClient: QueryClient)` → `{ router }`
 - **Client** (`better-blog/client`)
-  - `BetterBlogContextProvider`
+  - `BlogProvider`
   - Hooks: `usePosts`, `useCreatePost`, etc...
-  - Client components: `BlogRouterPage` etc...
+  - Client components: `BlogPageRouter` etc...
 
 ### Architecture (high-level)
 

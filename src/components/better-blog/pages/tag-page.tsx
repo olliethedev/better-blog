@@ -1,6 +1,6 @@
 "use client"
 
-import { useBetterBlogContext } from "@/lib/better-blog/context/better-blog-context"
+import { useBlogContext } from "@/lib/better-blog/context/better-blog-context"
 import { useRoute } from "../../../lib/better-blog/context/route-context"
 import { useTagPosts } from "../../../lib/better-blog/hooks"
 import { ErrorPlaceholder } from "../error-placeholder"
@@ -15,7 +15,7 @@ export function TagPageComponent() {
     const { posts, isLoading, error, loadMore, hasMore, isLoadingMore } =
         useTagPosts(tag)
 
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
 
     if (isLoading) return <PostsLoading />
 

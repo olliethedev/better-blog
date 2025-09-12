@@ -1,5 +1,5 @@
 import {
-    useBetterBlogContext,
+    useBlogContext,
     useComponents
 } from "../../lib/better-blog/context/better-blog-context"
 import type { Post } from "../../lib/better-blog/core/types"
@@ -20,7 +20,7 @@ export function PostsList({
     hasMore,
     isLoadingMore
 }: PostsListProps) {
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
     const { PostCard } = useComponents()
     if (posts.length === 0) {
         return <EmptyList message={localization.BLOG_LIST_EMPTY} />

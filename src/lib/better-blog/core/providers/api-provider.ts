@@ -1,3 +1,5 @@
+import { DEFAULT_LOCALE } from "@/lib/constants"
+import { normalizeBasePath, normalizeBaseURL } from "@/lib/utils"
 import { createClient } from "better-call/client"
 import {
     PostSerializedArraySchema,
@@ -24,8 +26,10 @@ function revivePost(raw: ReturnType<typeof PostSerializedSchema.parse>): Post {
 }
 
 export interface CreateApiBlogProviderOptions extends BlogDataProviderConfig {
-    /** Base URL including router basePath, e.g. "/api/posts" (default) */
+    /** Base URL if the API is on a different domain than the blog */
     baseURL?: string
+    /** Base URL including router basePath  example: "/api/posts" */
+    basePath: string
 
     /**
      * Optional override used in tests to inject a custom HTTP client creator.
@@ -34,14 +38,20 @@ export interface CreateApiBlogProviderOptions extends BlogDataProviderConfig {
     createClientImpl?: typeof createClient
 }
 
-export function createApiBlogProvider(
-    options?: CreateApiBlogProviderOptions
+export function createBlogApiProvider(
+    options: CreateApiBlogProviderOptions
 ): BlogDataProvider {
-    const clientFactory = options?.createClientImpl ?? createClient
+    const { baseURL, basePath, createClientImpl } = options ?? {}
+    const normalizedBaseURL = baseURL ? normalizeBaseURL(baseURL) : ""
+    const normalizedBasePath = normalizeBasePath(basePath)
+
+    // if baseURL is not provided the apiPath is just the basePath, that means the api is on the same domain
+    const apiPath = normalizedBaseURL + normalizedBasePath
+    const clientFactory = createClientImpl ?? createClient
     const client = clientFactory<BlogApiRoutes>({
-        baseURL: options?.baseURL ?? "/api/posts"
+        baseURL: apiPath
     })
-    const providerDefaultLocale = options?.defaultLocale ?? "en"
+    const providerDefaultLocale = options?.defaultLocale ?? DEFAULT_LOCALE
 
     function unwrapData<T>(response: unknown): T {
         // Many HTTP clients return `{ data, status, headers }`.

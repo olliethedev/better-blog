@@ -57,6 +57,7 @@ Optional: for local linking use [yalc](https://github.com/wclr/yalc).
 
 - `pnpm dev` – watch build and auto-publish via yalc to linked local apps
 - `pnpm build` – production build (ESM + CJS + types)
+- `docker compose up -d` – start local database for tests
 - `pnpm test` – run unit tests
 
 ### Testing locally in an app

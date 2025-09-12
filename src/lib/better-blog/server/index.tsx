@@ -1,7 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query"
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
 import React from "react"
-import { BlogRouterPage } from "../../../components/better-blog/blog-router-page"
+import { BlogPageRouter } from "../../../components/better-blog/blog-router-page"
 import { PostsLoading } from "../../../components/better-blog/loading"
 import type { PageComponentOverrides } from "../core/client-components"
 import { generateStaticRoutes, matchRoute } from "../core/router"
@@ -11,9 +11,9 @@ import { generatePostMetadata } from "../core/utils"
 import { prefetchBlogData } from "./prefetch"
 
 /**
- * The server adapter returned by {@link createServerAdapter} for SSR/SSG frameworks.
+ * The server adapter returned by {@link createBlogServerAdapter} for SSR/SSG frameworks.
  */
-export interface BetterBlogServerAdapter {
+export interface BlogServerAdapter {
     /**
      * Return the list of all dynamic route params for static generation.
      * Useful for frameworks like Next.js `generateStaticParams`.
@@ -31,7 +31,7 @@ export interface BetterBlogServerAdapter {
      * Server entry component that prefetches data and renders the routed page
      * within a React Query hydration boundary.
      */
-    Entry: React.ComponentType<{
+    BlogServerRouter: React.ComponentType<{
         /** Optional path string like "posts/my-post" (no leading slash). */
         path?: string
         /** React Query client instance used for prefetch/dehydrate. */
@@ -60,12 +60,12 @@ export interface BetterBlogServerAdapter {
  *
  * @param serverConfig Data provider used on the server to read blog data
  * @param queryClient React Query client instance for prefetching and dehydrating
- * @returns A {@link BetterBlogServerAdapter}
+ * @returns A {@link BlogServerAdapter}
  */
-export function createServerAdapter(
+export function createBlogServerAdapter(
     serverConfig: BlogDataProvider,
     queryClient: QueryClient
-): BetterBlogServerAdapter {
+): BlogServerAdapter {
     return {
         generateStaticParams() {
             const staticRoutes = generateStaticRoutes()
@@ -102,7 +102,10 @@ export function createServerAdapter(
             }
         },
 
-        Entry: async function BlogEntry({ path, loadingComponentOverrides }) {
+        BlogServerRouter: async function BlogServerRouter({
+            path,
+            loadingComponentOverrides
+        }) {
             const routeMatch = matchRoute(path?.split("/").filter(Boolean))
             const LoadingComponent = resolveServerLoadingComponent(
                 routeMatch.type,
@@ -117,7 +120,7 @@ export function createServerAdapter(
 
             return (
                 <React.Suspense fallback={fallbackComponent}>
-                    <BlogEntryContent
+                    <BlogServerRouterContent
                         routeMatch={routeMatch}
                         path={path}
                         serverConfig={serverConfig}
@@ -129,7 +132,7 @@ export function createServerAdapter(
     }
 }
 
-async function BlogEntryContent({
+async function BlogServerRouterContent({
     path,
     routeMatch,
     serverConfig,
@@ -148,7 +151,7 @@ async function BlogEntryContent({
 
     return (
         <HydrationBoundary state={dehydratedState}>
-            <BlogRouterPage path={path} />
+            <BlogPageRouter path={path} />
         </HydrationBoundary>
     )
 }

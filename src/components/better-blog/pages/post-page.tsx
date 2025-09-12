@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "date-fns"
 import {
-    useBetterBlogContext,
+    useBlogContext,
     useBlogPath,
     useComponents
 } from "../../../lib/better-blog/context/better-blog-context"
@@ -18,7 +18,7 @@ import { PageWrapper } from "./page-wrapper"
 export function PostPageComponent() {
     const { routeMatch } = useRoute()
     const { post, isLoading, error } = usePost(routeMatch.params?.slug)
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
     const { Link, Image } = useComponents()
     const blogPath = useBlogPath
 

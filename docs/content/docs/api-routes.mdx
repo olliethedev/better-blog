@@ -74,20 +74,20 @@ Endpoints exposed:
 ### Locale support
 
 - The API supports a `locale` query param for both list and detail routes.
-- On the client, the API-backed provider is wired through `BetterBlogContextProvider` (not used standalone).
-- You can set a provider-wide `defaultLocale` and optionally override per call via the context’s `clientConfig`.
+- On the client, the API-backed provider is wired through `BlogProvider` (not used standalone).
+- You can set a provider-wide `defaultLocale` and optionally override per call via the context’s `dataProvider`.
 
 Usage with context:
 
 ```tsx
-import { BetterBlogContextProvider, useBetterBlogContext } from "better-blog/client";
-import { createApiBlogProvider } from "better-blog/core/providers/api-provider";
+import { BlogProvider, useBlogContext } from "better-blog/client";
+import { createBlogApiProvider } from "better-blog/core/providers/api-provider";
 
 // Provide API-backed client with a provider-wide default locale
-<BetterBlogContextProvider
-  clientConfig={createApiBlogProvider({ baseURL: "/api/posts", defaultLocale: "en" })}
+<BlogProvider
+  dataProvider={createBlogApiProvider({ basePath: "/api/posts", defaultLocale: "en" })}
 >
   {children}
-</BetterBlogContextProvider>
+</BlogProvider>
 ```
 

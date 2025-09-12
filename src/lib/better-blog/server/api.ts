@@ -1,3 +1,4 @@
+import { DEFAULT_API_BASE_PATH } from "@/lib/constants"
 import { createEndpoint, createRouter } from "better-call"
 import { z } from "zod"
 import type { BlogDataProvider, Post } from "../core/types"
@@ -9,8 +10,7 @@ import {
 
 const listPostsQuerySchema = PostListQuerySchema
 
-
-export interface CreateBlogApiRouterOptions {
+export interface BlogApiRouterOptions {
     basePath?: string
     /**
      * Expose OpenAPI UI; disabled by default to avoid leaking routes by accident.
@@ -30,7 +30,7 @@ export interface CreateBlogApiRouterOptions {
 
 export function createBlogApiRouter(
     provider: BlogDataProvider,
-    options?: CreateBlogApiRouterOptions
+    options?: BlogApiRouterOptions
 ) {
     const listPosts = createEndpoint(
         "/posts",
@@ -142,7 +142,7 @@ export function createBlogApiRouter(
             deletePost
         },
         {
-            basePath: options?.basePath ?? "/api/posts",
+            basePath: options?.basePath ?? DEFAULT_API_BASE_PATH,
             openapi: options?.openapi
         }
     )

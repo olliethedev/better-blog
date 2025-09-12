@@ -2,7 +2,7 @@
 // NO "use client" directive - can be called from server components
 
 import type { QueryClient } from '@tanstack/react-query';
-import { createBlogQueries } from "../core/queries"
+import { createBlogQueryKeys } from "../core/queries"
 import type { BlogDataProvider, RouteMatch } from "../core/types"
 
 export async function prefetchBlogData(
@@ -10,7 +10,7 @@ export async function prefetchBlogData(
     serverConfig: BlogDataProvider,
     queryClient: QueryClient
 ): Promise<void> {
-    const queries = createBlogQueries(serverConfig)
+    const queries = createBlogQueryKeys(serverConfig)
 
     switch (routeMatch.type) {
         case "home": {

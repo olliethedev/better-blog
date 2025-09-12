@@ -1,6 +1,6 @@
 "use client";
 
-import { useBetterBlogContext } from "../../../lib/better-blog/context/better-blog-context"
+import { useBlogContext } from "../../../lib/better-blog/context/better-blog-context"
 import { useRoute } from "../../../lib/better-blog/context/route-context";
 import { usePost } from "../../../lib/better-blog/hooks";
 import { EmptyList } from "../empty-list"
@@ -12,7 +12,7 @@ import { PageWrapper } from "./page-wrapper"
 export function EditPostPageComponent() {
   const { routeMatch } = useRoute();
   const { post, isLoading, error } = usePost(routeMatch.params?.slug);
-  const { localization } = useBetterBlogContext()
+  const { localization } = useBlogContext()
 
   if (isLoading) return <PostLoading />;
 

@@ -34,16 +34,16 @@ export const provider = createDemoMemoryDBProvider();
 
 ```ts
 // Example: Next.js App Router (app/posts/[[...all]]/page.tsx)
-import { getDefaultQueryClient } from "better-blog";
-import { createServerAdapter } from "better-blog/server";
+import { getOrCreateQueryClient } from "better-blog";
+import { createBlogServerAdapter } from "better-blog/server";
 import { provider } from "@/lib/blog-provider";
 
-const queryClient = getDefaultQueryClient();
-const serverAdapter = createServerAdapter(provider, queryClient);
+const queryClient = getOrCreateQueryClient();
+const serverAdapter = createBlogServerAdapter(provider, queryClient);
 
 export default function BlogPage() {
-  const { Entry } = serverAdapter;
-  return <Entry queryClient={queryClient} />;
+  const { BlogServerRouter } = serverAdapter;
+  return <BlogServerRouter queryClient={queryClient} />;
 }
 ```
 
