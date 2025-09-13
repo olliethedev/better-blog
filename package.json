@@ -15,8 +15,8 @@
         "test": "jest --runInBand",
         "test:watch": "jest --watch --runInBand",
         "test:coverage": "jest --coverage --runInBand",
-        "prisma:test:generate": "prisma generate --schema src/lib/better-blog/core/providers/__tests__/prisma/schema.prisma",
-        "prisma:test:push": "mkdir -p .db && prisma db push --force-reset --schema src/lib/better-blog/core/providers/__tests__/prisma/schema.prisma"
+        "prisma:test:generate": "prisma generate --schema src/providers/__tests__/prisma/schema.prisma",
+        "prisma:test:push": "mkdir -p .db && prisma db push --force-reset --schema src/providers/__tests__/prisma/schema.prisma"
     },
     "type": "module",
     "main": "./dist/index.cjs",
@@ -43,14 +43,14 @@
                 "default": "./dist/client.cjs"
             }
         },
-        "./server": {
+        "./server/pages": {
             "import": {
-                "types": "./dist/server.d.ts",
-                "default": "./dist/server.js"
+                "types": "./dist/server/pages.d.ts",
+                "default": "./dist/server/pages.js"
             },
             "require": {
-                "types": "./dist/server.d.cts",
-                "default": "./dist/server.cjs"
+                "types": "./dist/server/pages.d.cts",
+                "default": "./dist/server/pages.cjs"
             }
         },
         "./server/api": {
@@ -175,6 +175,7 @@
         "highlight.js": ">=11.9.0",
         "kysely": ">=0.28.5",
         "lucide-react": ">=0.469.0",
+        "next-themes": ">=0.4.0",
         "prisma": ">=5.22.0",
         "react": ">=18.0.0",
         "react-day-picker": ">=9.8.1",

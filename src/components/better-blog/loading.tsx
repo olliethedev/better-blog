@@ -1,7 +1,7 @@
 import { FormPageSkeleton } from "../../components/better-blog/form-page-skeleton"
 import { ListPageSkeleton } from "../../components/better-blog/list-page-skeleton"
 import { PostPageSkeleton } from "../../components/better-blog/post-page-skeleton"
-import type { RouteMatch } from "../../lib/better-blog/core/types"
+import type { RouteMatch } from "../../core/types"
 
 export function FormLoading() {
     return (

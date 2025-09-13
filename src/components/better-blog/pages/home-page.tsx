@@ -5,8 +5,8 @@ import { PageHeader } from "@/components/better-blog/page-header"
 import { PageWrapper } from "@/components/better-blog/pages/page-wrapper"
 import { PostsList } from "@/components/better-blog/posts-list"
 
-import { useBlogContext } from "@/lib/better-blog/context/better-blog-context"
-import { usePosts } from "@/lib/better-blog/hooks"
+import { useBlogContext } from "@/context/better-blog-context"
+import { usePosts } from "@/hooks"
 import { ErrorPlaceholder } from "../error-placeholder"
 
 export function HomePageComponent() {

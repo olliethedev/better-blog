@@ -1,8 +1,8 @@
 import {
     useBlogContext,
     useComponents
-} from "../../lib/better-blog/context/better-blog-context"
-import type { Post } from "../../lib/better-blog/core/types"
+} from "../../context/better-blog-context"
+import type { Post } from "../../core/types"
 import { Button } from "../ui/button"
 import { EmptyList } from "./empty-list"
 import SearchInput from "./search-input"

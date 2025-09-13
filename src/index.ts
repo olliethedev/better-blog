@@ -1,18 +1,18 @@
 // Server-safe and client-safe exports (can be used in Next.js server components and SSR)
-export { matchRoute, generateStaticRoutes } from './lib/better-blog/core/router';
-export { generatePostMetadata } from './lib/better-blog/core/utils';
-export type * from './lib/better-blog/core/types';
+export { matchRoute, generateStaticRoutes } from "./core/router"
+export { generatePostMetadata } from "./core/utils"
+export type * from "./core/types"
 
 //schemas
-export * from "./lib/better-blog/schema/post"
+export * from "./schema/post"
 
 //queries
 
-export { createBlogQueryKeys } from "./lib/better-blog/core/queries"
-export { getOrCreateQueryClient } from "./lib/better-blog/core/get-query-client"
+export { createBlogQueryKeys } from "./queries"
+export { getOrCreateQueryClient } from "./core/get-query-client"
 
 // providers
 export {
     createDummyMemoryDBProvider,
     createDemoMemoryDBProvider
-} from "./lib/better-blog/core/providers/dummy-memory-db-provider"
+} from "./providers/dummy-memory-db-provider"

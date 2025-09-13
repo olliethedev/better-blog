@@ -2,11 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import type React from "react"
-import { BlogProvider } from "../../../lib/better-blog/context/better-blog-context"
-import type {
-    BlogDataProvider,
-    Post
-} from "../../../lib/better-blog/core/types"
+import { BlogProvider } from "../../../context/better-blog-context"
+import type { BlogDataProvider, Post } from "../../../core/types"
 import { SearchInput } from "../search-input"
 
 const mockPosts: Post[] = [

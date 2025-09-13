@@ -7,7 +7,7 @@ export default defineConfig((env) => {
         entry: {
             index: "./src/index.ts",
             client: "./src/client.ts",
-            server: "./src/server.ts",
+            "server/pages": "./src/server/pages/index.tsx",
             "server/api": "./src/server/api.ts",
             "server/sitemap": "./src/server/sitemap.ts",
             "server/sql": "./src/server/sql.ts",

@@ -13,8 +13,8 @@ import {
     useBlogContext,
     useBlogPath,
     useComponents
-} from "@/lib/better-blog/context/better-blog-context"
-import type { Post } from "@/lib/better-blog/core/types"
+} from "@/context/better-blog-context"
+import type { Post } from "@/core/types"
 import { formatDate } from "date-fns"
 import { CalendarIcon, ImageIcon } from "lucide-react"
 import { ArrowRightIcon } from "lucide-react"

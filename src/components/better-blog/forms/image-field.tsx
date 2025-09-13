@@ -7,8 +7,8 @@ import {
     FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { useBlogContext } from "@/lib/better-blog/context/better-blog-context"
-import { useComponents } from "@/lib/better-blog/context/better-blog-context"
+import { useBlogContext } from "@/context/better-blog-context"
+import { useComponents } from "@/context/better-blog-context"
 import { Loader2, Upload } from "lucide-react"
 import { useRef, useState } from "react"
 import { toast } from "sonner"

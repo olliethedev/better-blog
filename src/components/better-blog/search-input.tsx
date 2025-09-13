@@ -1,11 +1,8 @@
 "use client"
 
 import * as React from "react"
-import {
-    buildPath,
-    useBlogContext
-} from "../../lib/better-blog/context/better-blog-context"
-import { usePostSearch } from "../../lib/better-blog/hooks"
+import { buildPath, useBlogContext } from "../../context/better-blog-context"
+import { usePostSearch } from "../../hooks"
 import { stripHtml, stripMarkdown } from "../../lib/format-utils"
 import { HighlightText } from "./highlight-text"
 import { SearchModal, type SearchResult } from "./search-modal"

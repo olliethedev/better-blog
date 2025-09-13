@@ -1,7 +1,7 @@
 "use client"
 
 import { BetterBlogAttribution } from "@/components/better-blog/better-blog-attribution"
-import { useBlogContext } from "@/lib/better-blog/context/better-blog-context"
+import { useBlogContext } from "@/context/better-blog-context"
 import { cn } from "../../../lib/utils"
 
 export function PageWrapper({ children, className }: { children: React.ReactNode, className?: string }) {

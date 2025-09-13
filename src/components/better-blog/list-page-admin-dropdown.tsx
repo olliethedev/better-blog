@@ -11,7 +11,7 @@ import {
     useBlogContext,
     useBlogPath,
     useComponents
-} from "@/lib/better-blog/context/better-blog-context"
+} from "@/context/better-blog-context"
 import { SettingsIcon } from "lucide-react"
 
 export function ListPageAdminDropdown() {

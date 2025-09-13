@@ -1,12 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { render, screen, waitFor } from "@testing-library/react"
 import type React from "react"
-import { BlogProvider } from "../../../lib/better-blog/context/better-blog-context"
-import type {
-    BlogDataProvider,
-    Post
-} from "../../../lib/better-blog/core/types"
-import { usePostSearch } from "../../../lib/better-blog/hooks"
+import { BlogProvider } from "../../../context/better-blog-context"
+import type { BlogDataProvider, Post } from "../../../core/types"
+import { usePostSearch } from "../../../hooks"
 import { HomePageComponent } from "../pages/home-page"
 
 // Mock posts for testing

@@ -1,5 +1,5 @@
-import { BlogProvider } from "@/lib/better-blog/context/better-blog-context"
-import type { PageComponentOverrides } from "@/lib/better-blog/core/client-components"
+import { BlogProvider } from "@/context/better-blog-context"
+import type { PageComponentOverrides } from "@/core/client-components"
 import { render, screen } from "@testing-library/react"
 import { BlogPageRouter } from "../blog-router-page"
 

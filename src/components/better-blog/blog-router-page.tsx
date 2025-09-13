@@ -3,11 +3,11 @@
 import {
     useBlogContext,
     usePageOverrides
-} from "../../lib/better-blog/context/better-blog-context"
-import { RouteProvider } from "../../lib/better-blog/context/route-context"
-import { resolveRouteComponent } from "../../lib/better-blog/core/component-resolver"
-import { matchRoute } from "../../lib/better-blog/core/router"
-import type { RouteMatch } from "../../lib/better-blog/core/types"
+} from "../../context/better-blog-context"
+import { RouteProvider } from "../../context/route-context"
+import { resolveRouteComponent } from "../../core/component-resolver"
+import { matchRoute } from "../../core/router"
+import type { RouteMatch } from "../../core/types"
 
 function NotFoundPage({ message }: { message: string }) {
     return (

@@ -10,10 +10,10 @@
         "ignore": [
             "./src/components/ui/**",
             "./docs/**",
-            "./src/lib/better-blog/core/providers/sql/bun-sqlite-dialect.ts",
-            "./src/lib/better-blog/core/providers/sql/node-sqlite-dialect.ts",
-            "./src/lib/better-blog/core/providers/prisma-provider.ts",
-            "./src/lib/better-blog/core/providers/drizzle-provider.ts"
+            "./src/providers/sql/bun-sqlite-dialect.ts",
+            "./src/providers/sql/node-sqlite-dialect.ts",
+            "./src/providers/prisma-provider.ts",
+            "./src/providers/drizzle-provider.ts"
         ]
     },
     "formatter": {

@@ -1,8 +1,5 @@
 "use client"
-import {
-    PostCreateSchema,
-    PostUpdateSchema
-} from "@/lib/better-blog/schema/post"
+import { PostCreateSchema, PostUpdateSchema } from "@/schema/post"
 
 import { Button } from "@/components/ui/button"
 
@@ -19,8 +16,8 @@ import { Input } from "@/components/ui/input"
 
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { useBlogContext } from "@/lib/better-blog/context/better-blog-context"
-import { useCreatePost, usePost, useUpdatePost } from "@/lib/better-blog/hooks"
+import { useBlogContext } from "@/context/better-blog-context"
+import { useCreatePost, usePost, useUpdatePost } from "@/hooks"
 import { slugify } from "@/lib/format-utils"
 
 import { zodResolver } from "@hookform/resolvers/zod"

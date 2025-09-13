@@ -6,9 +6,9 @@ import {
     useBlogContext,
     useBlogPath,
     useComponents
-} from "../../../lib/better-blog/context/better-blog-context"
-import { useRoute } from "../../../lib/better-blog/context/route-context"
-import { usePost } from "../../../lib/better-blog/hooks"
+} from "../../../context/better-blog-context"
+import { useRoute } from "../../../context/route-context"
+import { usePost } from "../../../hooks"
 import { EmptyList } from "../empty-list"
 import { PostLoading } from "../loading"
 import { MarkdownContent } from "../markdown-content"

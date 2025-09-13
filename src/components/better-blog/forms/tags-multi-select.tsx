@@ -1,5 +1,5 @@
 import MultipleSelector, { type Option } from "@/components/ui/multi-select"
-import { useTags } from "@/lib/better-blog/hooks"
+import { useTags } from "@/hooks"
 
 export function TagsMultiSelect({
     value,
