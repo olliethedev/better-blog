@@ -1,7 +1,7 @@
 "use client"
 
-import { useBetterBlogContext } from "@/lib/better-blog/context/better-blog-context"
-import { useDrafts } from "../../../lib/better-blog/hooks"
+import { useBlogContext } from "@/context/better-blog-context"
+import { useDrafts } from "../../../hooks"
 import { ErrorPlaceholder } from "../error-placeholder"
 import { PostsLoading } from "../loading"
 import { PageHeader } from "../page-header"
@@ -12,7 +12,7 @@ export function DraftsPageComponent() {
     const { drafts, isLoading, error, loadMore, hasMore, isLoadingMore } =
         useDrafts()
 
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
 
     if (isLoading) return <PostsLoading />
 

@@ -1,7 +1,7 @@
 {
     "name": "better-blog",
     "homepage": "https://better-blog.com",
-    "version": "0.0.14",
+    "version": "0.0.15",
     "description": "Better Blog",
     "repository": {
         "type": "git",
@@ -15,12 +15,13 @@
         "test": "jest --runInBand",
         "test:watch": "jest --watch --runInBand",
         "test:coverage": "jest --coverage --runInBand",
-        "prisma:test:generate": "prisma generate --schema src/lib/better-blog/core/providers/__tests__/prisma/schema.prisma",
-        "prisma:test:push": "mkdir -p .db && prisma db push --force-reset --schema src/lib/better-blog/core/providers/__tests__/prisma/schema.prisma"
+        "prisma:test:generate": "prisma generate --schema src/providers/__tests__/prisma/schema.prisma",
+        "prisma:test:push": "mkdir -p .db && prisma db push --force-reset --schema src/providers/__tests__/prisma/schema.prisma"
     },
     "type": "module",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
+    "sideEffects": ["./dist/style.css"],
     "exports": {
         "./css": "./dist/style.css",
         ".": {
@@ -33,6 +34,46 @@
                 "default": "./dist/index.cjs"
             }
         },
+        "./types": {
+            "import": {
+                "types": "./dist/types.d.ts",
+                "default": "./dist/types.js"
+            },
+            "require": {
+                "types": "./dist/types.d.cts",
+                "default": "./dist/types.cjs"
+            }
+        },
+        "./queries": {
+            "import": {
+                "types": "./dist/queries.d.ts",
+                "default": "./dist/queries.js"
+            },
+            "require": {
+                "types": "./dist/queries.d.cts",
+                "default": "./dist/queries.cjs"
+            }
+        },
+        "./hooks": {
+            "import": {
+                "types": "./dist/hooks.d.ts",
+                "default": "./dist/hooks.js"
+            },
+            "require": {
+                "types": "./dist/hooks.d.cts",
+                "default": "./dist/hooks.cjs"
+            }
+        },
+        "./router": {
+            "import": {
+                "types": "./dist/router.d.ts",
+                "default": "./dist/router.js"
+            },
+            "require": {
+                "types": "./dist/router.d.cts",
+                "default": "./dist/router.cjs"
+            }
+        },
         "./client": {
             "import": {
                 "types": "./dist/client.d.ts",
@@ -43,14 +84,14 @@
                 "default": "./dist/client.cjs"
             }
         },
-        "./server": {
+        "./server/pages": {
             "import": {
-                "types": "./dist/server.d.ts",
-                "default": "./dist/server.js"
+                "types": "./dist/server/pages.d.ts",
+                "default": "./dist/server/pages.js"
             },
             "require": {
-                "types": "./dist/server.d.cts",
-                "default": "./dist/server.cjs"
+                "types": "./dist/server/pages.d.cts",
+                "default": "./dist/server/pages.cjs"
             }
         },
         "./server/api": {
@@ -104,7 +145,7 @@
             }
         }
     },
-    "files": ["src", "dist"],
+    "files": ["dist"],
     "keywords": ["typescript", "react", "blog", "shadcn", "nextjs"],
     "author": "olliethedev",
     "license": "MIT",
@@ -175,6 +216,7 @@
         "highlight.js": ">=11.9.0",
         "kysely": ">=0.28.5",
         "lucide-react": ">=0.469.0",
+        "next-themes": ">=0.4.0",
         "prisma": ">=5.22.0",
         "react": ">=18.0.0",
         "react-day-picker": ">=9.8.1",

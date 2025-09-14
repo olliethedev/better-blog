@@ -15,9 +15,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import {
-    useDeletePost,
-} from "@/lib/better-blog/hooks"
+import { useDeletePost } from "@/hooks"
 import { Trash2 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"

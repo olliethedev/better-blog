@@ -3,7 +3,7 @@ title: API routes
 description: Expose CRUD endpoints and use the default API-backed provider
 ---
 
-If you prefer not to ship a client-side `BlogDataProvider`, Better Blog can expose API endpoints and consume them via a default API-backed provider.
+Better Blog can expose API endpoints and consume them via a default API-backed provider.
 
 ### 1) Mount the API router
 
@@ -16,13 +16,12 @@ import { createBlogApiRouter } from "better-blog/server/api"
 import { createDemoMemoryDBProvider } from "better-blog"
 
 // simple in-memory provider for demo purposes, replace with your own provider
-const provider = createDemoMemoryDBProvider()
+const provider = await createDemoMemoryDBProvider()
 
-const { handler } = createBlogApiRouter(provider, {
-    openapi: {
-        disabled: false,
-    },
-  });
+const { handler } = createBlogApiRouter({
+  provider,
+  openapi: { disabled: false },
+});
   
   export const GET = handler;
   export const POST = handler;
@@ -37,14 +36,13 @@ import { createServerFileRoute } from "@tanstack/react-start/server"
 import { createBlogApiRouter } from "better-blog/server/api"
 import { createDemoMemoryDBProvider } from "better-blog"
 
-const provider = createDemoMemoryDBProvider()
+const provider = await createDemoMemoryDBProvider()
 
-const { handler } = createBlogApiRouter(provider, {
-    basePath: '/api/posts', // must match your api route path
-    openapi: {
-        disabled: false,
-    },
-  });
+const { handler } = createBlogApiRouter({
+  provider,
+  basePath: '/api/posts', // must match your api route path
+  openapi: { disabled: false },
+});
 
 
 export const ServerRoute = createServerFileRoute("/api/posts/$").methods({
@@ -74,20 +72,17 @@ Endpoints exposed:
 ### Locale support
 
 - The API supports a `locale` query param for both list and detail routes.
-- On the client, the API-backed provider is wired through `BetterBlogContextProvider` (not used standalone).
-- You can set a provider-wide `defaultLocale` and optionally override per call via the context’s `clientConfig`.
+- On the client, the API-backed provider is wired through `BlogProvider` (not used standalone).
+- You can set a provider-wide `defaultLocale` and optionally override per call via the context’s `dataProvider`.
 
 Usage with context:
 
 ```tsx
-import { BetterBlogContextProvider, useBetterBlogContext } from "better-blog/client";
-import { createApiBlogProvider } from "better-blog/core/providers/api-provider";
+import { BlogProvider } from "better-blog/client";
 
-// Provide API-backed client with a provider-wide default locale
-<BetterBlogContextProvider
-  clientConfig={createApiBlogProvider({ baseURL: "/api/posts", defaultLocale: "en" })}
->
+// Provide API-backed client via built-in API provider
+<BlogProvider apiBasePath="/api/posts">
   {children}
-</BetterBlogContextProvider>
+</BlogProvider>
 ```
 

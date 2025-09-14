@@ -2,7 +2,7 @@ import { Crepe, CrepeFeature } from "@milkdown/crepe"
 import "@milkdown/crepe/theme/common/style.css"
 import "./markdown-editor-styles.css"
 
-import { useBetterBlogContext } from "@/client"
+import { useBlogContext } from "@/client"
 import { cn } from "@/lib/utils"
 import { throttle } from "@/lib/utils"
 import { editorViewCtx, parserCtx } from "@milkdown/kit/core"
@@ -20,7 +20,7 @@ export function MarkdownEditor({
     onChange?: (markdown: string) => void
     className?: string
 }) {
-    const { uploadImage } = useBetterBlogContext()
+    const { uploadImage } = useBlogContext()
     const containerRef = useRef<HTMLDivElement | null>(null)
     const crepeRef = useRef<Crepe | null>(null)
     const isReadyRef = useRef(false)

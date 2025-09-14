@@ -7,21 +7,21 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
-    useAdminOptions,
-    useBetterBlogContext,
+    useAdminPermissions,
+    useBlogContext,
     useBlogPath,
     useComponents
-} from "@/lib/better-blog/context/better-blog-context"
+} from "@/context/better-blog-context"
 import { SettingsIcon } from "lucide-react"
 
 export function ListPageAdminDropdown() {
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
     const { Link } = useComponents()
     const newPostHref = useBlogPath("new")
     const draftPostsHref = useBlogPath("drafts")
-    const { canCreate, canUpdate, canDelete } = useAdminOptions()
-    const anyAdminOptions = canCreate || canUpdate || canDelete
-    if (!anyAdminOptions) return null
+    const { canCreate, canUpdate, canDelete } = useAdminPermissions()
+    const anyAdminPermissions = canCreate || canUpdate || canDelete
+    if (!anyAdminPermissions) return null
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

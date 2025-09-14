@@ -1,12 +1,10 @@
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { render, screen, waitFor } from "@testing-library/react"
 import type React from "react"
-import { BetterBlogContextProvider } from "../../../lib/better-blog/context/better-blog-context"
-import type {
-    BlogDataProvider,
-    Post
-} from "../../../lib/better-blog/core/types"
-import { usePostSearch } from "../../../lib/better-blog/hooks"
+import { BlogProvider } from "../../../context/better-blog-context"
+import { usePostSearch } from "../../../hooks"
 import { HomePageComponent } from "../pages/home-page"
 
 // Mock posts for testing
@@ -79,13 +77,13 @@ describe("Search and Query Integration", () => {
     test("home page pagination doesn't create duplicate query keys", async () => {
         const TestWrapper = ({ children }: { children: React.ReactNode }) => (
             <QueryClientProvider client={queryClient}>
-                <BetterBlogContextProvider
-                    clientConfig={mockProvider}
+                <BlogProvider
+                    dataProvider={mockProvider}
                     uploadImage={async () => ""}
                     basePath="/blog"
                 >
                     {children}
-                </BetterBlogContextProvider>
+                </BlogProvider>
             </QueryClientProvider>
         )
 
@@ -170,13 +168,13 @@ describe("Search and Query Integration", () => {
     test("search uses correct query keys separate from regular posts", async () => {
         const TestWrapper = ({ children }: { children: React.ReactNode }) => (
             <QueryClientProvider client={queryClient}>
-                <BetterBlogContextProvider
-                    clientConfig={mockProvider}
+                <BlogProvider
+                    dataProvider={mockProvider}
                     uploadImage={async () => ""}
                     basePath="/blog"
                 >
                     {children}
-                </BetterBlogContextProvider>
+                </BlogProvider>
             </QueryClientProvider>
         )
 

@@ -10,11 +10,11 @@ import {
     CardTitle
 } from "@/components/ui/card"
 import {
-    useBetterBlogContext,
+    useBlogContext,
     useBlogPath,
     useComponents
-} from "@/lib/better-blog/context/better-blog-context"
-import type { Post } from "@/lib/better-blog/core/types"
+} from "@/context/better-blog-context"
+import type { Post } from "@/types"
 import { formatDate } from "date-fns"
 import { CalendarIcon, ImageIcon } from "lucide-react"
 import { ArrowRightIcon } from "lucide-react"
@@ -25,7 +25,7 @@ export function PostCard({
     post: Post
 }) {
     const { Link, Image } = useComponents()
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
     const blogPath = useBlogPath
     const publishedDate = post.publishedAt || post.createdAt
 

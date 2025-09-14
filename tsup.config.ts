@@ -5,9 +5,13 @@ import { defineConfig } from "tsup"
 export default defineConfig((env) => {
     return {
         entry: {
+            types: "./src/types/index.ts",
             index: "./src/index.ts",
             client: "./src/client.ts",
-            server: "./src/server.ts",
+            queries: "./src/queries/index.ts",
+            hooks: "./src/hooks/index.ts",
+            router: "./src/router/index.ts",
+            "server/pages": "./src/server/pages/index.tsx",
             "server/api": "./src/server/api.ts",
             "server/sitemap": "./src/server/sitemap.ts",
             "server/sql": "./src/server/sql.ts",

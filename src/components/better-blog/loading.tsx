@@ -1,31 +1,20 @@
-import { FormPageSkeleton } from "../../components/better-blog/form-page-skeleton"
-import { ListPageSkeleton } from "../../components/better-blog/list-page-skeleton"
-import { PostPageSkeleton } from "../../components/better-blog/post-page-skeleton"
-import type { RouteMatch } from "../../lib/better-blog/core/types"
+// Re-export loading components from the server-safe loading resolver
+// This maintains backward compatibility while ensuring the components
+// can be used on both client and server in Next.js
+export {
+    FormLoading,
+    PostsLoading,
+    PostLoading
+} from "@/router/loading-resolver"
 
-export function FormLoading() {
-    return (
-        <div data-testid="form-skeleton">
-            <FormPageSkeleton />
-        </div>
-    )
-}
-
-export function PostsLoading() {
-    return (
-        <div data-testid="posts-skeleton">
-            <ListPageSkeleton />
-        </div>
-    )
-}
-
-export function PostLoading() {
-    return (
-        <div data-testid="post-skeleton">
-            <PostPageSkeleton />
-        </div>
-    )
-}
+import {
+    FormLoading,
+    PostLoading,
+    PostsLoading
+} from "@/router/loading-resolver"
+// For backward compatibility, we'll keep the defaultLoadingComponents export
+// but import it from the loading resolver
+import type { RouteMatch } from "@/types"
 
 export const defaultLoadingComponents: Record<
     RouteMatch["type"],

@@ -1,1 +1,1 @@
-export * from "../lib/better-blog/core/providers/sql/sql-provider";
+export * from "../providers/sql/sql-provider"

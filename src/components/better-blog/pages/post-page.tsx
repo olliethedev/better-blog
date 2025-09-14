@@ -3,12 +3,12 @@
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "date-fns"
 import {
-    useBetterBlogContext,
+    useBlogContext,
     useBlogPath,
     useComponents
-} from "../../../lib/better-blog/context/better-blog-context"
-import { useRoute } from "../../../lib/better-blog/context/route-context"
-import { usePost } from "../../../lib/better-blog/hooks"
+} from "../../../context/better-blog-context"
+import { useRoute } from "../../../context/route-context"
+import { usePost } from "../../../hooks"
 import { EmptyList } from "../empty-list"
 import { PostLoading } from "../loading"
 import { MarkdownContent } from "../markdown-content"
@@ -18,7 +18,7 @@ import { PageWrapper } from "./page-wrapper"
 export function PostPageComponent() {
     const { routeMatch } = useRoute()
     const { post, isLoading, error } = usePost(routeMatch.params?.slug)
-    const { localization } = useBetterBlogContext()
+    const { localization } = useBlogContext()
     const { Link, Image } = useComponents()
     const blogPath = useBlogPath
 

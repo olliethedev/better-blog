@@ -1,3 +1,3 @@
-export * from "../lib/better-blog/core/providers/drizzle-provider"
+export * from "../providers/drizzle-provider"
 
 
