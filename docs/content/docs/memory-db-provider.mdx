@@ -34,7 +34,7 @@ export const provider = await createDemoMemoryDBProvider();
 
 ```ts
 // Example: Next.js App Router (app/posts/[[...all]]/page.tsx)
-import { getOrCreateQueryClient } from "better-blog";
+import { getOrCreateQueryClient } from "better-blog/queries";
 import { createBlogServerAdapter } from "better-blog/server/pages";
 import { provider } from "@/lib/blog-provider";
 

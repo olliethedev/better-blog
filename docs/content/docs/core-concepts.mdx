@@ -5,10 +5,17 @@ description: How Better Blog is structured and key APIs
 
 ### Package structure
 
-- `better-blog`: shared utilities, schemas, types and queries
-- `better-blog/client`: client components (`BlogPageRouter`, `BlogProvider`, hooks)
-- `better-blog/server`: server adapters (e.g. `createBlogServerAdapter` for SSR/SSG)
-- `better-blog/server/api`: API router utilities (e.g. `createBlogApiRouter`)
+- `better-blog`: types, schemas, utilities, and memory DB helpers
+- `better-blog/queries`: query helpers (`getOrCreateQueryClient`, query keys)
+- `better-blog/hooks`: React hooks (client)
+- `better-blog/client`: `BlogPageRouter`, `BlogProvider`, context and UI types
+- `better-blog/router`: route helpers (`matchRoute`, `resolveLoadingComponent`)
+- `better-blog/server/pages`: SSR/SSG adapter (`createBlogServerAdapter`)
+- `better-blog/server/api`: API router (`createBlogApiRouter`)
+- `better-blog/server/sitemap`: sitemap generation (`createBlogSitemap`)
+- `better-blog/server/sql`: SQL provider exports
+- `better-blog/server/prisma`: Prisma provider exports
+- `better-blog/server/drizzle`: Drizzle provider exports
 
 ### Data provider
 
@@ -32,21 +39,7 @@ export interface BlogDataProvider {
 }
 ```
 
-### API surface (most used)
-
-- **Utilities, Schemas, Types and Queries** (`better-blog`)
-  - shared utilities,
-  - zod schemas
-  - types
-- **Server adapter** (`better-blog/server`)
-  - `createBlogServerAdapter({ provider: BlogDataProvider, queryClient: QueryClient })` → `{ generateStaticParams, generateMetadata, BlogServerRouter }`
-  - `createBlogApiRouter({ provider: BlogDataProvider, basePath?: string, openapi?: ... })` → `{ router }`
-- **Client** (`better-blog/client`)
-  - `BlogProvider`
-  - Hooks: `usePosts`, `useCreatePost`, etc...
-  - Client components: `BlogPageRouter` etc...
-
-### Architecture (high-level)
+### Architecture
 
 - Schema-driven routes and data; minimal state in components
 - Strict client/server separation via dedicated entry points

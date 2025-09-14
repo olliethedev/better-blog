@@ -4,6 +4,4 @@ export { BlogPageRouter } from "./components/better-blog/blog-router-page"
 export * from "./context/better-blog-context"
 export * from "./context/route-context"
 
-export * from "./hooks"
-
 

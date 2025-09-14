@@ -11,7 +11,8 @@ Create the Better Blog server adapter, then render via `BlogServerRouter` with s
 ```tsx
 import { createFileRoute } from "@tanstack/react-router"
 
-import { BlogDataProvider, getOrCreateQueryClient } from "better-blog";
+import { BlogDataProvider } from "better-blog";
+import { getOrCreateQueryClient } from "better-blog/queries";
 import { createBlogServerAdapter } from "better-blog/server/pages";
 
 // Implement your data provider here
@@ -117,7 +118,7 @@ import { Link, useRouter } from "@tanstack/react-router"
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { type BlogUIComponents, BlogProvider } from "better-blog/client";
-import { getOrCreateQueryClient } from "better-blog";
+import { getOrCreateQueryClient } from "better-blog/queries";
 
 const components: BlogUIComponents = {
   Link: ({ href, children, className }) => (
@@ -170,3 +171,24 @@ export function Provider({ children }: { children: ReactNode }) {
   );
 }
 ```
+
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Layers, Router } from "lucide-react";
+
+
+## What's next?
+
+<Cards>
+  <Card
+    title="Sitemap generation"
+    href="/sitemap"
+    icon={<Layers size={20} />}
+    description="Generate a sitemap for your blog."
+  />
+  <Card
+    title="API routes"
+    href="/api-routes"
+    icon={<Router size={20} />}
+    description="Ship an API and consume it with the default provider."
+  />
+</Cards>

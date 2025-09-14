@@ -3,7 +3,7 @@ title: API routes
 description: Expose CRUD endpoints and use the default API-backed provider
 ---
 
-If you prefer not to ship a client-side `BlogDataProvider`, Better Blog can expose API endpoints and consume them via a default API-backed provider.
+Better Blog can expose API endpoints and consume them via a default API-backed provider.
 
 ### 1) Mount the API router
 
@@ -78,13 +78,10 @@ Endpoints exposed:
 Usage with context:
 
 ```tsx
-import { BlogProvider, useBlogContext } from "better-blog/client";
-import { createBlogApiProvider } from "better-blog/core/providers/api-provider";
+import { BlogProvider } from "better-blog/client";
 
-// Provide API-backed client with a provider-wide default locale
-<BlogProvider
-  dataProvider={createBlogApiProvider({ basePath: "/api/posts", defaultLocale: "en" })}
->
+// Provide API-backed client via built-in API provider
+<BlogProvider apiBasePath="/api/posts">
   {children}
 </BlogProvider>
 ```
