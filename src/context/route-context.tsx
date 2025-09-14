@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import type { RouteMatch } from '../core/types';
+import type { RouteMatch } from "@/types"
+import React from "react"
 
 export interface RouteContextValue {
   routeMatch: RouteMatch;

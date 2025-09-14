@@ -1,4 +1,5 @@
-import type { BlogDataProvider, BlogDataProviderConfig } from "../../core/types"
+import type { BlogDataProvider } from "@/types"
+import type { BlogDataProviderConfig } from "@/types"
 import { type SQLDatabaseOptions, createKyselyAdapter } from "./dialect"
 import { kyselyAdapter } from "./kysely-adapter"
 

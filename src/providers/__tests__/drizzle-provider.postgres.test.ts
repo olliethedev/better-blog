@@ -6,7 +6,7 @@ import { drizzle as drizzleNodePostgres } from "drizzle-orm/node-postgres"
 import { FileMigrationProvider, Kysely, Migrator, PostgresDialect, sql } from "kysely"
 import { Pool } from "pg"
 
-import type { BlogDataProvider } from "../../core/types"
+import type { BlogDataProvider } from "@/types"
 import { getAuthor } from "../../providers/__tests__/test-options"
 import { createDrizzleProvider } from "../drizzle-provider"
 import { commonProviderTests } from "./common-provider-tests"

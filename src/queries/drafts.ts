@@ -1,9 +1,6 @@
+import type { BlogDataProvider } from "@/types"
 import { createQueryKeys } from "@lukemorales/query-key-factory"
-import type { BlogDataProvider } from "../core/types"
-
-export interface DraftsListParams {
-    limit?: number
-}
+import type { DraftsListParams } from "./types"
 
 export function createDraftsQueries(provider: BlogDataProvider) {
     return createQueryKeys("drafts", {
@@ -23,5 +20,3 @@ export function createDraftsQueries(provider: BlogDataProvider) {
         })
     })
 }
-
-

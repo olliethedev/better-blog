@@ -4,7 +4,7 @@ import * as path from "node:path"
 import { FileMigrationProvider, Kysely, Migrator, PostgresDialect, sql } from "kysely"
 import { Pool } from "pg"
 
-import type { BlogDataProvider } from "../../core/types"
+import type { BlogDataProvider } from "@/types"
 import { getAuthor } from "../../providers/__tests__/test-options"
 import { createSQLProvider } from "../sql/sql-provider"
 import { commonProviderTests } from "./common-provider-tests"

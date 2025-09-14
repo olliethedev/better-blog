@@ -1,8 +1,9 @@
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import type React from "react"
 import { BlogProvider } from "../../../context/better-blog-context"
-import type { BlogDataProvider, Post } from "../../../core/types"
 import { HomePageComponent } from "../pages/home-page"
 
 // Mock API handler to track calls
@@ -252,11 +253,12 @@ describe("HomePage", () => {
         render(<HomePageComponent />, { wrapper })
 
         await waitFor(() => {
-            expect(screen.getByText("There are no posts here yet.")).toBeInTheDocument()
+            expect(
+                screen.getByText("There are no posts here yet.")
+            ).toBeInTheDocument()
         })
 
         // Should not show load more button
         expect(screen.queryByText("Load more posts")).not.toBeInTheDocument()
     })
-
 })

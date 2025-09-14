@@ -1,5 +1,7 @@
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
+import type { Tag } from "@/types"
 import { renderHook, waitFor } from "@testing-library/react"
-import type { BlogDataProvider, Post, Tag } from "../../core/types"
 import { createWrapper } from "../../test/utils"
 import { useTags } from "../index"
 
@@ -20,7 +22,11 @@ function makePostWithTags(id: number, tags: Tag[]): Post {
 
 describe("useTags", () => {
     test("aggregates, dedupes and sorts tags", async () => {
-        const t = (i: number): Tag => ({ id: `t${i}`, slug: `t${i}`, name: `tag${i}` })
+        const t = (i: number): Tag => ({
+            id: `t${i}`,
+            slug: `t${i}`,
+            name: `tag${i}`
+        })
         const provider: BlogDataProvider = {
             async getAllPosts({ offset = 0, limit = 50 } = {}) {
                 if (offset === 0) return [makePostWithTags(1, [t(2), t(1)])]

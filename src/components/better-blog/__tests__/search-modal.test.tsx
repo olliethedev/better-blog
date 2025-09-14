@@ -1,9 +1,10 @@
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import type React from "react"
 import { BlogProvider } from "../../../context/better-blog-context"
-import type { BlogDataProvider, Post } from "../../../core/types"
 import { SearchInput } from "../search-input"
 
 const mockPosts: Post[] = [
@@ -173,9 +174,10 @@ describe("SearchModal", () => {
             () => {
                 // Check that the result appears - it will have highlighted text
                 const resultButtons = screen.getAllByRole("button")
-                const reactResult = resultButtons.find(btn => 
-                    btn.textContent?.includes("React") && 
-                    btn.textContent?.includes("Tips and Tricks")
+                const reactResult = resultButtons.find(
+                    (btn) =>
+                        btn.textContent?.includes("React") &&
+                        btn.textContent?.includes("Tips and Tricks")
                 )
                 expect(reactResult).toBeInTheDocument()
             },
@@ -234,9 +236,10 @@ describe("SearchModal", () => {
         await waitFor(
             () => {
                 const resultButtons = screen.getAllByRole("button")
-                const reactResult = resultButtons.find(btn => 
-                    btn.textContent?.includes("React") && 
-                    btn.textContent?.includes("Tips and Tricks")
+                const reactResult = resultButtons.find(
+                    (btn) =>
+                        btn.textContent?.includes("React") &&
+                        btn.textContent?.includes("Tips and Tricks")
                 )
                 expect(reactResult).toBeInTheDocument()
             },
@@ -245,9 +248,10 @@ describe("SearchModal", () => {
 
         // Click on result
         const resultButtons = screen.getAllByRole("button")
-        const reactResult = resultButtons.find(btn => 
-            btn.textContent?.includes("React") && 
-            btn.textContent?.includes("Tips and Tricks")
+        const reactResult = resultButtons.find(
+            (btn) =>
+                btn.textContent?.includes("React") &&
+                btn.textContent?.includes("Tips and Tricks")
         )
         fireEvent.click(reactResult!)
 
@@ -273,9 +277,10 @@ describe("SearchModal", () => {
         await waitFor(
             () => {
                 const resultButtons = screen.getAllByRole("button")
-                const reactResult = resultButtons.find(btn => 
-                    btn.textContent?.includes("React") && 
-                    btn.textContent?.includes("Tips and Tricks")
+                const reactResult = resultButtons.find(
+                    (btn) =>
+                        btn.textContent?.includes("React") &&
+                        btn.textContent?.includes("Tips and Tricks")
                 )
                 expect(reactResult).toBeInTheDocument()
             },
@@ -301,7 +306,9 @@ describe("SearchModal", () => {
 
         // Should not show previous results
         // Look for result content that shouldn't be there
-        expect(screen.queryByText(/Learn about.*React.*hooks/i)).not.toBeInTheDocument()
+        expect(
+            screen.queryByText(/Learn about.*React.*hooks/i)
+        ).not.toBeInTheDocument()
     })
 
     test("highlights search terms in results", async () => {
@@ -354,9 +361,10 @@ describe("SearchModal", () => {
         await waitFor(
             () => {
                 const resultButtons = screen.getAllByRole("button")
-                const reactResult = resultButtons.find(btn => 
-                    btn.textContent?.includes("React") && 
-                    btn.textContent?.includes("Tips and Tricks")
+                const reactResult = resultButtons.find(
+                    (btn) =>
+                        btn.textContent?.includes("React") &&
+                        btn.textContent?.includes("Tips and Tricks")
                 )
                 expect(reactResult).toBeInTheDocument()
             },

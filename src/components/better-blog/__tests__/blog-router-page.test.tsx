@@ -1,5 +1,5 @@
 import { BlogProvider } from "@/context/better-blog-context"
-import type { PageComponentOverrides } from "@/core/client-components"
+import type { PageComponentOverrides } from "@/types"
 import { render, screen } from "@testing-library/react"
 import { BlogPageRouter } from "../blog-router-page"
 

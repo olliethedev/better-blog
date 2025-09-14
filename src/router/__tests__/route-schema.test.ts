@@ -1,5 +1,5 @@
-import { matchPattern, resolveMetadata } from '../../core/route-schema';
-import { routeSchema } from '../../core/routes';
+import { matchPattern, resolveMetadata } from '../route-schema';
+import { routeSchema } from '../routes';
 
 describe('matchPattern', () => {
   test('matches static and dynamic segments and extracts params', () => {

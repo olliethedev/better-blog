@@ -1,14 +1,9 @@
-export type Tag = {
-    id: string
-    slug: string
-    name: string
-}
-
-export type Author = {
-    id: string
-    name: string
-    image?: string
-}
+// Cross-cutting types
+import type {
+    PostCreateExtendedInput,
+    PostUpdateExtendedInput
+} from "@/schema/post"
+import type React from "react"
 
 export type Post = {
     id: string
@@ -27,13 +22,6 @@ export type Post = {
     updatedAt: Date
     author: Author | null
 }
-
-import type {
-    PostCreateExtendedInput,
-    PostUpdateExtendedInput
-} from "../schema/post"
-
-
 export interface BlogDataProvider {
     getAllPosts: (filter?: {
         slug?: string
@@ -51,13 +39,10 @@ export interface BlogDataProvider {
     createPost?: (input: PostCreateExtendedInput) => Promise<Post>
     updatePost?: (slug: string, input: PostUpdateExtendedInput) => Promise<Post>
     deletePost?: (slug: string) => Promise<void>
-}
-
-export interface BlogDataProviderConfig {
+}export interface BlogDataProviderConfig {
     getAuthor?: (id: string) => Promise<Author | null>
     defaultLocale?: string
 }
-
 export interface RouteMatch {
     type: "home" | "post" | "tag" | "drafts" | "new" | "edit" | "unknown"
     params?: {
@@ -71,9 +56,31 @@ export interface RouteMatch {
         image?: string
     }
 }
+export interface PageComponentOverrides {
+    HomeComponent?: React.ComponentType
+    PostComponent?: React.ComponentType
+    TagComponent?: React.ComponentType
+    DraftsComponent?: React.ComponentType
+    NewPostComponent?: React.ComponentType
+    EditPostComponent?: React.ComponentType
 
-export interface BlogPostMetadata {
-    title: string
-    description?: string
+    HomeLoadingComponent?: React.ComponentType
+    PostLoadingComponent?: React.ComponentType
+    TagLoadingComponent?: React.ComponentType
+    DraftsLoadingComponent?: React.ComponentType
+    NewPostLoadingComponent?: React.ComponentType
+    EditPostLoadingComponent?: React.ComponentType
+
+    NotFoundComponent?: React.ComponentType<{ message: string} >
+}
+export type Author = {
+    id: string
+    name: string
     image?: string
 }
+export type Tag = {
+    id: string
+    slug: string
+    name: string
+}
+

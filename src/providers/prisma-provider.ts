@@ -2,7 +2,8 @@
 
 import { DEFAULT_LOCALE } from "@/lib/constants"
 import { slugify } from "@/lib/format-utils"
-import type { BlogDataProvider, BlogDataProviderConfig } from "../core/types"
+import type { BlogDataProviderConfig } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../schema/post"
 
 // biome-ignore lint/suspicious/noEmptyInterface: Library consumer provides PrismaClient

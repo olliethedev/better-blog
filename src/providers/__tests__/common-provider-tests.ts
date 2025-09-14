@@ -1,9 +1,10 @@
-import type {
-    BlogDataProvider,
-    Post,
-} from "../../core/types"
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import { slugify } from "../../lib/format-utils"
-import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../../schema/post"
+import type {
+    PostCreateExtendedInput,
+    PostUpdateExtendedInput
+} from "../../schema/post"
 import type { TagConnectOrCreate } from "../../schema/post"
 
 const FULL_MARKDOWN = `

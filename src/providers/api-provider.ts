@@ -1,7 +1,9 @@
 import { DEFAULT_LOCALE } from "@/lib/constants"
 import { normalizeBasePath, normalizeBaseURL } from "@/lib/utils"
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
+import type { BlogDataProviderConfig } from "@/types"
 import { createClient } from "better-call/client"
-import type { BlogDataProvider, BlogDataProviderConfig, Post } from "../core/types"
 import {
     PostSerializedArraySchema,
     PostSerializedSchema

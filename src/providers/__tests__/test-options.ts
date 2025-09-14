@@ -1,4 +1,4 @@
-import type { BlogDataProviderConfig } from "../../core/types"
+import type { BlogDataProviderConfig } from "@/types"
 
 export const getAuthor: BlogDataProviderConfig["getAuthor"] = async (id: string) => {
     return {

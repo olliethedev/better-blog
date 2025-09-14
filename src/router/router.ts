@@ -1,8 +1,6 @@
-import type { RouteMatch } from './types';
-import { routeSchema } from './routes';
+import type { RouteMatch } from "@/types"
 import { matchPattern, resolveMetadata } from './route-schema';
-
-
+import { routeSchema } from "./routes"
 
 export function matchRoute(pathSegments?: string[], basePath?: string): RouteMatch {
   const normalizedSlug = pathSegments || [];
@@ -69,17 +67,4 @@ export function matchRoute(pathSegments?: string[], basePath?: string): RouteMat
       title: `Unknown route: /${normalizedSlug.join('/')}`
     }
   };
-}
-
-export function generateStaticRoutes(): Array<{ slug: string[] }> {
-  const staticRoutes: Array<{ slug: string[] }> = [];
-  
-  // Collect static routes from all route definitions
-  for (const routeDef of routeSchema.routes) {
-    if (routeDef.staticRoutes) {
-      staticRoutes.push(...routeDef.staticRoutes);
-    }
-  }
-  
-  return staticRoutes;
 }

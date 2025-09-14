@@ -1,7 +1,8 @@
 import { DEFAULT_API_BASE_PATH } from "@/lib/constants"
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import { createEndpoint, createRouter } from "better-call"
 import { z } from "zod"
-import type { BlogDataProvider, Post } from "../core/types"
 import {
     PostCreateSchema,
     PostListQuerySchema,

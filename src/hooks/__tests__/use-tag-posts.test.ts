@@ -1,5 +1,6 @@
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import { renderHook, waitFor } from "@testing-library/react"
-import type { BlogDataProvider, Post } from "../../core/types"
 import { createWrapper } from "../../test/utils"
 import { useTagPosts } from "../index"
 
@@ -24,7 +25,10 @@ describe("useTagPosts", () => {
             async getAllPosts({ tag, offset = 0, limit = 10 } = {}) {
                 if (!tag) return []
                 // return a single page to keep it simple
-                if (offset === 0) return Array.from({ length: limit }, (_, i) => makePost(i, tag))
+                if (offset === 0)
+                    return Array.from({ length: limit }, (_, i) =>
+                        makePost(i, tag)
+                    )
                 return []
             }
         }
@@ -32,15 +36,21 @@ describe("useTagPosts", () => {
         const wrapper = createWrapper(provider)
 
         // disabled when tag is undefined
-        const { result: r1 } = renderHook(() => useTagPosts(undefined), { wrapper })
+        const { result: r1 } = renderHook(() => useTagPosts(undefined), {
+            wrapper
+        })
         await waitFor(() => expect(r1.current.isLoading).toBe(false))
         expect(r1.current.posts).toHaveLength(0)
 
         // enabled when tag provided
-        const { result: r2 } = renderHook(() => useTagPosts("react"), { wrapper })
+        const { result: r2 } = renderHook(() => useTagPosts("react"), {
+            wrapper
+        })
         await waitFor(() => expect(r2.current.isLoading).toBe(false))
         expect(r2.current.posts).toHaveLength(10)
-        expect(r2.current.posts.every(p => p.tags.some(t => t.id === "react"))).toBe(true)
+        expect(
+            r2.current.posts.every((p) => p.tags.some((t) => t.id === "react"))
+        ).toBe(true)
     })
 })
 

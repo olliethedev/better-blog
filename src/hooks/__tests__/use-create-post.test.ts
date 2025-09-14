@@ -1,5 +1,5 @@
+import type { BlogDataProvider } from "@/types"
 import { act, renderHook } from "@testing-library/react"
-import type { BlogDataProvider } from "../../core/types"
 import { createWrapper } from "../../test/utils"
 import { useCreatePost } from "../index"
 

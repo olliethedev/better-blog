@@ -2,15 +2,13 @@
 
 import { BetterBlogAttribution } from "@/components/better-blog/better-blog-attribution"
 import { useBlogContext } from "@/context/better-blog-context"
-import { cn } from "../../../lib/utils"
+import { PageLayout } from "./page-layout"
 
 export function PageWrapper({ children, className }: { children: React.ReactNode, className?: string }) {
     const { showAttribution } = useBlogContext()
     return (
         <>
-            <div className={cn("container mx-auto flex min-h-dvh flex-col items-center gap-16 px-4 py-24 lg:px-16", className)}>
-                {children}
-            </div>
+            <PageLayout className={className}>{children}</PageLayout>
 
             {showAttribution && <BetterBlogAttribution />}
         </>

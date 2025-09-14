@@ -1,7 +1,7 @@
+import type { BlogDataProvider } from "@/types"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import type React from "react"
 import { BlogProvider } from "../context/better-blog-context"
-import type { BlogDataProvider } from "../core/types"
 
 export function createWrapper(
     provider: BlogDataProvider,

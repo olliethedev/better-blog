@@ -1,12 +1,6 @@
+import type { BlogDataProvider } from "@/types"
 import { createQueryKeys } from "@lukemorales/query-key-factory"
-import type { BlogDataProvider } from "../core/types"
-
-export interface PostsListParams {
-    tag?: string
-    query?: string
-    limit?: number
-    published?: boolean
-}
+import type { PostsListParams } from "./types"
 
 export function createPostsQueries(provider: BlogDataProvider) {
     return createQueryKeys("posts", {

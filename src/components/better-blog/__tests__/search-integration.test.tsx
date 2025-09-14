@@ -1,8 +1,9 @@
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { render, screen, waitFor } from "@testing-library/react"
 import type React from "react"
 import { BlogProvider } from "../../../context/better-blog-context"
-import type { BlogDataProvider, Post } from "../../../core/types"
 import { usePostSearch } from "../../../hooks"
 import { HomePageComponent } from "../pages/home-page"
 

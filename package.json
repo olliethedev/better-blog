@@ -21,6 +21,7 @@
     "type": "module",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
+    "sideEffects": ["./dist/style.css"],
     "exports": {
         "./css": "./dist/style.css",
         ".": {
@@ -31,6 +32,46 @@
             "require": {
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
+            }
+        },
+        "./types": {
+            "import": {
+                "types": "./dist/types.d.ts",
+                "default": "./dist/types.js"
+            },
+            "require": {
+                "types": "./dist/types.d.cts",
+                "default": "./dist/types.cjs"
+            }
+        },
+        "./queries": {
+            "import": {
+                "types": "./dist/queries.d.ts",
+                "default": "./dist/queries.js"
+            },
+            "require": {
+                "types": "./dist/queries.d.cts",
+                "default": "./dist/queries.cjs"
+            }
+        },
+        "./hooks": {
+            "import": {
+                "types": "./dist/hooks.d.ts",
+                "default": "./dist/hooks.js"
+            },
+            "require": {
+                "types": "./dist/hooks.d.cts",
+                "default": "./dist/hooks.cjs"
+            }
+        },
+        "./router": {
+            "import": {
+                "types": "./dist/router.d.ts",
+                "default": "./dist/router.js"
+            },
+            "require": {
+                "types": "./dist/router.d.cts",
+                "default": "./dist/router.cjs"
             }
         },
         "./client": {
@@ -104,7 +145,7 @@
             }
         }
     },
-    "files": ["src", "dist"],
+    "files": ["dist"],
     "keywords": ["typescript", "react", "blog", "shadcn", "nextjs"],
     "author": "olliethedev",
     "license": "MIT",

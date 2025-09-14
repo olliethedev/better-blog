@@ -1,5 +1,4 @@
-import { matchRoute } from "../../core/router"
-import { generateStaticRoutes } from "../../core/router"
+import { matchRoute } from "../router"
 
 describe("matchRoute", () => {
     test("matches home /", () => {
@@ -92,21 +91,3 @@ describe("matchRoute with basePath stripping", () => {
     })
 })
 
-describe("generateStaticRoutes", () => {
-    test("collects all declared static routes", () => {
-        const staticRoutes = generateStaticRoutes()
-        // From routes.tsx: home: [], drafts: ['drafts'], new: ['new']
-        expect(staticRoutes).toEqual(
-            expect.arrayContaining([
-                { slug: [] },
-                { slug: ["drafts"] },
-                { slug: ["new"] }
-            ])
-        )
-
-        // Ensure no unexpected shape
-        for (const route of staticRoutes) {
-            expect(Array.isArray(route.slug)).toBe(true)
-        }
-    })
-})

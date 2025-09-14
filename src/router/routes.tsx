@@ -1,5 +1,6 @@
 // Server-safe route definitions (no React component imports)
-import type { RouteDefinition, RouteSchema } from "./route-schema"
+import type { RouteSchema } from "./types";
+import type { RouteDefinition } from "./types";
 
 const routes: RouteDefinition[] = [
     {

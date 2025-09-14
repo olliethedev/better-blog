@@ -1,10 +1,8 @@
 import { slugify } from "@/lib/format-utils"
+import type { BlogDataProvider } from "@/types"
+import type { BlogDataProviderConfig } from "@/types"
 import type { Kysely } from "kysely"
 import { sql } from "kysely"
-import type {
-    BlogDataProvider,
-    BlogDataProviderConfig,
-} from "../../core/types"
 import type { PostCreateExtendedInput } from "../../schema/post"
 import type { KyselyDatabaseType } from "./dialect"
 

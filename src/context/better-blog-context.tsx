@@ -3,9 +3,10 @@
 import { PostCard } from "@/components/better-blog/post-card"
 import { PostCardSkeleton } from "@/components/better-blog/post-card-skeleton"
 import { DEFAULT_API_BASE_PATH, DEFAULT_PAGES_BASE_PATH } from "@/lib/constants"
+import type { PageComponentOverrides } from "@/types"
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import React, { useMemo } from "react"
-import type { PageComponentOverrides } from "../core/client-components"
-import type { BlogDataProvider, Post } from "../core/types"
 import { normalizeBasePath } from "../lib/utils"
 import {
     type BlogLocalization,

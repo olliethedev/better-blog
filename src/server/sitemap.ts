@@ -1,6 +1,7 @@
 import { DEFAULT_PAGES_BASE_PATH } from "@/lib/constants"
 import { joinPaths, normalizeBasePath, normalizeBaseURL } from "@/lib/utils"
-import type { BlogDataProvider, Post } from "../core/types"
+import type { Post } from "@/types"
+import type { BlogDataProvider } from "@/types"
 
 type LangCode =
     | "aa"

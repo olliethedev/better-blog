@@ -4,8 +4,6 @@ export { BlogPageRouter } from "./components/better-blog/blog-router-page"
 export * from "./context/better-blog-context"
 export * from "./context/route-context"
 
-export type { PageComponentOverrides } from "./core/client-components"
-
 export * from "./hooks"
 
 

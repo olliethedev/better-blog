@@ -1,8 +1,6 @@
 import { DEFAULT_LOCALE } from "@/lib/constants"
-import type {
-    BlogDataProvider,
-    BlogDataProviderConfig,
-} from "../core/types"
+import type { BlogDataProviderConfig } from "@/types"
+import type { BlogDataProvider } from "@/types"
 import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../schema/post"
 
 // Very loose typing on purpose: consumer's Drizzle client is external to this lib

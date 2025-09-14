@@ -1,15 +1,15 @@
 import { PageHeaderSkeleton } from "../../components/better-blog/page-header-skeleton"
-import { PageWrapper } from "../../components/better-blog/pages/page-wrapper"
+import { PageLayout } from "../../components/better-blog/pages/page-layout"
 import { Skeleton } from "../../components/ui/skeleton"
 
 export function PostPageSkeleton() {
     return (
-        <PageWrapper>
+        <PageLayout>
             <div className="flex flex-col items-center gap-3">
                 <PageHeaderSkeleton />
             </div>
             <PostSkeleton />
-        </PageWrapper>
+        </PageLayout>
     )
 }
 

@@ -14,7 +14,7 @@ import {
     useBlogPath,
     useComponents
 } from "@/context/better-blog-context"
-import type { Post } from "@/core/types"
+import type { Post } from "@/types"
 import { formatDate } from "date-fns"
 import { CalendarIcon, ImageIcon } from "lucide-react"
 import { ArrowRightIcon } from "lucide-react"

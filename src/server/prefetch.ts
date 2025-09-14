@@ -1,8 +1,9 @@
 // Server-safe prefetch utilities
 // NO "use client" directive - can be called from server components
 
-import type { QueryClient } from '@tanstack/react-query';
-import type { BlogDataProvider, RouteMatch } from "../core/types"
+import type { BlogDataProvider } from "@/types"
+import type { RouteMatch } from "@/types"
+import type { QueryClient } from "@tanstack/react-query"
 import { createBlogQueryKeys } from "../queries"
 
 export async function prefetchBlogData(options: {

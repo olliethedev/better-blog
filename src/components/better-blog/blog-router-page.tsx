@@ -1,13 +1,24 @@
 "use client";
 
+import type { PageComponentOverrides } from "@/types"
+import type { RouteMatch } from "@/types"
 import {
     useBlogContext,
     usePageOverrides
 } from "../../context/better-blog-context"
 import { RouteProvider } from "../../context/route-context"
-import { resolveRouteComponent } from "../../core/component-resolver"
-import { matchRoute } from "../../core/router"
-import type { RouteMatch } from "../../core/types"
+
+import { matchRoute } from "../../router/router"
+
+import { resolveLoadingComponent } from "@/router/loading-resolver"
+import {
+    DraftsPageComponent,
+    EditPostPageComponent,
+    HomePageComponent,
+    NewPostPageComponent,
+    PostPageComponent,
+    TagPageComponent
+} from "./pages"
 
 function NotFoundPage({ message }: { message: string }) {
     return (
@@ -63,4 +74,79 @@ export function BlogPageRouter({
         </RouteProvider>
     )
 }
+
+/**
+ * Resolves the component and loading component for a given route match
+ * This keeps RouteMatch pure while using client-side component mappings
+ */
+function resolveRouteComponents(
+    routeMatch: RouteMatch,
+    overrides?: PageComponentOverrides
+): {
+    Component?: React.ComponentType
+    LoadingComponent?: React.ComponentType
+} {
+    return {
+        Component: resolveComponent(routeMatch.type, overrides),
+        LoadingComponent: resolveLoadingComponent(routeMatch.type, overrides)
+    }
+}
+
+/**
+ * Gets just the component for a route match (convenience function)
+ */
+export function resolveRouteComponent(
+    routeMatch: RouteMatch,
+    overrides?: PageComponentOverrides
+): React.ComponentType | undefined {
+    const { Component } = resolveRouteComponents(routeMatch, overrides)
+    return Component
+}
+
+// Default component mappings (excluding 'unknown' type)
+export const defaultComponents = {
+    home: HomePageComponent,
+    post: PostPageComponent,
+    tag: TagPageComponent,
+    drafts: DraftsPageComponent,
+    new: NewPostPageComponent,
+    edit: EditPostPageComponent
+} as const
+
+/**
+ * Resolves the final component for a route type, applying overrides
+ */
+export function resolveComponent(
+    routeType: RouteMatch["type"],
+    overrides?: PageComponentOverrides
+): React.ComponentType | undefined {
+    // Handle unknown route types early
+    if (routeType === "unknown" || !(routeType in defaultComponents)) {
+        return undefined
+    }
+
+    const type = routeType
+
+    // Check for override first
+    if (overrides) {
+        switch (type) {
+            case "home":
+                return overrides.HomeComponent || defaultComponents.home
+            case "post":
+                return overrides.PostComponent || defaultComponents.post
+            case "tag":
+                return overrides.TagComponent || defaultComponents.tag
+            case "drafts":
+                return overrides.DraftsComponent || defaultComponents.drafts
+            case "new":
+                return overrides.NewPostComponent || defaultComponents.new
+            case "edit":
+                return overrides.EditPostComponent || defaultComponents.edit
+        }
+    }
+
+    // Fall back to default
+    return defaultComponents[type]
+}
+
 
