@@ -99,8 +99,7 @@ MIT
 
 ---
 
-## Roadmap (short)
-- clean up type definitions, variable names, etc.
+## TODO
 - e2e tests
 - add example projects
 - internationalization unit tests for blog data providers
