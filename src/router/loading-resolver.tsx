@@ -1,5 +1,5 @@
 // This file is intentionally kept separate from client components to ensure
-// it can be used on both server and client in Next.js environments
+// it can be used on both server and client in environments like Next.js
 
 import type { PageComponentOverrides, RouteMatch } from "@/types"
 import { FormPageSkeleton } from "../components/better-blog/form-page-skeleton"

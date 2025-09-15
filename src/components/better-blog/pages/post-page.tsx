@@ -1,13 +1,11 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
+import { useBlogContext } from "@/hooks/context-hooks"
+import { useComponents } from "@/hooks/context-hooks"
+import { useBlogPath } from "@/hooks/context-hooks"
+import { useRoute } from "@/hooks/context-hooks"
 import { formatDate } from "date-fns"
-import {
-    useBlogContext,
-    useBlogPath,
-    useComponents
-} from "../../../context/better-blog-context"
-import { useRoute } from "../../../context/route-context"
 import { usePost } from "../../../hooks"
 import { EmptyList } from "../empty-list"
 import { PostLoading } from "../loading"

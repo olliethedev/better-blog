@@ -14,7 +14,7 @@ Use the in-memory demo provider to get started quickly without a real database. 
 ### Import
 
 ```ts
-import { createDemoMemoryDBProvider } from "better-blog";
+import { createSeededMemoryProvider } from "better-blog/providers/memory";
 ```
 
 This returns a `BlogDataProvider` with seeded demo posts and tags.
@@ -25,9 +25,9 @@ Define the provider once in a shared module (e.g. `src/lib/blog-provider.ts`) an
 
 ```ts
 // src/lib/blog-provider.ts
-import { createDemoMemoryDBProvider } from "better-blog";
+import { createSeededMemoryProvider } from "better-blog/providers/memory";
 
-export const provider = await createDemoMemoryDBProvider();
+export const provider = await createSeededMemoryProvider();
 ```
 
 #### Use with server adapter (SSR/SSG)
@@ -54,7 +54,7 @@ See the API routes guide for full details. Minimal example:
 
 ```ts
 // Next.js (app/api/posts/[...all]/route.ts)
-import { createBlogApiRouter } from "better-blog/server/api";
+import { createBlogApiRouter } from "better-blog/api";
 import { provider } from "@/lib/blog-provider";
 
 const { handler } = createBlogApiRouter({ provider, openapi: { disabled: false } });
@@ -68,7 +68,7 @@ export const DELETE = handler;
 ```ts
 // TanStack Start (src/routes/api/posts/$.ts)
 import { createServerFileRoute } from "@tanstack/react-start/server";
-import { createBlogApiRouter } from "better-blog/server/api";
+import { createBlogApiRouter } from "better-blog/api";
 import { provider } from "@/lib/blog-provider";
 
 const { handler } = createBlogApiRouter({ provider, basePath: "/api/posts" });

@@ -7,7 +7,7 @@ import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
 import { Suspense } from "react"
 import { BlogPageRouter } from "../../components/better-blog/blog-router-page"
 import { matchRoute } from "../../router"
-import { prefetchBlogData } from "../prefetch"
+import { prefetchBlogData } from "./prefetch"
 import type { BlogPostMetadata } from "./types"
 
 import { resolveLoadingComponent } from "@/router/loading-resolver"

@@ -1,7 +1,8 @@
 "use client"
 
+import { useBlogContext } from "@/hooks/context-hooks"
+import { buildPath } from "@/lib/utils"
 import * as React from "react"
-import { buildPath, useBlogContext } from "../../context/better-blog-context"
 import { usePostSearch } from "../../hooks"
 import { stripHtml, stripMarkdown } from "../../lib/format-utils"
 import { HighlightText } from "./highlight-text"

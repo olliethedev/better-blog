@@ -8,7 +8,7 @@ import { Pool } from "pg"
 
 import type { BlogDataProvider } from "@/types"
 import { getAuthor } from "../../providers/__tests__/test-options"
-import { createDrizzleProvider } from "../drizzle-provider"
+import { createDrizzleProvider } from "../drizzle/drizzle-provider"
 import { commonProviderTests } from "./common-provider-tests"
 
 // Reuse the existing Kysely migrations to prepare the schema

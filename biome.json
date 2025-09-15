@@ -12,8 +12,8 @@
             "./docs/**",
             "./src/providers/sql/bun-sqlite-dialect.ts",
             "./src/providers/sql/node-sqlite-dialect.ts",
-            "./src/providers/prisma-provider.ts",
-            "./src/providers/drizzle-provider.ts"
+            "./src/providers/prisma/prisma-provider.ts",
+            "./src/providers/dirzzle/drizzle-provider.ts"
         ]
     },
     "formatter": {

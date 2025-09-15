@@ -4,7 +4,7 @@
 import type { BlogDataProvider } from "@/types"
 import type { RouteMatch } from "@/types"
 import type { QueryClient } from "@tanstack/react-query"
-import { createBlogQueryKeys } from "../queries"
+import { createBlogQueryKeys } from "../../queries"
 
 export async function prefetchBlogData(options: {
     match: RouteMatch

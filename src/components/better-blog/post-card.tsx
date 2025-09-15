@@ -9,11 +9,9 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
-import {
-    useBlogContext,
-    useBlogPath,
-    useComponents
-} from "@/context/better-blog-context"
+import { useBlogPath } from "@/hooks/context-hooks"
+import { useComponents } from "@/hooks/context-hooks"
+import { useBlogContext } from "@/hooks/context-hooks"
 import type { Post } from "@/types"
 import { formatDate } from "date-fns"
 import { CalendarIcon, ImageIcon } from "lucide-react"

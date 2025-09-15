@@ -8,14 +8,16 @@ description: How Better Blog is structured and key APIs
 - `better-blog`: types, schemas, utilities, and memory DB helpers
 - `better-blog/queries`: query helpers (`getOrCreateQueryClient`, query keys)
 - `better-blog/hooks`: React hooks (client)
-- `better-blog/client`: `BlogPageRouter`, `BlogProvider`, context and UI types
+- `better-blog/client`: `BlogPageRouter` and page components (client-only)
+- `better-blog/context`: `BlogProvider`, context and UI types
 - `better-blog/router`: route helpers (`matchRoute`, `resolveLoadingComponent`)
 - `better-blog/server/pages`: SSR/SSG adapter (`createBlogServerAdapter`)
-- `better-blog/server/api`: API router (`createBlogApiRouter`)
-- `better-blog/server/sitemap`: sitemap generation (`createBlogSitemap`)
-- `better-blog/server/sql`: SQL provider exports
-- `better-blog/server/prisma`: Prisma provider exports
-- `better-blog/server/drizzle`: Drizzle provider exports
+- `better-blog/api`: API router (`createBlogApiRouter`)
+- `better-blog/sitemap`: sitemap generation (`createBlogSitemap`)
+- `better-blog/providers/sql`: SQL provider exports
+- `better-blog/providers/prisma`: Prisma provider exports
+- `better-blog/providers/drizzle`: Drizzle provider exports
+- `better-blog/providers/memory`: In-memory demo provider
 
 ### Data provider
 

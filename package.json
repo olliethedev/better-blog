@@ -1,7 +1,7 @@
 {
     "name": "better-blog",
     "homepage": "https://better-blog.com",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "description": "Better Blog",
     "repository": {
         "type": "git",
@@ -74,6 +74,16 @@
                 "default": "./dist/router.cjs"
             }
         },
+        "./context": {
+            "import": {
+                "types": "./dist/context.d.ts",
+                "default": "./dist/context.js"
+            },
+            "require": {
+                "types": "./dist/context.d.cts",
+                "default": "./dist/context.cjs"
+            }
+        },
         "./client": {
             "import": {
                 "types": "./dist/client.d.ts",
@@ -82,6 +92,16 @@
             "require": {
                 "types": "./dist/client.d.cts",
                 "default": "./dist/client.cjs"
+            }
+        },
+        "./api": {
+            "import": {
+                "types": "./dist/api.d.ts",
+                "default": "./dist/api.js"
+            },
+            "require": {
+                "types": "./dist/api.d.cts",
+                "default": "./dist/api.cjs"
             }
         },
         "./server/pages": {
@@ -94,55 +114,83 @@
                 "default": "./dist/server/pages.cjs"
             }
         },
-        "./server/api": {
+        "./sitemap": {
             "import": {
-                "types": "./dist/server/api.d.ts",
-                "default": "./dist/server/api.js"
+                "types": "./dist/sitemap.d.ts",
+                "default": "./dist/sitemap.js"
             },
             "require": {
-                "types": "./dist/server/api.d.cts",
-                "default": "./dist/server/api.cjs"
+                "types": "./dist/sitemap.d.cts",
+                "default": "./dist/sitemap.cjs"
             }
         },
-        "./server/sitemap": {
+        "./providers/api": {
             "import": {
-                "types": "./dist/server/sitemap.d.ts",
-                "default": "./dist/server/sitemap.js"
+                "types": "./dist/providers/api.d.ts",
+                "default": "./dist/providers/api.js"
             },
             "require": {
-                "types": "./dist/server/sitemap.d.cts",
-                "default": "./dist/server/sitemap.cjs"
+                "types": "./dist/providers/api.d.cts",
+                "default": "./dist/providers/api.cjs"
             }
         },
-        "./server/sql": {
+        "./providers/drizzle": {
             "import": {
-                "types": "./dist/server/sql.d.ts",
-                "default": "./dist/server/sql.js"
+                "types": "./dist/providers/drizzle.d.ts",
+                "default": "./dist/providers/drizzle.js"
             },
             "require": {
-                "types": "./dist/server/sql.d.cts",
-                "default": "./dist/server/sql.cjs"
+                "types": "./dist/providers/drizzle.d.cts",
+                "default": "./dist/providers/drizzle.cjs"
             }
         },
-        "./server/prisma": {
+        "./providers/memory": {
             "import": {
-                "types": "./dist/server/prisma.d.ts",
-                "default": "./dist/server/prisma.js"
+                "types": "./dist/providers/memory.d.ts",
+                "default": "./dist/providers/memory.js"
             },
             "require": {
-                "types": "./dist/server/prisma.d.cts",
-                "default": "./dist/server/prisma.cjs"
+                "types": "./dist/providers/memory.d.cts",
+                "default": "./dist/providers/memory.cjs"
             }
         },
-        "./server/drizzle": {
+        "./providers/prisma": {
             "import": {
-                "types": "./dist/server/drizzle.d.ts",
-                "default": "./dist/server/drizzle.js"
+                "types": "./dist/providers/prisma.d.ts",
+                "default": "./dist/providers/prisma.js"
             },
             "require": {
-                "types": "./dist/server/drizzle.d.cts",
-                "default": "./dist/server/drizzle.cjs"
+                "types": "./dist/providers/prisma.d.cts",
+                "default": "./dist/providers/prisma.cjs"
             }
+        },
+        "./providers/sql": {
+            "import": {
+                "types": "./dist/providers/sql.d.ts",
+                "default": "./dist/providers/sql.js"
+            },
+            "require": {
+                "types": "./dist/providers/sql.d.cts",
+                "default": "./dist/providers/sql.cjs"
+            }
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "types": ["dist/types.d.ts"],
+            "queries": ["dist/queries.d.ts"],
+            "hooks": ["dist/hooks.d.ts"],
+            "router": ["dist/router.d.ts"],
+            "context": ["dist/context.d.ts"],
+            "client": ["dist/client.d.ts"],
+            "api": ["dist/api.d.ts"],
+            "server/pages": ["dist/server/pages.d.ts"],
+            "sitemap": ["dist/sitemap.d.ts"],
+            "providers/api": ["dist/providers/api.d.ts"],
+            "providers/drizzle": ["dist/providers/drizzle.d.ts"],
+            "providers/memory": ["dist/providers/memory.d.ts"],
+            "providers/prisma": ["dist/providers/prisma.d.ts"],
+            "providers/sql": ["dist/providers/sql.d.ts"]
         }
     },
     "files": ["dist"],

@@ -10,7 +10,7 @@ Use the server sitemap helper to generate a framework-friendly sitemap for your 
 #### API
 
 ```ts
-import { createBlogSitemap } from 'better-blog/server/sitemap'
+import { createBlogSitemap } from 'better-blog/sitemap'
 
 type Sitemap = Array<{
   url: string
@@ -34,7 +34,7 @@ Create `app/sitemap.ts`:
 ```ts
 import type { MetadataRoute } from 'next'
 import { dataProvider } from '@/lib/blog-data-provider'
-import { createBlogSitemap } from 'better-blog/server/sitemap'
+import { createBlogSitemap } from 'better-blog/sitemap'
 
 const BASE_URL = 'https://www.better-blog.com'
 

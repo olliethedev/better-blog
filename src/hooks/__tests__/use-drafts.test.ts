@@ -1,11 +1,11 @@
 import { renderHook, waitFor } from "@testing-library/react"
-import { createDemoMemoryDBProvider } from "../../providers/dummy-memory-db-provider"
+import { createSeededMemoryProvider } from "../../providers/memory/memory-provider"
 import { createWrapper } from "../../test/utils"
 import { useDrafts } from "../index"
 
 describe("useDrafts", () => {
     test("filters unpublished and paginates", async () => {
-        const provider = await createDemoMemoryDBProvider()
+        const provider = await createSeededMemoryProvider()
         const wrapper = createWrapper(provider)
         const { result } = renderHook(() => useDrafts(), { wrapper })
         await waitFor(() => expect(result.current.isLoading).toBe(false))

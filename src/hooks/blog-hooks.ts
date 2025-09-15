@@ -10,12 +10,12 @@ import {
 } from "@tanstack/react-query"
 import type { InfiniteData } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
-import { useBlogContext } from "../context/better-blog-context"
 import { createBlogQueryKeys } from "../queries"
 import type {
     PostCreateExtendedInput,
     PostUpdateExtendedInput
 } from "../schema/post"
+import { useBlogContext } from "./context-hooks"
 import { useDebounce } from "./use-debounce"
 
 import type { UseDraftsResult, UsePostResult, UsePostSearchOptions, UsePostSearchResult, UsePostsOptions, UsePostsResult, UseTagsResult } from "./types"

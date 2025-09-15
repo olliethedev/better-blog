@@ -6,12 +6,10 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import {
-    useAdminPermissions,
-    useBlogContext,
-    useBlogPath,
-    useComponents
-} from "@/context/better-blog-context"
+import { useAdminPermissions } from "@/hooks/context-hooks"
+import { useBlogPath } from "@/hooks/context-hooks"
+import { useComponents } from "@/hooks/context-hooks"
+import { useBlogContext } from "@/hooks/context-hooks"
 import { SettingsIcon } from "lucide-react"
 
 export function ListPageAdminDropdown() {
