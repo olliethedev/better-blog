@@ -22,7 +22,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: pnpm -w install
+        run: pnpm install -r --frozen-lockfile
 
       - name: Start Docker Containers
         run: |
