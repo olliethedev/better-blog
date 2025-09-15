@@ -85,6 +85,7 @@ Optional: for local linking use [yalc](https://github.com/wclr/yalc).
 ### Testing locally in an app
 
 ```bash
+cd packages/better-blog/
 yalc publish --push
 # in your app
 yalc add better-blog && pnpm install
