@@ -3,25 +3,18 @@
     "tasks": {
         "build": {
             "dependsOn": ["^build"],
-            "outputs": ["dist/**"],
-            "inputs": [
-                "src/**",
-                "tsconfig.json",
-                "tsup.config.ts",
-                "package.json",
-                "pnpm-lock.yaml"
-            ]
+            "outputs": ["dist/**", ".next/**", "build/**"]
         },
         "dev": {
-            "persistent": true,
             "cache": false,
-            "inputs": [
-                "src/**",
-                "tsconfig.json",
-                "tsup.config.ts",
-                "package.json",
-                "pnpm-lock.yaml"
-            ]
+            "persistent": true
+        },
+        "test": {
+            "dependsOn": ["^build"],
+            "outputs": []
+        },
+        "lint": {
+            "outputs": []
         }
     }
 }

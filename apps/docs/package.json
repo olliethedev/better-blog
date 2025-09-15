@@ -9,6 +9,7 @@
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
+    "better-blog": "workspace:*",
     "framer-motion": "^12.19.1",
     "fumadocs-core": "15.7.11",
     "fumadocs-docgen": "^3.0.0",
@@ -35,10 +36,5 @@
     "tailwindcss": "^4.1.10",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@10.12.1",
-  "pnpm": {
-    "overrides": {
-      "fumadocs-core": "15.7.11"
-    }
-  }
+  "packageManager": "pnpm@10.12.1"
 }

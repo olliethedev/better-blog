@@ -1,0 +1,128 @@
+---
+title: Hooks
+---
+
+The following React hooks are available. Use these in custom components and pages.
+
+## Data Hooks
+
+### usePosts
+
+Fetch a paginated list of posts, with load-more support and optional filtering.
+
+#### Options
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UsePostsOptions" />
+
+#### Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UsePostsResult" />
+
+### usePost
+
+Fetch a single post by `slug`.
+
+#### Parameters
+
+- slug: string | undefined
+
+#### Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UsePostResult" />
+
+### useTagPosts
+
+Fetch posts filtered by tag with pagination.
+
+#### Parameters
+
+- tag: string | undefined
+
+#### Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UsePostsResult" />
+
+### useTags
+
+Fetch all unique tags across posts.
+
+#### Options
+
+This hook has no options.
+
+#### Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UseTagsResult" />
+
+### useDrafts
+
+Fetch draft posts with pagination.
+
+#### Options
+
+This hook has no options.
+
+#### Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UseDraftsResult" />
+
+### usePostSearch
+
+Search posts by free-text query. Internally composes `usePosts` with debouncing.
+
+#### Options
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UsePostSearchOptions" />
+
+#### Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UsePostSearchResult" />
+
+## Misc
+
+### Mutations
+
+Perform create/update/delete operations on posts. These return TanStack Query mutation objects.
+
+#### useCreatePost — Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UseCreatePostResult" />
+
+#### useUpdatePost — Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UseUpdatePostResult" />
+
+#### useDeletePost — Result
+
+<AutoTypeTable path="../../packages/better-blog/src/hooks/types.ts" name="UseDeletePostResult" />
+
+### Context & Routing
+
+Utilities for consuming Better Blog context and routing information.
+
+#### useBlogContext — Result
+
+<AutoTypeTable path="../../packages/better-blog/src/context/types.ts" name="BlogContextType" />
+
+#### useComponents — Result
+
+<AutoTypeTable path="../../packages/better-blog/src/context/types.ts" name="BlogUIComponents" />
+
+#### usePageOverrides — Result
+
+<AutoTypeTable path="../../packages/better-blog/src/types/index.ts" name="PageComponentOverrides" />
+
+#### useBasePath — Result
+
+Returns: string
+
+#### useBlogPath — Parameters & Result
+
+- Parameters: `(...segments: Array<string | number | undefined | null>)`
+- Returns: string
+
+#### useRoute — Result
+
+<AutoTypeTable path="../../packages/better-blog/src/context/types.ts" name="RouteContextValue" />
+
+

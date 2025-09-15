@@ -7,6 +7,7 @@ const config = {
   reactStrictMode: true,
   basePath: '/docs',
   assetPrefix: '/docs',
+  transpilePackages: ['better-blog']
 };
 
 export default withMDX(config);

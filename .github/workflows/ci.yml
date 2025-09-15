@@ -20,10 +20,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          # Do not enable dependency cache because repo doesn't commit pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm -w install
 
       - name: Start Docker Containers
         run: |
@@ -31,10 +30,17 @@ jobs:
           # Wait for services to be ready
           sleep 20
 
-      - name: Run tests
-        run: pnpm test
+      - name: Lint
+        run: pnpm -w lint
+
+      - name: Build
+        run: pnpm -w build
+
+      - name: Test
+        run: pnpm -w test
 
       - name: Stop Docker Containers
+        if: always()
         run: docker compose down
 
 
