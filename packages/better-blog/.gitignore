@@ -4,8 +4,3 @@
 
 /.turbo
 /coverage
-/.tsup
-/.vscode
-.vercel
-
-dev.db

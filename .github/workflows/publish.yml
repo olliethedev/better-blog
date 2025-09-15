@@ -27,18 +27,17 @@ jobs:
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
-          # Do not enable dependency cache because repo doesn't commit pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm -w install
 
-      - name: Build
-        run: pnpm build
+      - name: Build workspace
+        run: pnpm -w build
 
-      - name: Verify tag matches package.json version
+      - name: Verify tag matches package version
+        working-directory: packages/better-blog
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
-          # Determine tag from release event or fallback to ref
           if [ -n "${{ github.event.release.tag_name }}" ]; then
             RAW_TAG="${{ github.event.release.tag_name }}"
           else
@@ -51,6 +50,7 @@ jobs:
           fi
 
       - name: Publish to npm
+        working-directory: packages/better-blog
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance

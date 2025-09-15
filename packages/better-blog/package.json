@@ -1,0 +1,288 @@
+{
+    "name": "better-blog",
+    "homepage": "https://better-blog.com",
+    "version": "0.0.17",
+    "description": "Better Blog",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/olliethedev/better-blog"
+    },
+    "scripts": {
+        "pretest": "pnpm prisma:test:generate",
+        "build": "tsup --clean --dts  && cp src/style.css dist/style.css",
+        "dev": "tsup --watch --onSuccess \"yalc publish --push\"",
+        "prepublishOnly": "rm -rf dist && turbo build",
+        "test": "jest --runInBand",
+        "test:watch": "jest --watch --runInBand",
+        "test:coverage": "jest --coverage --runInBand",
+        "prisma:test:generate": "prisma generate --schema src/providers/__tests__/prisma/schema.prisma",
+        "prisma:test:push": "mkdir -p .db && prisma db push --force-reset --schema src/providers/__tests__/prisma/schema.prisma"
+    },
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "sideEffects": ["./dist/style.css"],
+    "exports": {
+        "./css": "./dist/style.css",
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            },
+            "require": {
+                "types": "./dist/index.d.cts",
+                "default": "./dist/index.cjs"
+            }
+        },
+        "./types": {
+            "import": {
+                "types": "./dist/types.d.ts",
+                "default": "./dist/types.js"
+            },
+            "require": {
+                "types": "./dist/types.d.cts",
+                "default": "./dist/types.cjs"
+            }
+        },
+        "./queries": {
+            "import": {
+                "types": "./dist/queries.d.ts",
+                "default": "./dist/queries.js"
+            },
+            "require": {
+                "types": "./dist/queries.d.cts",
+                "default": "./dist/queries.cjs"
+            }
+        },
+        "./hooks": {
+            "import": {
+                "types": "./dist/hooks.d.ts",
+                "default": "./dist/hooks.js"
+            },
+            "require": {
+                "types": "./dist/hooks.d.cts",
+                "default": "./dist/hooks.cjs"
+            }
+        },
+        "./router": {
+            "import": {
+                "types": "./dist/router.d.ts",
+                "default": "./dist/router.js"
+            },
+            "require": {
+                "types": "./dist/router.d.cts",
+                "default": "./dist/router.cjs"
+            }
+        },
+        "./context": {
+            "import": {
+                "types": "./dist/context.d.ts",
+                "default": "./dist/context.js"
+            },
+            "require": {
+                "types": "./dist/context.d.cts",
+                "default": "./dist/context.cjs"
+            }
+        },
+        "./client": {
+            "import": {
+                "types": "./dist/client.d.ts",
+                "default": "./dist/client.js"
+            },
+            "require": {
+                "types": "./dist/client.d.cts",
+                "default": "./dist/client.cjs"
+            }
+        },
+        "./api": {
+            "import": {
+                "types": "./dist/api.d.ts",
+                "default": "./dist/api.js"
+            },
+            "require": {
+                "types": "./dist/api.d.cts",
+                "default": "./dist/api.cjs"
+            }
+        },
+        "./server/pages": {
+            "import": {
+                "types": "./dist/server/pages.d.ts",
+                "default": "./dist/server/pages.js"
+            },
+            "require": {
+                "types": "./dist/server/pages.d.cts",
+                "default": "./dist/server/pages.cjs"
+            }
+        },
+        "./sitemap": {
+            "import": {
+                "types": "./dist/sitemap.d.ts",
+                "default": "./dist/sitemap.js"
+            },
+            "require": {
+                "types": "./dist/sitemap.d.cts",
+                "default": "./dist/sitemap.cjs"
+            }
+        },
+        "./providers/api": {
+            "import": {
+                "types": "./dist/providers/api.d.ts",
+                "default": "./dist/providers/api.js"
+            },
+            "require": {
+                "types": "./dist/providers/api.d.cts",
+                "default": "./dist/providers/api.cjs"
+            }
+        },
+        "./providers/drizzle": {
+            "import": {
+                "types": "./dist/providers/drizzle.d.ts",
+                "default": "./dist/providers/drizzle.js"
+            },
+            "require": {
+                "types": "./dist/providers/drizzle.d.cts",
+                "default": "./dist/providers/drizzle.cjs"
+            }
+        },
+        "./providers/memory": {
+            "import": {
+                "types": "./dist/providers/memory.d.ts",
+                "default": "./dist/providers/memory.js"
+            },
+            "require": {
+                "types": "./dist/providers/memory.d.cts",
+                "default": "./dist/providers/memory.cjs"
+            }
+        },
+        "./providers/prisma": {
+            "import": {
+                "types": "./dist/providers/prisma.d.ts",
+                "default": "./dist/providers/prisma.js"
+            },
+            "require": {
+                "types": "./dist/providers/prisma.d.cts",
+                "default": "./dist/providers/prisma.cjs"
+            }
+        },
+        "./providers/sql": {
+            "import": {
+                "types": "./dist/providers/sql.d.ts",
+                "default": "./dist/providers/sql.js"
+            },
+            "require": {
+                "types": "./dist/providers/sql.d.cts",
+                "default": "./dist/providers/sql.cjs"
+            }
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "types": ["dist/types.d.ts"],
+            "queries": ["dist/queries.d.ts"],
+            "hooks": ["dist/hooks.d.ts"],
+            "router": ["dist/router.d.ts"],
+            "context": ["dist/context.d.ts"],
+            "client": ["dist/client.d.ts"],
+            "api": ["dist/api.d.ts"],
+            "server/pages": ["dist/server/pages.d.ts"],
+            "sitemap": ["dist/sitemap.d.ts"],
+            "providers/api": ["dist/providers/api.d.ts"],
+            "providers/drizzle": ["dist/providers/drizzle.d.ts"],
+            "providers/memory": ["dist/providers/memory.d.ts"],
+            "providers/prisma": ["dist/providers/prisma.d.ts"],
+            "providers/sql": ["dist/providers/sql.d.ts"]
+        }
+    },
+    "files": ["dist"],
+    "keywords": ["typescript", "react", "blog", "shadcn", "nextjs"],
+    "author": "olliethedev",
+    "license": "MIT",
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "devDependencies": {
+        "@biomejs/biome": "1.9.4",
+        "@prisma/client": "^5.22.0",
+        "@tailwindcss/typography": "^0.5.16",
+        "@testing-library/jest-dom": "^6.6.4",
+        "@testing-library/react": "^16.3.0",
+        "@testing-library/user-event": "^14.6.1",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^24.1.0",
+        "@types/pg": "^8.11.10",
+        "@types/react": "^19.1.8",
+        "@types/react-dom": "^19.1.6",
+        "drizzle-orm": "^0.36.0",
+        "esbuild-plugin-preserve-directives": "^0.0.11",
+        "jest": "^30.0.5",
+        "jest-environment-jsdom": "^30.0.5",
+        "kysely": "^0.28.5",
+        "pg": "^8.12.0",
+        "prisma": "^5.22.0",
+        "tailwindcss-animate": "^1.0.7",
+        "ts-jest": "^29.4.0",
+        "tsc-watch": "^7.1.1",
+        "tsup": "^8.5.0",
+        "tsx": "^4.20.3",
+        "turbo": "^2.5.5",
+        "typescript": "^5.8.3"
+    },
+    "peerDependencies": {
+        "@hookform/resolvers": ">=5.0.0",
+        "@prisma/client": ">=5.22.0",
+        "@radix-ui/react-accordion": ">=1.2.0",
+        "@radix-ui/react-alert-dialog": ">=1.1.0",
+        "@radix-ui/react-avatar": ">=1.1.0",
+        "@radix-ui/react-checkbox": ">=1.1.0",
+        "@radix-ui/react-context": ">=1.1.0",
+        "@radix-ui/react-dialog": ">=1.1.0",
+        "@radix-ui/react-dropdown-menu": ">=2.1.0",
+        "@radix-ui/react-icons": ">=1.1.0",
+        "@radix-ui/react-label": ">=2.1.0",
+        "@radix-ui/react-popover": ">=1.1.0",
+        "@radix-ui/react-primitive": ">=2.0.0",
+        "@radix-ui/react-radio-group": ">=1.3.0",
+        "@radix-ui/react-select": ">=2.2.0",
+        "@radix-ui/react-separator": ">=1.1.0",
+        "@radix-ui/react-slot": ">=1.1.0",
+        "@radix-ui/react-switch": ">=1.1.0",
+        "@radix-ui/react-tabs": ">=1.1.0",
+        "@radix-ui/react-toggle": ">=1.1.0",
+        "@radix-ui/react-toggle-group": ">=1.1.0",
+        "@radix-ui/react-tooltip": ">=1.2.0",
+        "@radix-ui/react-use-callback-ref": ">=1.1.0",
+        "@radix-ui/react-use-layout-effect": ">=1.1.0",
+        "@tanstack/react-query": ">=5.66.0",
+        "@types/better-sqlite3": "^7.6.13",
+        "@types/bun": "^1.2.20",
+        "better-sqlite3": "^11.10.0",
+        "class-variance-authority": ">=0.7.0",
+        "clsx": ">=2.1.0",
+        "cmdk": ">=1.1.0",
+        "date-fns": ">=4.1.0",
+        "highlight.js": ">=11.9.0",
+        "kysely": ">=0.28.5",
+        "lucide-react": ">=0.469.0",
+        "next-themes": ">=0.4.0",
+        "prisma": ">=5.22.0",
+        "react": ">=18.0.0",
+        "react-day-picker": ">=9.8.1",
+        "react-dom": ">=18.0.0",
+        "react-hook-form": ">=7.55.0",
+        "react-markdown": ">=10.1.0",
+        "rehype-highlight": ">=7.0.0",
+        "remark-gfm": ">=4.0.0",
+        "sonner": ">=1.7.0",
+        "tailwind-merge": ">=2.6.0",
+        "tailwindcss": ">=3.0.0",
+        "zod": ">=3.24.0"
+    },
+    "packageManager": "pnpm@10.12.1",
+    "dependencies": {
+        "@lukemorales/query-key-factory": "^1.3.4",
+        "@milkdown/crepe": "^7.15.3",
+        "@milkdown/kit": "^7.15.3",
+        "better-call": "^1.0.14"
+    }
+}

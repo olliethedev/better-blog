@@ -1,4 +1,4 @@
-# better-blog
+# better-blog (monorepo)
 
 Add a production-ready, SEO-friendly blog to your React app in minutes. better-blog is a framework-agnostic (React, Next.js, React Router, Tanstack Start, etc...), type-safe router + component set with drop-in setup, SSR/SSG out of the box, and full customization—works with modern frameworks like Next.js App Router and React Router.
 
@@ -43,6 +43,28 @@ Learn how to use Better Blog in your project by following the [installation guid
 
 ---
 
+## Monorepo layout
+
+```
+.
+├─ apps/
+│  └─ docs/                 # Documentation site (Next.js)
+├─ packages/
+│  └─ better-blog/          # Published library package
+├─ pnpm-workspace.yaml      # pnpm workspace globs
+├─ turbo.json               # Turborepo pipeline
+├─ tsconfig.base.json       # Shared TS config
+└─ package.json             # Workspace scripts
+```
+
+## Workspace commands
+
+- `pnpm -w install` – install all deps
+- `pnpm -w build` – build all packages/apps in topological order
+- `pnpm --filter better-blog dev` – watch the library
+- `pnpm --filter better-blog test` – run library tests
+- `pnpm --filter better-blog-docs dev` – run docs locally
+
 ## Developing the library
 
 ### Prereqs
@@ -55,14 +77,15 @@ Optional: for local linking use [yalc](https://github.com/wclr/yalc).
 
 ### Common commands
 
-- `pnpm dev` – watch build and auto-publish via yalc to linked local apps
-- `pnpm build` – production build (ESM + CJS + types)
+- `pnpm --filter better-blog dev` – watch build
+- `pnpm --filter better-blog build` – production build (ESM + CJS + types)
 - `docker compose up -d` – start local database for tests
-- `pnpm test` – run unit tests
+- `pnpm --filter better-blog test` – run unit tests
 
 ### Testing locally in an app
 
 ```bash
+cd packages/better-blog/
 yalc publish --push
 # in your app
 yalc add better-blog && pnpm install
@@ -76,8 +99,7 @@ MIT
 
 ---
 
-## Roadmap (short)
-- clean up type definitions, variable names, etc.
+## TODO
 - e2e tests
 - add example projects
 - internationalization unit tests for blog data providers
