@@ -1,13 +1,13 @@
 import { QueryClient } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
-import { createDemoMemoryDBProvider } from "../../providers/dummy-memory-db-provider"
+import { createSeededMemoryProvider } from "../../providers/memory/memory-provider"
 import { createBlogQueryKeys } from "../../queries"
 import { createWrapper } from "../../test/utils"
 import { usePostSearch, usePosts } from "../index"
 
 describe("usePosts", () => {
     test("loads first page and paginates", async () => {
-        const provider = await createDemoMemoryDBProvider()
+        const provider = await createSeededMemoryProvider()
         const wrapper = createWrapper(provider)
         const { result } = renderHook(() => usePosts({ limit: 10 }), {
             wrapper
@@ -24,7 +24,7 @@ describe("usePosts", () => {
     })
 
     test("handles empty query parameter correctly", async () => {
-        const provider = await createDemoMemoryDBProvider()
+        const provider = await createSeededMemoryProvider()
         const wrapper = createWrapper(provider)
         const queryClient = new QueryClient()
 
@@ -59,7 +59,7 @@ describe("usePosts", () => {
     })
 
     test("generates consistent query keys", async () => {
-        const provider = await createDemoMemoryDBProvider()
+        const provider = await createSeededMemoryProvider()
         const queries = createBlogQueryKeys(provider)
 
         // Test various scenarios to ensure query keys are consistent
@@ -87,7 +87,7 @@ describe("usePosts", () => {
 
 describe("usePostSearch", () => {
     test("handles empty search query correctly", async () => {
-        const provider = await createDemoMemoryDBProvider()
+        const provider = await createSeededMemoryProvider()
         const wrapper = createWrapper(provider)
 
         const { result } = renderHook(
@@ -103,7 +103,7 @@ describe("usePostSearch", () => {
     })
 
     test("returns search results with valid query", async () => {
-        const provider = await createDemoMemoryDBProvider()
+        const provider = await createSeededMemoryProvider()
         const wrapper = createWrapper(provider)
 
         const { result } = renderHook(

@@ -12,11 +12,11 @@ Can be served by any web standard compatible server (like Bun, node, nextjs, sve
 Create `app/api/posts/[...all]/route.ts`:
 
 ```ts
-import { createBlogApiRouter } from "better-blog/server/api"
-import { createDemoMemoryDBProvider } from "better-blog"
+import { createBlogApiRouter } from "better-blog/api"
+import { createSeededMemoryProvider } from "better-blog/providers/memory"
 
 // simple in-memory provider for demo purposes, replace with your own provider
-const provider = await createDemoMemoryDBProvider()
+const provider = await createSeededMemoryProvider()
 
 const { handler } = createBlogApiRouter({
   provider,
@@ -33,10 +33,10 @@ Or with TanStack Start, create `src/routes/api/posts/$.ts`:
 
 ```ts
 import { createServerFileRoute } from "@tanstack/react-start/server"
-import { createBlogApiRouter } from "better-blog/server/api"
-import { createDemoMemoryDBProvider } from "better-blog"
+import { createBlogApiRouter } from "better-blog/api"
+import { createSeededMemoryProvider } from "better-blog/providers/memory"
 
-const provider = await createDemoMemoryDBProvider()
+const provider = await createSeededMemoryProvider()
 
 const { handler } = createBlogApiRouter({
   provider,
@@ -78,7 +78,7 @@ Endpoints exposed:
 Usage with context:
 
 ```tsx
-import { BlogProvider } from "better-blog/client";
+import { BlogProvider } from "better-blog/context";
 
 // Provide API-backed client via built-in API provider
 <BlogProvider apiBasePath="/api/posts">

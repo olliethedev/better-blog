@@ -2,7 +2,6 @@ import { Crepe, CrepeFeature } from "@milkdown/crepe"
 import "@milkdown/crepe/theme/common/style.css"
 import "./markdown-editor-styles.css"
 
-import { useBlogContext } from "@/client"
 import { cn } from "@/lib/utils"
 import { throttle } from "@/lib/utils"
 import { editorViewCtx, parserCtx } from "@milkdown/kit/core"
@@ -10,6 +9,7 @@ import { listener, listenerCtx } from "@milkdown/kit/plugin/listener"
 import { Slice } from "@milkdown/kit/prose/model"
 import { Selection } from "@milkdown/kit/prose/state"
 import { useLayoutEffect, useRef, useState } from "react"
+import { useBlogContext } from "../../../hooks/context-hooks"
 
 export function MarkdownEditor({
     value,

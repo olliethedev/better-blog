@@ -1,7 +1,7 @@
 "use client";
 
-import { useBlogContext } from "../../../context/better-blog-context"
-import { useRoute } from "../../../context/route-context"
+import { useBlogContext } from "@/hooks/context-hooks"
+import { useRoute } from "@/hooks/context-hooks"
 import { usePost } from "../../../hooks"
 import { EmptyList } from "../empty-list"
 import { EditPostForm } from "../forms/post-forms"

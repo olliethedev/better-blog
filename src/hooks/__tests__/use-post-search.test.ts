@@ -1,12 +1,12 @@
 import { QueryClient } from "@tanstack/react-query"
 import { renderHook, waitFor } from "@testing-library/react"
-import { createDemoMemoryDBProvider } from "../../providers/dummy-memory-db-provider"
+import { createSeededMemoryProvider } from "../../providers/memory/memory-provider"
 import { createWrapper } from "../../test/utils"
 import { usePostSearch } from "../index"
 
 describe("usePostSearch", () => {
     test("handles search debouncing correctly", async () => {
-        const provider = await createDemoMemoryDBProvider()
+        const provider = await createSeededMemoryProvider()
         // Create a fresh query client for each test to avoid cache interactions
         const queryClient = new QueryClient({
             defaultOptions: { queries: { retry: false } }
@@ -52,7 +52,7 @@ describe("usePostSearch", () => {
     })
 
     test("preserves last successful results during loading", async () => {
-        const provider = await createDemoMemoryDBProvider()
+        const provider = await createSeededMemoryProvider()
         // Create a fresh query client for each test to avoid cache interactions
         const queryClient = new QueryClient({
             defaultOptions: { queries: { retry: false } }

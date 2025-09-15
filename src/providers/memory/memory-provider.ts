@@ -1,12 +1,10 @@
-import type { Post } from "@/types"
-import type { BlogDataProvider } from "@/types"
-import type { BlogDataProviderConfig } from "@/types"
-import type { Tag } from "@/types"
-import { slugify } from "../lib/format-utils"
+import type { BlogDataProvider, BlogDataProviderConfig, Post, Tag } from "@/types"
+import { slugify } from "../../lib/format-utils"
 import type {
     PostCreateExtendedInput,
     PostUpdateExtendedInput
-} from "../schema/post"
+} from "../../schema/post"
+import type { CreateMemoryProviderOptions } from "./types"
 
 const FULL_MARKDOWN = `
 
@@ -119,9 +117,7 @@ function normalizeQuery(q?: string): string {
     return (q ?? "").toLowerCase().trim()
 }
 
-export interface CreateDummyMemoryDBProviderOptions {
-    seedPosts?: Post[]
-}
+
 
 // Extra tag input shapes supported by the memory provider to match form submissions
 type CreateTagConnectOrCreate = {
@@ -144,8 +140,8 @@ type UpdateTagsInput = {
     }
 }
 
-export async function createDummyMemoryDBProvider(
-    options?: CreateDummyMemoryDBProviderOptions & BlogDataProviderConfig
+export async function createMemoryProvider(
+    options?: CreateMemoryProviderOptions
 ): Promise<BlogDataProvider> {
     const posts: Post[] = Array.isArray(options?.seedPosts)
         ? [...options.seedPosts]
@@ -335,7 +331,7 @@ export async function createDummyMemoryDBProvider(
 }
 
 // Convenience: a pre-seeded provider using demo posts, for quick prototyping
-export async function createDemoMemoryDBProvider(
+export async function createSeededMemoryProvider(
     options?: BlogDataProviderConfig
 ): Promise<BlogDataProvider> {
     const tagNames = [
@@ -402,7 +398,7 @@ export async function createDemoMemoryDBProvider(
         }
     })
 
-    return createDummyMemoryDBProvider({ seedPosts: posts, ...options })
+    return createMemoryProvider({ seedPosts: posts, ...options })
 }
 
 

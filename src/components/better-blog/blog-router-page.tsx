@@ -1,11 +1,9 @@
 "use client";
 
+import { useBlogContext } from "@/hooks/context-hooks"
+import { usePageOverrides } from "@/hooks/context-hooks"
 import type { PageComponentOverrides } from "@/types"
 import type { RouteMatch } from "@/types"
-import {
-    useBlogContext,
-    usePageOverrides
-} from "../../context/better-blog-context"
 import { RouteProvider } from "../../context/route-context"
 
 import { matchRoute } from "../../router/router"

@@ -1,11 +1,9 @@
 import type { BlogDataProvider } from "@/types"
-import type { BlogDataProviderConfig } from "@/types"
-import { type SQLDatabaseOptions, createKyselyAdapter } from "./dialect"
+import { createKyselyAdapter } from "./dialect"
 import { kyselyAdapter } from "./kysely-adapter"
+import type { SQLProviderOptions } from "./types"
 
-export type SQLProviderOptions = BlogDataProviderConfig & {
-    database: SQLDatabaseOptions
-}
+
 
 export async function createSQLProvider(
     options: SQLProviderOptions

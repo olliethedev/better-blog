@@ -28,7 +28,7 @@ pnpm install -D @types/pg
 ```ts
 //./lib/blog-data-provider.ts
 
-import { createSQLProvider } from "better-blog/server/sql"
+import { createSQLProvider } from "better-blog/providers/sql"
 import { Pool } from "pg";
 
 export function createBlogDataProvider() {

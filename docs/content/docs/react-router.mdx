@@ -47,7 +47,7 @@ export default function BlogEntryPage() {
 import { QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom"
-import { type BlogUIComponents, BlogProvider } from "better-blog/client";
+import { type BlogUIComponents, BlogProvider } from "better-blog/context";
 import type { BlogDataProvider } from "better-blog";
 import { getOrCreateQueryClient } from "better-blog/queries";
 import { ThemeProvider } from "./theme-provider";

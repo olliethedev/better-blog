@@ -1,6 +1,5 @@
 import { DEFAULT_API_BASE_PATH } from "@/lib/constants"
 import type { Post } from "@/types"
-import type { BlogDataProvider } from "@/types"
 import { createEndpoint, createRouter } from "better-call"
 import { z } from "zod"
 import {
@@ -8,32 +7,11 @@ import {
     PostListQuerySchema,
     PostUpdateSchema
 } from "../schema/post"
+import type { CreateBlogApiRouterOptions } from "./types"
 
 const listPostsQuerySchema = PostListQuerySchema
 
-export interface RouterOpenAPIOptions {
-    disabled?: boolean
-    path?: string
-    scalar?: {
-        title?: string
-        version?: string
-        description?: string
-        theme?: string
-    }
-}
 
-export interface BlogApiRouterOptions {
-    basePath?: string
-    /**
-     * Expose OpenAPI UI; disabled by default to avoid leaking routes by accident.
-     * Pass-through to better-call's router openapi config.
-     */
-    openapi?: RouterOpenAPIOptions
-}
-
-export interface CreateBlogApiRouterOptions extends BlogApiRouterOptions {
-    provider: BlogDataProvider
-}
 
 export function createBlogApiRouter(options: CreateBlogApiRouterOptions) {
     const { provider } = options

@@ -2,12 +2,11 @@
 
 import { DEFAULT_LOCALE } from "@/lib/constants"
 import { slugify } from "@/lib/format-utils"
-import type { BlogDataProviderConfig } from "@/types"
 import type { BlogDataProvider } from "@/types"
-import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../schema/post"
+import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../../schema/post"
+import type { PrismaProviderOptions } from "./types"
 
-// biome-ignore lint/suspicious/noEmptyInterface: Library consumer provides PrismaClient
-interface PrismaClient {}
+
 
 // Very loose typing on purpose: consumer's Prisma client is external to this lib
 interface PrismaClientInternal {
@@ -36,9 +35,7 @@ interface PrismaClientInternal {
 	}
 }
 
-export interface PrismaProviderOptions extends BlogDataProviderConfig {
-    prisma: PrismaClient
-}
+
 
 export async function createPrismaProvider(options: PrismaProviderOptions): Promise<BlogDataProvider> {
     const { prisma, defaultLocale: providerDefaultLocale = DEFAULT_LOCALE, getAuthor } = options

@@ -1,44 +1,18 @@
 import { DEFAULT_LOCALE } from "@/lib/constants"
 import { normalizeBasePath, normalizeBaseURL } from "@/lib/utils"
-import type { Post } from "@/types"
-import type { BlogDataProvider } from "@/types"
-import type { BlogDataProviderConfig } from "@/types"
+import type { BlogDataProvider, Post } from "@/types"
 import { createClient } from "better-call/client"
+import type { BlogApiRoutes } from "../../api/api"
 import {
     PostSerializedArraySchema,
     PostSerializedSchema
-} from "../schema/post"
+} from "../../schema/post"
 import type {
     PostCreateExtendedInput,
     PostUpdateExtendedInput
-} from "../schema/post"
-import type { BlogApiRoutes } from "../server/api"
+} from "../../schema/post"
+import type { CreateApiBlogProviderOptions } from "./types"
 
-function revivePost(raw: ReturnType<typeof PostSerializedSchema.parse>): Post {
-    const r = raw
-    const created = r.createdAt ? new Date(r.createdAt) : new Date()
-    const updated = r.updatedAt ? new Date(r.updatedAt) : created
-    const published = r.publishedAt ? new Date(r.publishedAt) : undefined
-    return {
-        ...(r as Omit<Post, "createdAt" | "updatedAt" | "publishedAt">),
-        createdAt: created,
-        updatedAt: updated,
-        publishedAt: published
-    }
-}
-
-export interface CreateApiBlogProviderOptions extends BlogDataProviderConfig {
-    /** Base URL if the API is on a different domain than the blog */
-    baseURL?: string
-    /** Base URL including router basePath  example: "/api/posts" */
-    basePath: string
-
-    /**
-     * Optional override used in tests to inject a custom HTTP client creator.
-     * Must be compatible with better-call's createClient API.
-     */
-    createClientImpl?: typeof createClient
-}
 
 export function createBlogApiProvider(
     options: CreateApiBlogProviderOptions
@@ -123,4 +97,15 @@ export function createBlogApiProvider(
     }
 }
 
-
+function revivePost(raw: ReturnType<typeof PostSerializedSchema.parse>): Post {
+    const r = raw
+    const created = r.createdAt ? new Date(r.createdAt) : new Date()
+    const updated = r.updatedAt ? new Date(r.updatedAt) : created
+    const published = r.publishedAt ? new Date(r.publishedAt) : undefined
+    return {
+        ...(r as Omit<Post, "createdAt" | "updatedAt" | "publishedAt">),
+        createdAt: created,
+        updatedAt: updated,
+        publishedAt: published
+    }
+}

@@ -1,7 +1,7 @@
 "use client"
 
 import { BetterBlogAttribution } from "@/components/better-blog/better-blog-attribution"
-import { useBlogContext } from "@/context/better-blog-context"
+import { useBlogContext } from "@/hooks/context-hooks"
 import { PageLayout } from "./page-layout"
 
 export function PageWrapper({ children, className }: { children: React.ReactNode, className?: string }) {

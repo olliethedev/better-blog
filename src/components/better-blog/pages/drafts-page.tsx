@@ -1,6 +1,6 @@
 "use client"
 
-import { useBlogContext } from "@/context/better-blog-context"
+import { useBlogContext } from "@/hooks/context-hooks"
 import { useDrafts } from "../../../hooks"
 import { ErrorPlaceholder } from "../error-placeholder"
 import { PostsLoading } from "../loading"

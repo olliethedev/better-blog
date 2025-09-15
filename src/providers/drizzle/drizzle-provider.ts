@@ -1,32 +1,12 @@
 import { DEFAULT_LOCALE } from "@/lib/constants"
-import type { BlogDataProviderConfig } from "@/types"
 import type { BlogDataProvider } from "@/types"
-import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../schema/post"
+import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../../schema/post"
+import type { DrizzleProviderOptions } from "./types"
 
-// Very loose typing on purpose: consumer's Drizzle client is external to this lib
-// biome-ignore lint/suspicious/noEmptyInterface: Library consumer provides Drizzle DB client
-interface DrizzleDb {}
+
 
 // biome-ignore lint/suspicious/noExplicitAny: external type
 type AnyDb = any
-
-export interface DrizzleProviderOptions extends BlogDataProviderConfig {
-    drizzle: DrizzleDb
-    // Optional: consumer may pass their `sql` tag from drizzle-orm
-    // biome-ignore lint/suspicious/noExplicitAny: external type
-    sql: any
-}
-
-// Normalize drizzle.execute return shape into typed rows
-function rowsFromExecute<T>(res: unknown): T[] {
-    const arr = Array.isArray(res)
-        ? (res as unknown[])
-        : ((res as { rows?: unknown[] })?.rows ?? [])
-    return arr as T[]
-}
-function firstRowFromExecute<T>(res: unknown): T | undefined {
-    return rowsFromExecute<T>(res)[0]
-}
 
 // Minimal row shapes we select
 interface SelectPostRow {
@@ -48,17 +28,6 @@ interface SelectTagRow {
     id: string
     name: string
     slug: string
-}
-
-function coerceDate(value: unknown): Date {
-    if (value instanceof Date) return value
-    if (typeof value === "string" || typeof value === "number") {
-        const d = new Date(value)
-        if (!Number.isNaN(d.getTime())) return d
-    }
-    // last resort: try stringifying to avoid throwing
-    const d = new Date(String(value ?? ""))
-    return Number.isNaN(d.getTime()) ? new Date() : d
 }
 
 export async function createDrizzleProvider(
@@ -526,4 +495,27 @@ export async function createDrizzleProvider(
     }
 
     return provider
+}
+
+// Normalize drizzle.execute return shape into typed rows
+function rowsFromExecute<T>(res: unknown): T[] {
+    const arr = Array.isArray(res)
+        ? (res as unknown[])
+        : ((res as { rows?: unknown[] })?.rows ?? [])
+    return arr as T[]
+}
+
+function firstRowFromExecute<T>(res: unknown): T | undefined {
+    return rowsFromExecute<T>(res)[0]
+}
+
+function coerceDate(value: unknown): Date {
+    if (value instanceof Date) return value
+    if (typeof value === "string" || typeof value === "number") {
+        const d = new Date(value)
+        if (!Number.isNaN(d.getTime())) return d
+    }
+    // last resort: try stringifying to avoid throwing
+    const d = new Date(String(value ?? ""))
+    return Number.isNaN(d.getTime()) ? new Date() : d
 }

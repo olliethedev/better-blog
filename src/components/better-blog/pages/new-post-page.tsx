@@ -1,6 +1,6 @@
 "use client";
 
-import { useBlogContext } from "../../../context/better-blog-context"
+import { useBlogContext } from "@/hooks/context-hooks"
 import { AddPostForm } from "../forms/post-forms"
 import { PageHeader } from "../page-header"
 import { PageWrapper } from "./page-wrapper"

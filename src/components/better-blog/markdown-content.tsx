@@ -13,9 +13,10 @@ import remarkGfm from "remark-gfm"
 import "./markdown-content-styles.css"
 import "./forms/markdown-editor-styles.css"
 import "highlight.js/styles/atom-one-dark.css"
-import { useComponents } from "@/client"
+import { slugify } from "@/lib/format-utils"
 import { CopyIcon } from "lucide-react"
 import { CheckIcon } from "lucide-react"
+import { useComponents } from "../../hooks/context-hooks"
 
 export type MarkdownContentProps = {
     markdown: string
@@ -32,14 +33,6 @@ function getNodeText(node: ReactNode): string {
         return getNodeText(props.children as ReactNode)
     }
     return ""
-}
-
-function slugify(text: string): string {
-    return text
-        .toLowerCase()
-        .trim()
-        .replace(/[`~!@#$%^&*()+=\[\]{}|;:'",.<>/?\\]/g, "")
-        .replace(/\s+/g, "-")
 }
 
 type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6"

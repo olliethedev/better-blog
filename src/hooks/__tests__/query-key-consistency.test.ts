@@ -1,13 +1,13 @@
 import { QueryClient } from "@tanstack/react-query"
 import { act, renderHook, waitFor } from "@testing-library/react"
-import { createDemoMemoryDBProvider as createDemoMemoryDBProvider2 } from "../../providers/dummy-memory-db-provider"
+import { createSeededMemoryProvider } from "../../providers/memory/memory-provider"
 import { createBlogQueryKeys as createBlogQueryKeys2 } from "../../queries"
 import { createWrapper as createWrapper2 } from "../../test/utils"
 import { usePostSearch, usePosts as usePosts2 } from "../index"
 
 describe("Query key consistency", () => {
     test("usePosts and usePostSearch use compatible query keys", async () => {
-        const provider = await createDemoMemoryDBProvider2()
+        const provider = await createSeededMemoryProvider()
         // Create a fresh query client to control the test environment
         const queryClient = new QueryClient({
             defaultOptions: { queries: { retry: false } }
@@ -72,7 +72,7 @@ describe("Query key consistency", () => {
     })
 
     test("query key generation is consistent", async () => {
-        const provider = await createDemoMemoryDBProvider2()
+        const provider = await createSeededMemoryProvider()
         const queries = createBlogQueryKeys2(provider)
 
         // Test all combinations of query key generation

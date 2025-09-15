@@ -87,5 +87,6 @@ MIT
 - blog ui translations
 - add auth hooks to createBlogApiRouter config (canCreate, canUpdate, canDelete)
 - richer metadata helpers (og:image, canonical url, etc.)
+- lighthouse score improvements
 - remix docs
 - export page components via shadcn registry

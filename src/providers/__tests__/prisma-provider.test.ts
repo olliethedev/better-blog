@@ -1,5 +1,5 @@
 import { getAuthor } from "../../providers/__tests__/test-options"
-import { createPrismaProvider } from "../prisma-provider"
+import { createPrismaProvider } from "../prisma/prisma-provider"
 /** @jest-environment node */
 import { commonProviderTests } from "./common-provider-tests"
 import { disconnectPrisma, getPrisma } from "./prisma/get-prisma"

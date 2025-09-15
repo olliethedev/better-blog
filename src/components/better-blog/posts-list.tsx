@@ -1,8 +1,6 @@
+import { useBlogContext } from "@/hooks/context-hooks"
+import { useComponents } from "@/hooks/context-hooks"
 import type { Post } from "@/types"
-import {
-    useBlogContext,
-    useComponents
-} from "../../context/better-blog-context"
 import { Button } from "../ui/button"
 import { EmptyList } from "./empty-list"
 import SearchInput from "./search-input"

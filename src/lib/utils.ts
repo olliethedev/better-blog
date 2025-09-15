@@ -107,3 +107,17 @@ export function joinPaths(...segments: string[]): string {
         ? joined
         : `/${joined}`.replace(/\/+/g, "/")
 }
+
+export function buildPath(
+    basePath: string,
+    ...segments: Array<string | number | undefined | null>
+): string {
+    const cleaned = segments
+        .filter((s) => s !== undefined && s !== null && `${s}`.length > 0)
+        .map((s) => `${s}`.replace(/^\/+|\/+$/g, ""))
+    const suffix = cleaned.join("/")
+    if (basePath === "/" || basePath === "") {
+        return suffix ? `/${suffix}` : "/"
+    }
+    return suffix ? `${basePath}/${suffix}` : basePath
+}
