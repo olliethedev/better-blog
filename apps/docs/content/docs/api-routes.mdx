@@ -9,7 +9,7 @@ Better Blog can expose API endpoints and consume them via a default API-backed p
 
 Can be served by any web standard compatible server (like Bun, node, nextjs, sveltekit, etc...)
 
-Create `app/api/posts/[...all]/route.ts`:
+Create `app/api/posts/[[...all]]/route.ts`:
 
 ```ts
 import { createBlogApiRouter } from "better-blog/api"

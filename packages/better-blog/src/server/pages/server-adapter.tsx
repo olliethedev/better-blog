@@ -112,6 +112,8 @@ async function BlogServerRouterContent({
         queryClient
     })
 
+    console.log("queryClient", queryClient)
+
     // Dehydrate the state for hydration on the client
     const dehydratedState = dehydrate(queryClient)
 

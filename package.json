@@ -13,7 +13,8 @@
     },
     "pnpm": {
         "overrides": {
-            "fumadocs-core": "15.7.11"
+            "fumadocs-core": "15.7.11",
+            "better-call": "1.0.19"
         },
         "onlyBuiltDependencies": ["@biomejs/biome", "esbuild"],
         "ignoredBuiltDependencies": ["@prisma/client", "@prisma/engines", "prisma"]
