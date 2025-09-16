@@ -1,4 +1,4 @@
-# better-blog (monorepo)
+# better-blog
 
 [![CI](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml/badge.svg)](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml)
 [![E2E Tests](https://github.com/olliethedev/better-blog/actions/workflows/e2e.yml/badge.svg)](https://github.com/olliethedev/better-blog/actions/workflows/e2e.yml)
