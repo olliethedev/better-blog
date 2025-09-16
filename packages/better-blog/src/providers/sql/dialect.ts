@@ -1,6 +1,6 @@
 import type { Database as BunDatabase } from "bun:sqlite";
-import type { DatabaseSync } from "node:sqlite";
-import type { Database } from "better-sqlite3";
+// import type { DatabaseSync } from "node:sqlite";
+import type { Database } from "better-sqlite3"
 import { Kysely, MssqlDialect } from "kysely";
 import type { Dialect, MysqlPool, PostgresPool } from "kysely";
 import {
@@ -9,40 +9,41 @@ import {
 	SqliteDialect,
 } from "kysely";
 export type KyselyDatabaseType = "postgres" | "mysql" | "sqlite" | "mssql";
-export type SQLDatabaseOptions = PostgresPool
-| MysqlPool
-| Database
-| Dialect
-| BunDatabase
-| DatabaseSync
-| {
-        dialect: Dialect;
-        type: KyselyDatabaseType;
-        /**
-         * casing for table names
-         *
-         * @default "camel"
-         */
-        casing?: "snake" | "camel";
-  }
-| {
-        /**
-         * Kysely instance
-         */
-        
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        db: Kysely<any>;
-        /**
-         * Database type between postgres, mysql and sqlite
-         */
-        type: KyselyDatabaseType;
-        /**
-         * casing for table names
-         *
-         * @default "camel"
-         */
-        casing?: "snake" | "camel";
-  };
+export type SQLDatabaseOptions =
+    | PostgresPool
+    | MysqlPool
+    | Database
+    | Dialect
+    | BunDatabase
+    // | DatabaseSync
+    | {
+          dialect: Dialect
+          type: KyselyDatabaseType
+          /**
+           * casing for table names
+           *
+           * @default "camel"
+           */
+          casing?: "snake" | "camel"
+      }
+    | {
+          /**
+           * Kysely instance
+           */
+
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          db: Kysely<any>
+          /**
+           * Database type between postgres, mysql and sqlite
+           */
+          type: KyselyDatabaseType
+          /**
+           * casing for table names
+           *
+           * @default "camel"
+           */
+          casing?: "snake" | "camel"
+      }
 
 export function getKyselyDatabaseType(
 	db: SQLDatabaseOptions,
@@ -142,32 +143,32 @@ export const createKyselyAdapter = async (db: SQLDatabaseOptions) => {
 		});
 	}
 
-	if ("createSession" in db) {
-		let DatabaseSync: typeof import("node:sqlite").DatabaseSync | undefined =
-			undefined;
-		try {
-			({ DatabaseSync } = await import("node:sqlite"));
-		} catch (error: unknown) {
-			if (
-				error !== null &&
-				typeof error === "object" &&
-				"code" in error &&
-				error.code !== "ERR_UNKNOWN_BUILTIN_MODULE"
-			) {
-				throw error;
-			}
-		}
-		if (DatabaseSync && db instanceof DatabaseSync) {
-			const { NodeSqliteDialect } = await import("./node-sqlite-dialect");
-			dialect = new NodeSqliteDialect({
-				database: db,
-			});
-		}
-	}
+	// if ("createSession" in db) {
+// 	let DatabaseSync: typeof import("node:sqlite").DatabaseSync | undefined =
+// 		undefined;
+// 	try {
+// 		({ DatabaseSync } = await import("node:sqlite"));
+// 	} catch (error: unknown) {
+// 		if (
+// 			error !== null &&
+// 			typeof error === "object" &&
+// 			"code" in error &&
+// 			error.code !== "ERR_UNKNOWN_BUILTIN_MODULE"
+// 		) {
+// 			throw error;
+// 		}
+// 	}
+// 	if (DatabaseSync && db instanceof DatabaseSync) {
+// 		const { NodeSqliteDialect } = await import("./node-sqlite-dialect");
+// 		dialect = new NodeSqliteDialect({
+// 			database: db,
+// 		});
+// 	}
+// }
 
-	return {
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		kysely: dialect ? new Kysely<any>({ dialect }) : null,
-		databaseType,
-	};
+return {
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    kysely: dialect ? new Kysely<any>({ dialect }) : null,
+    databaseType
+}
 };
