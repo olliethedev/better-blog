@@ -1,23 +1,20 @@
 name: E2E Tests
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    concurrency:
+      group: e2e-${{ github.ref }}
+      cancel-in-progress: true
     permissions:
       contents: read
     env:
       PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       DOCKER_BUILDKIT: 1
-    services:
-      # Docker daemon is available by default on ubuntu-latest
-      # No explicit Postgres service; we use Testcontainers per-project
-      # and spawn isolated containers.
 
     steps:
       - name: Checkout
