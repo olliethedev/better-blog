@@ -1,7 +1,6 @@
-import { createBlogServerAdapter } from "better-blog/server/pages"
-
-import { memoryProvider } from "@/lib/providers/memory"
+import { getProvider } from "@/lib/providers"
 import { getOrCreateQueryClient } from "@/lib/query-client"
+import { createBlogServerAdapter } from "better-blog/server/pages"
 import type { Metadata } from "next"
 
 // Create query client for React Query
@@ -11,7 +10,8 @@ console.log("queryClient!", queryClient)
 
 // Create the server adapter
 const serverAdapter = createBlogServerAdapter({
-    provider: memoryProvider,
+    // Must be a promise or value; we resolve provider at runtime
+    provider: await getProvider(),
     queryClient
 })
 

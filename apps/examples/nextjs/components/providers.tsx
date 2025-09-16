@@ -54,6 +54,9 @@ export function Provider({ children }: { children: ReactNode }) {
                     // implement your own image upload logic here
                     return "https://placehold.co/400/png"
                 }}
+                dataProvider={
+                    undefined /* default to API router; SSR uses getProvider */
+                }
             >
                 {children}
             </BlogProvider>

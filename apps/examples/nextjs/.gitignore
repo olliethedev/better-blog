@@ -19,6 +19,7 @@
 
 # production
 /build
+.turbo
 
 # misc
 .DS_Store
@@ -30,8 +31,6 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
 
 # vercel
 .vercel
@@ -39,3 +38,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# env files
+.env.local
+.env
