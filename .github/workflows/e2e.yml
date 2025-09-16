@@ -15,10 +15,6 @@ jobs:
     env:
       PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
       DOCKER_BUILDKIT: 1
-    services:
-      # Docker daemon is available by default on ubuntu-latest
-      # No explicit Postgres service; we use Testcontainers per-project
-      # and spawn isolated containers.
 
     steps:
       - name: Checkout
