@@ -30,7 +30,6 @@ const components: BlogUIComponents = {
 }
 
 export function Provider({ children }: { children: ReactNode }) {
-    console.log("queryClient", queryClient)
     const router = useRouter()
 
     return (
