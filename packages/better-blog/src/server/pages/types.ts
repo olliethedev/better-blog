@@ -26,8 +26,6 @@ export interface BlogServerAdapter {
     BlogServerRouter: React.ComponentType<{
         /** Optional path string like "posts/my-post" (no leading slash). */
         path?: string
-        /** React Query client instance used for prefetch/dehydrate. */
-        queryClient: QueryClient
         /**
          * Optional overrides for server-side loading components rendered while
          * the page is being prepared.

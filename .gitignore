@@ -7,5 +7,7 @@
 /.tsup
 /.vscode
 .vercel
+.e2e
+/test-results
 
 dev.db
