@@ -1,5 +1,11 @@
 # better-blog (monorepo)
 
+[![CI](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml/badge.svg)](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml)
+[![E2E Tests](https://github.com/olliethedev/better-blog/actions/workflows/e2e.yml/badge.svg)](https://github.com/olliethedev/better-blog/actions/workflows/e2e.yml)
+[![npm version](https://img.shields.io/npm/v/better-blog)](https://www.npmjs.com/package/better-blog)
+[![npm downloads](https://img.shields.io/npm/dm/better-blog)](https://www.npmjs.com/package/better-blog)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Add a production-ready, SEO-friendly blog to your React app in minutes. better-blog is a framework-agnostic (React, Next.js, React Router, Tanstack Start, etc...), type-safe router + component set with drop-in setup, SSR/SSG out of the box, and full customization—works with modern frameworks like Next.js App Router and React Router.
 
 ---

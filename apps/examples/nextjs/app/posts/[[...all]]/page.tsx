@@ -6,8 +6,6 @@ import type { Metadata } from "next"
 // Create query client for React Query
 const queryClient = getOrCreateQueryClient()
 
-console.log("queryClient!", queryClient)
-
 // Create the server adapter
 const serverAdapter = createBlogServerAdapter({
     // Must be a promise or value; we resolve provider at runtime
