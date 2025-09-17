@@ -124,5 +124,7 @@ export function MarkdownEditor({
         })
     }, [value, isReady])
 
-    return <div ref={containerRef} className={cn("milkdown-custom", className)} />
+    return (
+        <div ref={containerRef} className={cn("milkdown-custom", className)} />
+    )
 }

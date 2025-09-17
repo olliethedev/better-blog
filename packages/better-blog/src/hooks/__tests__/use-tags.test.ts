@@ -40,5 +40,3 @@ describe("useTags", () => {
         expect(result.current.tags.map((x) => x.id)).toEqual(["t1", "t2", "t3"]) // sorted by name
     })
 })
-
-

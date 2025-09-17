@@ -70,7 +70,14 @@ function AnchorRenderer(props: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
 
 function ImgRenderer(props: React.ImgHTMLAttributes<HTMLImageElement>) {
     const { Image } = useComponents()
-    const { src = "", alt = "", className: imgClassName, width, height, ...rest } = props
+    const {
+        src = "",
+        alt = "",
+        className: imgClassName,
+        width,
+        height,
+        ...rest
+    } = props
     return (
         <Image
             src={src}
@@ -126,7 +133,9 @@ function PreRenderer(props: React.HTMLAttributes<HTMLPreElement>) {
         const childProps = child.props as { children?: ReactNode }
         codeText = getNodeText(childProps.children as ReactNode)
     }
-    const normalized = codeText.endsWith("\n") ? codeText.slice(0, -1) : codeText
+    const normalized = codeText.endsWith("\n")
+        ? codeText.slice(0, -1)
+        : codeText
     const lineCount = Math.max(1, normalized.split("\n").length)
     const digitCount = String(lineCount).length
     const onCopy: MouseEventHandler<HTMLButtonElement> = async (e) => {
@@ -141,7 +150,8 @@ function PreRenderer(props: React.HTMLAttributes<HTMLPreElement>) {
             ) {
                 await navigator.clipboard.writeText(text)
                 setCopied(true)
-                if (resetTimerRef.current) window.clearTimeout(resetTimerRef.current)
+                if (resetTimerRef.current)
+                    window.clearTimeout(resetTimerRef.current)
                 resetTimerRef.current = window.setTimeout(() => {
                     setCopied(false)
                     resetTimerRef.current = null
@@ -152,7 +162,9 @@ function PreRenderer(props: React.HTMLAttributes<HTMLPreElement>) {
     return (
         <div
             className="milkdown-code-block"
-            style={{ ["--code-gutter-width" as unknown as string]: `${digitCount + 1}ch` }}
+            style={{
+                ["--code-gutter-width" as unknown as string]: `${digitCount + 1}ch`
+            }}
         >
             <div className="code-toolbar" aria-hidden>
                 <span className="language-label">{label}</span>

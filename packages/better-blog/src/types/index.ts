@@ -39,7 +39,8 @@ export interface BlogDataProvider {
     createPost?: (input: PostCreateExtendedInput) => Promise<Post>
     updatePost?: (slug: string, input: PostUpdateExtendedInput) => Promise<Post>
     deletePost?: (slug: string) => Promise<void>
-}export interface BlogDataProviderConfig {
+}
+export interface BlogDataProviderConfig {
     getAuthor?: (id: string) => Promise<Author | null>
     defaultLocale?: string
 }
@@ -71,7 +72,7 @@ export interface PageComponentOverrides {
     NewPostLoadingComponent?: React.ComponentType
     EditPostLoadingComponent?: React.ComponentType
 
-    NotFoundComponent?: React.ComponentType<{ message: string} >
+    NotFoundComponent?: React.ComponentType<{ message: string }>
 }
 export type Author = {
     id: string
@@ -83,4 +84,3 @@ export type Tag = {
     slug: string
     name: string
 }
-

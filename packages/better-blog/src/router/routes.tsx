@@ -1,6 +1,6 @@
 // Server-safe route definitions (no React component imports)
-import type { RouteSchema } from "./types";
-import type { RouteDefinition } from "./types";
+import type { RouteSchema } from "./types"
+import type { RouteDefinition } from "./types"
 
 const routes: RouteDefinition[] = [
     {
@@ -64,5 +64,5 @@ const routes: RouteDefinition[] = [
 ]
 
 export const routeSchema: RouteSchema = {
-  routes
-};
+    routes
+}

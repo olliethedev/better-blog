@@ -41,5 +41,3 @@ export function createTagsQueries(provider: BlogDataProvider) {
         }
     })
 }
-
-

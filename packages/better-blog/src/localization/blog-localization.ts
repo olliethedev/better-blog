@@ -1,5 +1,5 @@
 import { BLOG_CARD } from "./blog-card"
-import { BLOG_LIST } from "./blog-list";
+import { BLOG_LIST } from "./blog-list"
 import { BLOG_POST } from "./blog-post"
 
 export const blogLocalization = {

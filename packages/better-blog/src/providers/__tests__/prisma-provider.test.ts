@@ -26,5 +26,3 @@ describe("Prisma provider (SQLite)", () => {
         await disconnectPrisma()
     })
 })
-
-

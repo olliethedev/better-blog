@@ -21,5 +21,3 @@ export async function pushPrismaSchema(): Promise<void> {
     await execute("pnpm prisma:test:generate")
     await execute("pnpm prisma:test:push")
 }
-
-

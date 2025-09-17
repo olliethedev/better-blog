@@ -116,5 +116,3 @@ describe("BlogPageRouter NotFound behavior", () => {
         expect(screen.getByTestId("new")).toBeInTheDocument()
     })
 })
-
-

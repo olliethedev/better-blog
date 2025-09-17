@@ -56,10 +56,13 @@ export function SearchModal<T extends SearchResult>({
     // Handle keyboard shortcut
     React.useEffect(() => {
         const down = (e: KeyboardEvent) => {
-            const cleanShortcut = keyboardShortcut.replace("⌘", "").replace("⇧", "").toLowerCase()
+            const cleanShortcut = keyboardShortcut
+                .replace("⌘", "")
+                .replace("⇧", "")
+                .toLowerCase()
             if (e.key === cleanShortcut && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault()
-                
+
                 setOpen((open) => !open)
             }
         }
@@ -109,7 +112,11 @@ export function SearchModal<T extends SearchResult>({
 
     return (
         <>
-            <button type="button" className={buttonClasses} onClick={() => setOpen(true)}>
+            <button
+                type="button"
+                className={buttonClasses}
+                onClick={() => setOpen(true)}
+            >
                 <span className="flex grow items-center">
                     <SearchIcon
                         className="-ms-1 me-3 text-muted-foreground/80"

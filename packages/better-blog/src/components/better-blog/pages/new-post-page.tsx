@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useBlogContext } from "@/hooks/context-hooks"
 import { AddPostForm } from "../forms/post-forms"
@@ -17,5 +17,3 @@ export function NewPostPageComponent() {
         </PageWrapper>
     )
 }
-
-
