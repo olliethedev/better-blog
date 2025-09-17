@@ -5,6 +5,7 @@ import { test as setup } from '@playwright/test';
 
 const PROJECT = 'react-memory';
 const PORT = 3004;
+const HOST = '127.0.0.1';
 
 async function waitForReady(url: string, timeoutMs = 60000) {
   const start = Date.now();
@@ -25,7 +26,7 @@ setup('write env and start react (memory)', async () => {
   await writeFile(envPath, contents, 'utf8');
 
   // biome-ignore lint/style/noUnusedTemplateLiteral: <explanation>
-  const proc = spawn('node', ['e2e/scripts/run-webserver.mjs', `--framework=react`, `--project=${PROJECT}`, `--port=${PORT}`], {
+  const proc = spawn('node', ['e2e/scripts/run-webserver.mjs', `--framework=react`, `--project=${PROJECT}`, `--port=${PORT}`, `--script=start:e2e`], {
     stdio: 'ignore',
     detached: true,
     env: process.env,
@@ -35,7 +36,7 @@ setup('write env and start react (memory)', async () => {
   const metaPath = join('.e2e', `${PROJECT}.json`);
   await writeFile(metaPath, JSON.stringify({ serverPid: proc.pid }), 'utf8');
 
-  await waitForReady(`http://localhost:${PORT}/posts`);
+  await waitForReady(`http://${HOST}:${PORT}/posts`);
 });
 
 

@@ -10,6 +10,7 @@ teardown('cleanup memory server', async () => {
     const metaRaw = await readFile(metaPath, 'utf8');
     const { serverPid } = JSON.parse(metaRaw) as { serverPid?: number };
     if (serverPid) {
+      try { process.kill(-serverPid); } catch {}
       try { process.kill(serverPid); } catch {}
     }
   } catch {}

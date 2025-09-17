@@ -9,7 +9,11 @@ teardown('stop postgres container', async () => {
   try {
     const metaPath = join('.e2e', `${PROJECT}.json`);
     const metaRaw = await readFile(metaPath, 'utf8');
-    const { containerId } = JSON.parse(metaRaw) as { containerId: string };
+    const { containerId, serverPid } = JSON.parse(metaRaw) as { containerId: string, serverPid?: number };
+    // Stop Next.js server if still running
+    if (serverPid) {
+      try { process.kill(serverPid); } catch {}
+    }
     const docker = new Docker();
     const container = docker.getContainer(containerId);
     try {

@@ -5,6 +5,7 @@ import { test as setup } from '@playwright/test';
 
 const PROJECT = 'react-api';
 const PORT = 3005;
+const HOST = '127.0.0.1';
 
 async function waitForReady(url: string, timeoutMs = 60000) {
   const start = Date.now();
@@ -39,7 +40,7 @@ setup('write env and start react (api)', async () => {
   const metaPath = join('.e2e', `${PROJECT}.json`);
   await writeFile(metaPath, JSON.stringify({ serverPid: proc.pid }), 'utf8');
 
-  await waitForReady(`http://localhost:${PORT}/posts`);
+  await waitForReady(`http://${HOST}:${PORT}/posts`);
 });
 
 

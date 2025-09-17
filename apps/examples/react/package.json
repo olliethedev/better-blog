@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "start": "vite preview --port $PORT --strictPort --host 127.0.0.1",
-    "start:e2e": "pnpm build && NODE_ENV=test vite preview --port $PORT --strictPort --host 127.0.0.1",
+    "start": "vite preview --strictPort",
+    "start:e2e": "pnpm build && NODE_ENV=test vite preview --strictPort",
     "start:node": "pnpm build && NODE_ENV=production node server.mjs",
     "serve:node": "NODE_ENV=production node server.mjs",
     "lint": "eslint ."

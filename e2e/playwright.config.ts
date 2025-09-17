@@ -35,7 +35,7 @@ export default defineConfig({
             name: "nextjs-memory",
             workers: 1,
             dependencies: ["setup nextjs-memory"],
-            use: { baseURL: "http://localhost:3001" }
+            use: { baseURL: "http://127.0.0.1:3001" }
         },
 
         // Setup/teardown for Next.js + SQL (Postgres via Testcontainers)
@@ -52,7 +52,7 @@ export default defineConfig({
             name: "nextjs-sql-pg",
             workers: 1,
             dependencies: ["setup nextjs-sql-pg"],
-            use: { baseURL: "http://localhost:3002" }
+            use: { baseURL: "http://127.0.0.1:3002" }
         },
 
         // Setup/teardown for React Router + memory
@@ -69,7 +69,7 @@ export default defineConfig({
             name: "react-memory",
             workers: 1,
             dependencies: ["setup react-memory"],
-            use: { baseURL: "http://localhost:3004" }
+            use: { baseURL: "http://127.0.0.1:3004" }
         },
 
         // Setup/teardown for React Router + API (Node backend)
@@ -86,7 +86,7 @@ export default defineConfig({
             name: "react-api",
             workers: 1,
             dependencies: ["setup react-api"],
-            use: { baseURL: "http://localhost:3005" }
+            use: { baseURL: "http://127.0.0.1:3005" }
         }
     ]
 })

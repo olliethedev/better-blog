@@ -5,8 +5,8 @@
     "scripts": {
         "dev": "next dev --turbopack",
         "build": "next build --turbopack",
-        "start": "next start -p $PORT",
-        "start:e2e": "pnpm build && NODE_ENV=test next start -p $PORT",
+        "start": "next start",
+        "start:e2e": "pnpm build && NODE_ENV=test next start",
         "lint": "eslint"
     },
     "dependencies": {

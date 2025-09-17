@@ -10,6 +10,7 @@ import { GenericContainer, Wait } from 'testcontainers';
 
 const PROJECT = 'nextjs-sql-pg';
 const PORT = 3002;
+const HOST = '127.0.0.1';
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 async function migrateToLatest(kysely: Kysely<any>) {
@@ -84,7 +85,7 @@ setup('start postgres, migrate, write env, start nextjs (sql)', async () => {
   await writeFile(metaPath, JSON.stringify({ containerId: container.getId() }), 'utf8');
 
   // biome-ignore lint/style/noUnusedTemplateLiteral: <explanation>
-  const proc = spawn('node', ['e2e/scripts/run-webserver.mjs', `--framework=nextjs`, `--project=${PROJECT}`, `--port=${PORT}`], {
+  const proc = spawn('node', ['e2e/scripts/run-webserver.mjs', `--framework=nextjs`, `--project=${PROJECT}`, `--port=${PORT}`, `--script=start:e2e`], {
     stdio: 'ignore',
     detached: true,
     env: process.env,
@@ -93,6 +94,19 @@ setup('start postgres, migrate, write env, start nextjs (sql)', async () => {
 
   // append serverPid to meta
   await writeFile(metaPath, JSON.stringify({ containerId: container.getId(), serverPid: proc.pid }), 'utf8');
+
+  // Wait for HTTP readiness
+  const start = Date.now();
+  while (Date.now() - start < 60000) {
+    try {
+      const res = await fetch(`http://${HOST}:${PORT}/posts`);
+      if (res.ok) break;
+    } catch {}
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  // One last attempt to confirm
+  const confirm = await fetch(`http://${HOST}:${PORT}/posts`).catch(() => null);
+  if (!confirm || !confirm.ok) throw new Error(`Next.js server not ready at http://${HOST}:${PORT}/posts`);
 });
 
 

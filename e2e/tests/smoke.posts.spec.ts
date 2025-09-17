@@ -6,7 +6,7 @@ test("posts page renders", async ({ page }) => {
         if (msg.type() === "error") errors.push(msg.text())
     })
 
-    await page.goto("/posts", { waitUntil: "networkidle" })
+    await page.goto("/posts", { waitUntil: "domcontentloaded" })
     await expect(
         page.getByRole("heading", { name: /blog posts/i })
     ).toBeVisible()
