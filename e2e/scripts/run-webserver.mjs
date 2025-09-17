@@ -49,6 +49,9 @@ if (process.env.BETTER_BLOG_PROVIDER && !process.env.VITE_BLOG_PROVIDER) {
 if (process.env.API_BASE_PATH && !process.env.VITE_API_BASE_PATH) {
     process.env.VITE_API_BASE_PATH = process.env.API_BASE_PATH
 }
+if (process.env.API_BASE_URL && !process.env.VITE_API_BASE_URL) {
+    process.env.VITE_API_BASE_URL = process.env.API_BASE_URL
+}
 
 const startScript = script || "start"
 const startCmd = ["pnpm", ["--dir", `apps/examples/${framework}`, startScript]]

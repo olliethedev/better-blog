@@ -32,10 +32,10 @@ export function Provider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true
-    const mode = import.meta.env?.VITE_BLOG_PROVIDER || (typeof process !== 'undefined' ? process.env.BETTER_BLOG_PROVIDER : undefined) || 'memory'
+    const mode = import.meta.env?.VITE_BLOG_PROVIDER ?? 'memory'
     if (mode === 'api') {
-      const baseURL = '' // same origin
-      const basePath = import.meta.env?.VITE_API_BASE_PATH || (typeof process !== 'undefined' ? process.env.API_BASE_PATH : undefined) || '/api/posts'
+      const baseURL = import.meta.env?.VITE_API_BASE_URL ?? ''
+      const basePath = import.meta.env?.VITE_API_BASE_PATH ?? '/api/posts'
       const provider = createBlogApiProvider({ baseURL, basePath })
       if (active) setDataProvider(provider)
     } else {
