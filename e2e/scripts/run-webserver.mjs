@@ -33,9 +33,7 @@ try {
 process.env.PORT = String(port);
 process.env.E2E = process.env.E2E || '1';
 
-const startCmd = framework === 'nextjs'
-  ? ['pnpm', ['--dir', 'apps/examples/nextjs', 'start']]
-  : ['pnpm', ['--dir', `apps/examples/${framework}`, 'start']];
+const startCmd = ["pnpm", ["--dir", `apps/examples/${framework}`, "start"]]
 
 const proc = spawn(startCmd[0], startCmd[1], { stdio: 'inherit', env: process.env });
 proc.on('exit', (code) => process.exit(code ?? 1));

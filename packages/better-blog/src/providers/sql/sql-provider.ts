@@ -3,8 +3,6 @@ import { createKyselyAdapter } from "./dialect"
 import { kyselyAdapter } from "./kysely-adapter"
 import type { SQLProviderOptions } from "./types"
 
-
-
 export async function createSQLProvider(
     options: SQLProviderOptions
 ): Promise<BlogDataProvider> {

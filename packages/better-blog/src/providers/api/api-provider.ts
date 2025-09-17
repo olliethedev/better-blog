@@ -13,7 +13,6 @@ import type {
 } from "../../schema/post"
 import type { CreateApiBlogProviderOptions } from "./types"
 
-
 export function createBlogApiProvider(
     options: CreateApiBlogProviderOptions
 ): BlogDataProvider {

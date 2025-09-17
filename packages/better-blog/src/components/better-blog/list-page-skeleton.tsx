@@ -3,7 +3,6 @@ import { PageLayout } from "../../components/better-blog/pages/page-layout"
 import { PostCardSkeleton } from "../../components/better-blog/post-card-skeleton"
 import { Skeleton } from "../../components/ui/skeleton"
 
-
 export function ListPageSkeleton() {
     return (
         <PageLayout>
@@ -15,8 +14,7 @@ export function ListPageSkeleton() {
     )
 }
 
-
- function PostsListSkeleton({ count = 6 }: { count?: number }) {
+function PostsListSkeleton({ count = 6 }: { count?: number }) {
     return (
         <div className="w-full space-y-6">
             <div className="flex justify-center pb-6">
@@ -38,4 +36,3 @@ export function ListPageSkeleton() {
         </div>
     )
 }
-

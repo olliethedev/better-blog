@@ -1,5 +1,5 @@
-import type { BlogDataProviderConfig, Post } from "@/types";
+import type { BlogDataProviderConfig, Post } from "@/types"
 
-export interface CreateMemoryProviderOptions  extends BlogDataProviderConfig{
+export interface CreateMemoryProviderOptions extends BlogDataProviderConfig {
     seedPosts?: Post[]
 }

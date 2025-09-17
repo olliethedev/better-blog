@@ -3,7 +3,6 @@ import { joinPaths, normalizeBasePath, normalizeBaseURL } from "@/lib/utils"
 import type { Post } from "@/types"
 import type { BlogSitemapOptions, Sitemap } from "./types"
 
-
 function getPostLastModified(post: Post): Date | undefined {
     return post.updatedAt ?? post.publishedAt ?? post.createdAt
 }
@@ -70,5 +69,3 @@ export async function createBlogSitemap(
 
     return sitemap
 }
-
-

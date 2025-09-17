@@ -1,8 +1,6 @@
-export { HomePageComponent } from "./home-page";
-export { PostPageComponent } from "./post-page";
-export { TagPageComponent } from "./tag-page";
-export { DraftsPageComponent } from "./drafts-page";
-export { NewPostPageComponent } from "./new-post-page";
-export { EditPostPageComponent } from "./edit-post-page";
-
-
+export { HomePageComponent } from "./home-page"
+export { PostPageComponent } from "./post-page"
+export { TagPageComponent } from "./tag-page"
+export { DraftsPageComponent } from "./drafts-page"
+export { NewPostPageComponent } from "./new-post-page"
+export { EditPostPageComponent } from "./edit-post-page"

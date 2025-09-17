@@ -2,7 +2,6 @@ import { PageHeaderSkeleton } from "../../components/better-blog/page-header-ske
 import { PageLayout } from "../../components/better-blog/pages/page-layout"
 import { Skeleton } from "../../components/ui/skeleton"
 
-
 export function FormPageSkeleton() {
     return (
         <PageLayout>
@@ -14,8 +13,7 @@ export function FormPageSkeleton() {
     )
 }
 
-
- function FormSkeleton() {
+function FormSkeleton() {
     return (
         <div className="w-full space-y-8">
             {/* Two-column basics */}
@@ -74,5 +72,4 @@ export function FormPageSkeleton() {
             </div>
         </div>
     )
- }
-
+}

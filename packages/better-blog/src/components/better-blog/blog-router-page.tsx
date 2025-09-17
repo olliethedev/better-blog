@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useBlogContext } from "@/hooks/context-hooks"
 import { usePageOverrides } from "@/hooks/context-hooks"
@@ -146,5 +146,3 @@ export function resolveComponent(
     // Fall back to default
     return defaultComponents[type]
 }
-
-

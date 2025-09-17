@@ -90,4 +90,3 @@ describe("matchRoute with basePath stripping", () => {
         expect(matchRoute(["posts", "new"], "/posts/").type).toBe("new")
     })
 })
-

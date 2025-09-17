@@ -35,4 +35,4 @@ export function getOrCreateQueryClient() {
         if (!browserQueryClient) browserQueryClient = makeQueryClient()
         return browserQueryClient
     }
-} 
+}

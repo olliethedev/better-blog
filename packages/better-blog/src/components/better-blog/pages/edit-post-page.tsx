@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useBlogContext } from "@/hooks/context-hooks"
 import { useRoute } from "@/hooks/context-hooks"
@@ -34,5 +34,3 @@ export function EditPostPageComponent() {
         </PageWrapper>
     )
 }
-
-

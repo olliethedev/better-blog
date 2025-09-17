@@ -48,5 +48,3 @@ describe("usePost", () => {
         expect(result.current.post?.slug).toBe(slug)
     })
 })
-
-

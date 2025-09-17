@@ -11,8 +11,6 @@ import type { CreateBlogApiRouterOptions } from "./types"
 
 const listPostsQuerySchema = PostListQuerySchema
 
-
-
 export function createBlogApiRouter(options: CreateBlogApiRouterOptions) {
     const { provider } = options
     const listPosts = createEndpoint(

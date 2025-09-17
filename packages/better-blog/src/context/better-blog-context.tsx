@@ -16,7 +16,6 @@ import {
 } from "./defaults"
 import type { BlogContextType, BlogProviderProps } from "./types"
 
-
 export const BlogContext = React.createContext<BlogContextType | null>(null)
 
 export function BlogProvider({

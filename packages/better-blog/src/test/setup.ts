@@ -20,5 +20,3 @@ if (!(global as unknown as { crypto?: Crypto }).crypto) {
     // @ts-ignore
     global.crypto = crypto as unknown as Crypto
 }
-
-

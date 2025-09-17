@@ -49,7 +49,9 @@ describe("Query key consistency", () => {
             { wrapper }
         )
 
-        await waitFor(() => expect(activeSearchResult.current.isLoading).toBe(false))
+        await waitFor(() =>
+            expect(activeSearchResult.current.isLoading).toBe(false)
+        )
         expect(activeSearchResult.current.posts.length).toBeGreaterThan(0)
 
         // Create a new query client for testing remount with fresh cache
@@ -57,7 +59,7 @@ describe("Query key consistency", () => {
             defaultOptions: { queries: { retry: false } }
         })
         const remountWrapper = createWrapper2(provider, remountQueryClient)
-        
+
         // Test that page reload/remount scenario doesn't cause issues
         const { result: remountResult } = renderHook(
             () => usePosts2({ limit: 10 }),

@@ -1,4 +1,9 @@
-import type { BlogDataProvider, BlogDataProviderConfig, Post, Tag } from "@/types"
+import type {
+    BlogDataProvider,
+    BlogDataProviderConfig,
+    Post,
+    Tag
+} from "@/types"
 import { slugify } from "../../lib/format-utils"
 import type {
     PostCreateExtendedInput,
@@ -116,8 +121,6 @@ function generateId(prefix = "p"): string {
 function normalizeQuery(q?: string): string {
     return (q ?? "").toLowerCase().trim()
 }
-
-
 
 // Extra tag input shapes supported by the memory provider to match form submissions
 type CreateTagConnectOrCreate = {
@@ -400,5 +403,3 @@ export async function createSeededMemoryProvider(
 
     return createMemoryProvider({ seedPosts: posts, ...options })
 }
-
-

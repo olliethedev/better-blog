@@ -6,7 +6,9 @@ import { useCreatePost } from "../index"
 describe("useCreatePost", () => {
     test("exposes mutate and triggers invalidations on success (shape)", async () => {
         const provider: BlogDataProvider = {
-            async getAllPosts() { return [] }
+            async getAllPosts() {
+                return []
+            }
         }
         const wrapper = createWrapper(provider)
 
@@ -26,5 +28,3 @@ describe("useCreatePost", () => {
         expect(typeof result.current.mutate).toBe("function")
     })
 })
-
-

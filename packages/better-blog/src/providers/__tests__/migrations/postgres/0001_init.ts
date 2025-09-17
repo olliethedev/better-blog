@@ -8,9 +8,13 @@ export async function up(db: Kysely<DBSchema>): Promise<void> {
 
     await db.schema
         .createTable("Post")
-        .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
+        .addColumn("id", "uuid", (col) =>
+            col.primaryKey().defaultTo(sql`gen_random_uuid()`)
+        )
         .addColumn("authorId", "text")
-        .addColumn("defaultLocale", "text", (col) => col.notNull().defaultTo("en"))
+        .addColumn("defaultLocale", "text", (col) =>
+            col.notNull().defaultTo("en")
+        )
         .addColumn("title", "text", (col) => col.notNull())
         .addColumn("slug", "text", (col) => col.notNull().unique())
         .addColumn("excerpt", "text", (col) => col.notNull())
@@ -18,8 +22,12 @@ export async function up(db: Kysely<DBSchema>): Promise<void> {
         .addColumn("image", "text")
         .addColumn("version", "integer", (col) => col.notNull().defaultTo(1))
         .addColumn("status", "text", (col) => col.notNull().defaultTo("DRAFT"))
-        .addColumn("createdAt", "timestamptz", (col) => col.notNull().defaultTo(sql`now()`))
-        .addColumn("updatedAt", "timestamptz", (col) => col.notNull().defaultTo(sql`now()`))
+        .addColumn("createdAt", "timestamptz", (col) =>
+            col.notNull().defaultTo(sql`now()`)
+        )
+        .addColumn("updatedAt", "timestamptz", (col) =>
+            col.notNull().defaultTo(sql`now()`)
+        )
         .execute()
 
     await db.schema
@@ -36,18 +44,30 @@ export async function up(db: Kysely<DBSchema>): Promise<void> {
 
     await db.schema
         .createTable("Tag")
-        .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
-        .addColumn("defaultLocale", "text", (col) => col.notNull().defaultTo("en"))
+        .addColumn("id", "uuid", (col) =>
+            col.primaryKey().defaultTo(sql`gen_random_uuid()`)
+        )
+        .addColumn("defaultLocale", "text", (col) =>
+            col.notNull().defaultTo("en")
+        )
         .addColumn("name", "text", (col) => col.notNull())
         .addColumn("slug", "text", (col) => col.notNull().unique())
-        .addColumn("createdAt", "timestamptz", (col) => col.notNull().defaultTo(sql`now()`))
-        .addColumn("updatedAt", "timestamptz", (col) => col.notNull().defaultTo(sql`now()`))
+        .addColumn("createdAt", "timestamptz", (col) =>
+            col.notNull().defaultTo(sql`now()`)
+        )
+        .addColumn("updatedAt", "timestamptz", (col) =>
+            col.notNull().defaultTo(sql`now()`)
+        )
         .execute()
 
     await db.schema
         .createTable("PostI18n")
-        .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
-        .addColumn("postId", "uuid", (col) => col.notNull().references("Post.id").onDelete("cascade"))
+        .addColumn("id", "uuid", (col) =>
+            col.primaryKey().defaultTo(sql`gen_random_uuid()`)
+        )
+        .addColumn("postId", "uuid", (col) =>
+            col.notNull().references("Post.id").onDelete("cascade")
+        )
         .addColumn("locale", "text", (col) => col.notNull())
         .addColumn("title", "text", (col) => col.notNull())
         .addColumn("slug", "text", (col) => col.notNull())
@@ -77,8 +97,12 @@ export async function up(db: Kysely<DBSchema>): Promise<void> {
 
     await db.schema
         .createTable("TagI18n")
-        .addColumn("id", "uuid", (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
-        .addColumn("tagId", "uuid", (col) => col.notNull().references("Tag.id").onDelete("cascade"))
+        .addColumn("id", "uuid", (col) =>
+            col.primaryKey().defaultTo(sql`gen_random_uuid()`)
+        )
+        .addColumn("tagId", "uuid", (col) =>
+            col.notNull().references("Tag.id").onDelete("cascade")
+        )
         .addColumn("locale", "text", (col) => col.notNull())
         .addColumn("name", "text", (col) => col.notNull())
         .addColumn("slug", "text", (col) => col.notNull())
@@ -106,8 +130,12 @@ export async function up(db: Kysely<DBSchema>): Promise<void> {
 
     await db.schema
         .createTable("PostTag")
-        .addColumn("postId", "uuid", (col) => col.notNull().references("Post.id").onDelete("cascade"))
-        .addColumn("tagId", "uuid", (col) => col.notNull().references("Tag.id").onDelete("cascade"))
+        .addColumn("postId", "uuid", (col) =>
+            col.notNull().references("Post.id").onDelete("cascade")
+        )
+        .addColumn("tagId", "uuid", (col) =>
+            col.notNull().references("Tag.id").onDelete("cascade")
+        )
         .addPrimaryKeyConstraint("pk_post_tag", ["postId", "tagId"])
         .execute()
 
@@ -125,5 +153,3 @@ export async function down(db: Kysely<DBSchema>): Promise<void> {
     await db.schema.dropTable("Tag").execute()
     await db.schema.dropTable("Post").execute()
 }
-
-

@@ -1,9 +1,10 @@
 import { DEFAULT_LOCALE } from "@/lib/constants"
 import type { BlogDataProvider } from "@/types"
-import type { PostCreateExtendedInput, PostUpdateExtendedInput } from "../../schema/post"
+import type {
+    PostCreateExtendedInput,
+    PostUpdateExtendedInput
+} from "../../schema/post"
 import type { DrizzleProviderOptions } from "./types"
-
-
 
 // biome-ignore lint/suspicious/noExplicitAny: external type
 type AnyDb = any
@@ -39,7 +40,7 @@ export async function createDrizzleProvider(
         getAuthor
     } = options
     const drizzle = drizzleClient as unknown as AnyDb
-    // Prefer consumer-provided drizzle `sql` 
+    // Prefer consumer-provided drizzle `sql`
     // biome-ignore lint/suspicious/noExplicitAny: external type
     const SQLTag = (options as any).sql as any
 
@@ -191,7 +192,9 @@ export async function createDrizzleProvider(
 
             const ids = rows.map((r) => r.id)
             // Build a disjunction for ids to avoid driver-specific array handling
-            const idConds: unknown[] = ids.map((id) => SQLTag`pt."postId" = ${id}`)
+            const idConds: unknown[] = ids.map(
+                (id) => SQLTag`pt."postId" = ${id}`
+            )
             const tagRowsRes = await drizzle.execute(SQLTag`
                 select
                   pt."postId" as "postId",
@@ -324,19 +327,25 @@ export async function createDrizzleProvider(
                         const tagRowRes = await tx.execute(
                             SQLTag`select id from "Tag" where slug = ${tagSlug} limit 1`
                         )
-                        let tagRow = firstRowFromExecute<{ id: string }>(tagRowRes)
+                        let tagRow = firstRowFromExecute<{ id: string }>(
+                            tagRowRes
+                        )
                         if (!tagRow) {
                             const insTagRes = await tx.execute(SQLTag`
                                 insert into "Tag" ("defaultLocale", name, slug, "updatedAt")
                                 values (${DEFAULT_LOCALE}, ${tagName}, ${tagSlug}, now())
                                 returning id
                             `)
-                            tagRow = firstRowFromExecute<{ id: string }>(insTagRes)
+                            tagRow = firstRowFromExecute<{ id: string }>(
+                                insTagRes
+                            )
                             if (!tagRow?.id) {
                                 const fallback = await tx.execute(
                                     SQLTag`select id from "Tag" where slug = ${tagSlug} limit 1`
                                 )
-                                const fb = firstRowFromExecute<{ id: string }>(fallback)
+                                const fb = firstRowFromExecute<{ id: string }>(
+                                    fallback
+                                )
                                 if (!fb?.id)
                                     throw new Error(
                                         "Failed to resolve created tag id"
@@ -402,15 +411,15 @@ export async function createDrizzleProvider(
                             create?: Array<
                                 | string
                                 | {
-                                    tag?: {
-                                        connectOrCreate?: {
-                                            create?: {
-                                                name?: string
-                                                slug?: string
-                                            }
-                                        }
-                                    }
-                                }
+                                      tag?: {
+                                          connectOrCreate?: {
+                                              create?: {
+                                                  name?: string
+                                                  slug?: string
+                                              }
+                                          }
+                                      }
+                                  }
                             >
                         }
                     }
@@ -438,19 +447,25 @@ export async function createDrizzleProvider(
                             const tagRowRes = await tx.execute(
                                 SQLTag`select id from "Tag" where slug = ${tagSlug} limit 1`
                             )
-                            let tagRow = firstRowFromExecute<{ id: string }>(tagRowRes)
+                            let tagRow = firstRowFromExecute<{ id: string }>(
+                                tagRowRes
+                            )
                             if (!tagRow) {
                                 const insTagRes = await tx.execute(SQLTag`
                                     insert into "Tag" ("defaultLocale", name, slug, "updatedAt")
                                     values (${DEFAULT_LOCALE}, ${tagName}, ${tagSlug}, now())
                                     returning id
                                 `)
-                                tagRow = firstRowFromExecute<{ id: string }>(insTagRes)
+                                tagRow = firstRowFromExecute<{ id: string }>(
+                                    insTagRes
+                                )
                                 if (!tagRow?.id) {
                                     const fallback = await tx.execute(
                                         SQLTag`select id from "Tag" where slug = ${tagSlug} limit 1`
                                     )
-                                    const fb = firstRowFromExecute<{ id: string }>(fallback)
+                                    const fb = firstRowFromExecute<{
+                                        id: string
+                                    }>(fallback)
                                     if (!fb?.id)
                                         throw new Error(
                                             "Failed to resolve created tag id"

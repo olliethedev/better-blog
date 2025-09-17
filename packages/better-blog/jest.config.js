@@ -43,6 +43,7 @@ export default {
     ],
     collectCoverageFrom: [
         "src/**/*.(ts|tsx)",
+        "!src/components/ui/**/*",
         "!src/**/*.d.ts",
         "!src/test/**/*",
         "!src/types/**/*"

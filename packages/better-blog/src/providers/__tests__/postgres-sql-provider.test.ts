@@ -1,7 +1,13 @@
 import * as fs from "node:fs/promises"
 import * as path from "node:path"
 /** @jest-environment node */
-import { FileMigrationProvider, Kysely, Migrator, PostgresDialect, sql } from "kysely"
+import {
+    FileMigrationProvider,
+    Kysely,
+    Migrator,
+    PostgresDialect,
+    sql
+} from "kysely"
 import { Pool } from "pg"
 
 import type { BlogDataProvider } from "@/types"
@@ -24,13 +30,13 @@ let provider: BlogDataProvider
 async function migrateToLatest(kysely: Kysely<DBSchema>) {
     const migrationFolder = path.join(
         process.cwd(),
-        "src/providers/__tests__/migrations/postgres",
+        "src/providers/__tests__/migrations/postgres"
     )
     const migrator = new Migrator({
         db: kysely,
         provider: new FileMigrationProvider({ fs, path, migrationFolder }),
         migrationTableName: "blog_migrations",
-        migrationLockTableName: "blog_migrations_lock",
+        migrationLockTableName: "blog_migrations_lock"
     })
     const { error } = await migrator.migrateToLatest()
     if (error) throw error
@@ -43,15 +49,20 @@ beforeAll(async () => {
         user: "user",
         password: "password",
         database: "better_blog",
-        max: 4,
+        max: 4
     })
 
     db = new Kysely<DBSchema>({ dialect: new PostgresDialect({ pool }) })
 
     // Recreate schema for a clean slate
-    await sql`DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;`.execute(db)
+    await sql`DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;`.execute(
+        db
+    )
     await migrateToLatest(db)
-    provider = await createSQLProvider({ database: { db, type: "postgres" }, getAuthor })
+    provider = await createSQLProvider({
+        database: { db, type: "postgres" },
+        getAuthor
+    })
 }, 30000)
 
 afterAll(async () => {
@@ -63,5 +74,3 @@ describe("Postgres SQL Provider", () => {
         return provider
     })
 })
-
-

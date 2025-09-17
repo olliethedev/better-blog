@@ -15,5 +15,3 @@ export async function disconnectPrisma() {
         prisma = null
     }
 }
-
-

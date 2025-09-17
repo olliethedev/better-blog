@@ -1,3 +1,1 @@
-export default {} as unknown as (typeof import('rehype-highlight'))
-
-
+export default {} as unknown as typeof import("rehype-highlight")

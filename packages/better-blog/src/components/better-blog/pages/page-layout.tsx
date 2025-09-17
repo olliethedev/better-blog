@@ -1,9 +1,16 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-export function PageLayout({ children, className }: { children: React.ReactNode, className?: string }) {
-
+export function PageLayout({
+    children,
+    className
+}: { children: React.ReactNode; className?: string }) {
     return (
-        <div className={cn("container mx-auto flex min-h-dvh flex-col items-center gap-16 px-4 py-24 lg:px-16", className)}>
+        <div
+            className={cn(
+                "container mx-auto flex min-h-dvh flex-col items-center gap-16 px-4 py-24 lg:px-16",
+                className
+            )}
+        >
             {children}
         </div>
     )

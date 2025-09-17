@@ -1,6 +1,8 @@
 import type { BlogDataProviderConfig } from "@/types"
 
-export const getAuthor: BlogDataProviderConfig["getAuthor"] = async (id: string) => {
+export const getAuthor: BlogDataProviderConfig["getAuthor"] = async (
+    id: string
+) => {
     return {
         id,
         name: "olliethedev",

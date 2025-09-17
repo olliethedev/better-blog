@@ -41,69 +41,19 @@ Learn how to use Better Blog in your project by following the [installation guid
 
 ---
 
-## Architecture
 
-- **Design**
-  - Schema-driven routes and data; minimal state in components
-  - Strict client/server separation via dedicated entry points
+## Contribution
 
----
+Better Blog is free and open source project licensed under the [MIT License](./LICENSE). You are free to do whatever you want with it.
 
-## Monorepo layout
+You could help continuing its development by:
 
-```
-.
-├─ apps/
-│  └─ docs/                 # Documentation site (Next.js)
-├─ packages/
-│  └─ better-blog/          # Published library package
-├─ pnpm-workspace.yaml      # pnpm workspace globs
-├─ turbo.json               # Turborepo pipeline
-├─ tsconfig.base.json       # Shared TS config
-└─ package.json             # Workspace scripts
-```
+- [Contribute to the source code](./CONTRIBUTING.md)
+- [Suggest new features and report issues](https://github.com/olliethedev/better-blog/issues)
 
-## Workspace commands
-
-- `pnpm -w install` – install all deps
-- `pnpm -w build` – build all packages/apps in topological order
-- `pnpm --filter better-blog dev` – watch the library
-- `pnpm --filter better-blog test` – run library tests
-- `pnpm --filter better-blog-docs dev` – run docs locally
-
-## Developing the library
-
-### Prereqs
-
-```bash
-pnpm install
-```
-
-Optional: for local linking use [yalc](https://github.com/wclr/yalc).
-
-### Common commands
-
-- `pnpm --filter better-blog dev` – watch build
-- `pnpm --filter better-blog build` – production build (ESM + CJS + types)
-- `docker compose up -d` – start local database for tests
-- `pnpm --filter better-blog test` – run unit tests
-
-### Testing locally in an app
-
-```bash
-cd packages/better-blog/
-yalc publish --push
-# in your app
-yalc add better-blog && pnpm install
-```
 
 ---
 
-## License
-
-MIT
-
----
 
 ## TODO
 - e2e tests
