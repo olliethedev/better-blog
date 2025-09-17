@@ -6,10 +6,10 @@ test("posts page renders", async ({ page }) => {
         if (msg.type() === "error") errors.push(msg.text())
     })
 
-    await page.goto("/posts", { waitUntil: "domcontentloaded" })
+    await page.goto("/posts", { waitUntil: "networkidle" })
     await expect(
         page.getByRole("heading", { name: /blog posts/i })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 30000 })
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 

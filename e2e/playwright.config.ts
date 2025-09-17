@@ -42,7 +42,10 @@ export default defineConfig({
         {
             name: "setup nextjs-sql-pg",
             testMatch: /global\.setup\.nextjs-sql-pg\.ts/,
-            teardown: "cleanup nextjs-sql-pg"
+            teardown: "cleanup nextjs-sql-pg",
+            // Ensure only one Next.js server runs at a time by waiting for
+            // the memory-based Next.js project to finish first.
+            dependencies: ["nextjs-memory"]
         },
         {
             name: "cleanup nextjs-sql-pg",

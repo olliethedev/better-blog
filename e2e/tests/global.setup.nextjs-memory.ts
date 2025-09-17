@@ -7,7 +7,7 @@ const PROJECT = 'nextjs-memory';
 const PORT = 3001;
 const HOST = '127.0.0.1';
 
-async function waitForReady(url: string, timeoutMs = 60000) {
+async function waitForReady(url: string, timeoutMs = 120000) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     try {
