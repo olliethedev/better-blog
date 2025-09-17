@@ -11,9 +11,11 @@ function parseArgs(argv) {
   return args;
 }
 
-const { framework, project, port } = parseArgs(process.argv.slice(2));
+const { framework, project, port, script } = parseArgs(process.argv.slice(2))
 if (!framework || !project || !port) {
-  console.error('Usage: run-webserver.mjs --framework=<nextjs> --project=<name> --port=<number>');
+  console.error(
+    "Usage: run-webserver.mjs --framework=<nextjs|react> --project=<name> --port=<number> [--script=<start|start:node|start:e2e>]"
+)
   process.exit(2);
 }
 
@@ -33,7 +35,23 @@ try {
 process.env.PORT = String(port);
 process.env.E2E = process.env.E2E || '1';
 
-const startCmd = ["pnpm", ["--dir", `apps/examples/${framework}`, "start"]]
+// Map generic envs to Vite build-time envs when needed
+
+if (
+  process.env.BETTER_BLOG_PROVIDER 
+  && 
+  !process.env.VITE_BLOG_PROVIDER ) {
+  process.env.VITE_BLOG_PROVIDER = process .env.BETTER_BLOG_PROVIDER
+}
+if (
+  process.env.API_BASE_PATH 
+  && 
+  !process.env.VITE_API_BASE_PATH ) {
+  process.env.VITE_API_BASE_PATH = process.env.API_BASE_PATH
+}
+
+const startScript = script || "start"
+const startCmd = ["pnpm", ["--dir", `apps/examples/${framework}`, startScript]]
 
 const proc = spawn(startCmd[0], startCmd[1], { stdio: 'inherit', env: process.env });
 proc.on('exit', (code) => process.exit(code ?? 1));

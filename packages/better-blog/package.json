@@ -1,7 +1,7 @@
 {
     "name": "better-blog",
     "homepage": "https://better-blog.com",
-    "version": "0.0.19",
+    "version": "0.0.20",
     "description": "A drop-in blog framework for your React app",
     "repository": {
         "type": "git",

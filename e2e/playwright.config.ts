@@ -53,6 +53,40 @@ export default defineConfig({
             workers: 1,
             dependencies: ["setup nextjs-sql-pg"],
             use: { baseURL: "http://localhost:3002" }
+        },
+
+        // Setup/teardown for React Router + memory
+        {
+            name: "setup react-memory",
+            testMatch: /global\.setup\.react-memory\.ts/,
+            teardown: "cleanup react-memory"
+        },
+        {
+            name: "cleanup react-memory",
+            testMatch: /global\.teardown\.react-memory\.ts/
+        },
+        {
+            name: "react-memory",
+            workers: 1,
+            dependencies: ["setup react-memory"],
+            use: { baseURL: "http://localhost:3004" }
+        },
+
+        // Setup/teardown for React Router + API (Node backend)
+        {
+            name: "setup react-api",
+            testMatch: /global\.setup\.react-api\.ts/,
+            teardown: "cleanup react-api"
+        },
+        {
+            name: "cleanup react-api",
+            testMatch: /global\.teardown\.react-api\.ts/
+        },
+        {
+            name: "react-api",
+            workers: 1,
+            dependencies: ["setup react-api"],
+            use: { baseURL: "http://localhost:3005" }
         }
     ]
 })
