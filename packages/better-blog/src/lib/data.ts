@@ -1,6 +1,5 @@
-import type { Post } from "@/types";
-import { slugify } from "./format-utils";
-
+import type { Post } from "@/types"
+import { slugify } from "./format-utils"
 
 export const getTestPosts = () => {
     const tagNames = [
@@ -21,10 +20,9 @@ export const getTestPosts = () => {
         "Tooling"
     ]
 
-
     const testPosts: Post[] = Array.from({ length: 15 }, (_, i) => {
         const idx = i + 1
-        const date = new Date(`2024-01-${ String(idx).padStart(2, "0") }`)
+        const date = new Date(`2024-01-${String(idx).padStart(2, "0")}`)
         const name = tagNames[i % tagNames.length]
         const tag = { id: String(i + 1), name, slug: slugify(name) }
         const isDraft = idx % 5 === 0 // every 5th post is a draft
@@ -66,9 +64,10 @@ export const getTestPosts = () => {
                 "Security Checklist",
                 "Dev Tooling"
             ][i],
-            content: i === 0
-                ? FULL_MARKDOWN
-                : "This is a sample post for demo purposes. It contains enough text to be searchable.",
+            content:
+                i === 0
+                    ? FULL_MARKDOWN
+                    : "This is a sample post for demo purposes. It contains enough text to be searchable.",
             excerpt: "Excerpt for demo post.",
             published: !isDraft,
             publishedAt: isDraft ? undefined : date,
@@ -80,7 +79,8 @@ export const getTestPosts = () => {
         } satisfies Post
     })
     return testPosts
-};export const FULL_MARKDOWN = `
+}
+export const FULL_MARKDOWN = `
 
 # Markdown Showcase  
 
@@ -182,4 +182,3 @@ We can also add multiple annotations like this.[^2]
 [^2]: Another annotation, often used for references or notes.
 
 `
-

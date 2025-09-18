@@ -1,12 +1,11 @@
-import type { Post } from "@/types"
-import type { BlogDataProvider } from "@/types"
+import { getTestPosts } from "@/lib/data"
+import type { BlogDataProvider, Post } from "@/types"
 import { slugify } from "../../lib/format-utils"
 import type {
     PostCreateExtendedInput,
-    PostUpdateExtendedInput
+    PostUpdateExtendedInput,
+    TagConnectOrCreate
 } from "../../schema/post"
-import type { TagConnectOrCreate } from "../../schema/post"
-import { getTestPosts } from "@/lib/data"
 
 export function commonProviderTests(
     createProvider: () => BlogDataProvider | Promise<BlogDataProvider>
