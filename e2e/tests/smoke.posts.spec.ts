@@ -9,7 +9,7 @@ test("posts page renders", async ({ page }) => {
     await page.goto("/posts", { waitUntil: "networkidle" })
     await expect(
         page.getByRole("heading", { name: /blog posts/i })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 30000 })
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 

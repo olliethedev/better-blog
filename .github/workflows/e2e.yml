@@ -1,6 +1,9 @@
 name: E2E Tests
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
@@ -33,6 +36,12 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        
+      - name: Start Docker Containers
+        run: |
+          docker compose up -d
+          # Wait for services to be ready
+          sleep 20
 
       - name: Install Playwright browsers
         run: pnpm e2e:install
@@ -58,5 +67,9 @@ jobs:
           name: traces
           path: test-results/**/*.zip
           if-no-files-found: ignore
+
+      - name: Stop Docker Containers
+        if: always()
+        run: docker compose down
 
 

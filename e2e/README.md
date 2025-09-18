@@ -75,8 +75,6 @@ pnpm e2e:ui
 ## Conventions
 
 - Ports: reserve distinct ports per framework (e.g., Next.js 3001/3002, TanStack 3003, Router 3004).
-- Env files per project are written to `.e2e/<project>.env` and read by `e2e/scripts/run-webserver.mjs`.
-- Any runtime metadata (e.g., container IDs, server PIDs) goes to `.e2e/<project>.json`.
 
 ## CI
 

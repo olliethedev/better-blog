@@ -1,14 +1,6 @@
-import { memoryProvider } from "@/lib/providers/memory"
-import { getSqlProvider } from "@/lib/providers/sql"
+import { getProvider } from "@/lib/providers"
 import { createBlogApiRouter } from "better-blog/api"
 
-async function getProvider() {
-    const choice = process.env.BETTER_BLOG_PROVIDER || "memory"
-    if (choice === "sql" || choice === "kysely" || choice === "postgres") {
-        return await getSqlProvider()
-    }
-    return memoryProvider
-}
 
 const providerPromise = getProvider()
 const { handler } = createBlogApiRouter({
