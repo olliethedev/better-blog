@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "NODE_ENV=development node server.mjs",
     "build": "tsc -b && vite build",
+    "build:memory": "tsc -b && VITE_BLOG_PROVIDER=memory vite build --outDir dist-memory",
+    "build:api": "tsc -b && VITE_BLOG_PROVIDER=api vite build --outDir dist-api",
     "start": "vite preview --strictPort",
-    "start:e2e": "pnpm build && NODE_ENV=test vite preview --strictPort",
-    "start:node": "pnpm build && NODE_ENV=production node server.mjs",
-    "serve:node": "NODE_ENV=production node server.mjs",
+    "start:e2e": "pnpm build:memory && NODE_ENV=test vite preview --strictPort --outDir dist-memory",
+    "start:e2e:api": "pnpm build:api && NODE_ENV=test node server.mjs --dist-dir=dist-api",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -37,7 +39,6 @@
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
     "autoprefixer": "^10.4.21",
-    "better-call": "1.0.19",
     "eslint": "^9.30.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

@@ -4,21 +4,58 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { createBlogApiRouter } from "better-blog/api"
 import { createSeededMemoryProvider } from "better-blog/providers/memory"
+import { createSQLProvider } from "better-blog/providers/sql"
 import { toNodeHandler } from "better-call/node"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+async function parseArgs(argv) {
+    const args = {}
+    for (const a of argv) {
+        const [k, v] = a.split("=")
+        if (k && v !== undefined) args[k.replace(/^--/, "")] = v
+    }
+    return args
+}
+
 async function main() {
+    // Parse command line arguments
+    const args = await parseArgs(process.argv.slice(2))
+    
     const port = Number(process.env.PORT || 3005)
     const host = process.env.HOST || "127.0.0.1"
     const basePath = process.env.API_BASE_PATH || "/api/posts"
 
-    const provider = await createSeededMemoryProvider()
+    // Get provider based on environment variable
+    const providerType = process.env.BETTER_BLOG_PROVIDER || 'memory'
+    console.log(`Using provider: ${providerType}`)
+    
+    let provider
+    if (providerType === 'sql') {
+        const url = process.env.DATABASE_URL
+        if (!url) throw new Error('DATABASE_URL is required for SQL provider')
+        
+        try {
+            // Dynamically import pg to avoid requiring it for memory provider
+            const { Pool } = await import('pg')
+            const pool = new Pool({ connectionString: url })
+            provider = await createSQLProvider({ database: pool })
+        } catch (err) {
+            console.error('Failed to initialize SQL provider:', err)
+            throw err
+        }
+    } else {
+        // Default to memory provider
+        provider = await createSeededMemoryProvider()
+    }
+    
     const router = createBlogApiRouter({ provider, basePath })
     const apiHandler = toNodeHandler(router.handler)
 
-    const distDir = path.join(__dirname, "dist")
+    // Use custom dist directory if specified via command line arguments
+    const distDir = path.join(__dirname, args["dist-dir"] || "dist")
+    console.log(`Using dist directory: ${distDir}`)
     const indexHtml = path.join(distDir, "index.html")
 
     function getContentType(filePath) {

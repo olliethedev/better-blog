@@ -15,10 +15,11 @@ Fixes # (issue) (if applicable)-->
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] Documentation update
+- [ ] Test update
+- [ ] Other (please describe in description)
 
 ## How Has This Been Tested?
 
 - [ ] Lint passes (`pnpm -w lint`)
 - [ ] Unit tests pass (`pnpm -w test`)
-- [ ] E2E tests pass (`pnpm -w e2e`) 
-- [ ] Docs updated (if behavior or APIs changed)
+- [ ] E2E tests pass (`pnpm -w e2e`)

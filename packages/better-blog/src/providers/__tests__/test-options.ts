@@ -9,3 +9,5 @@ export const getAuthor: BlogDataProviderConfig["getAuthor"] = async (
         image: "https://avatars.githubusercontent.com/u/123456789?v=4"
     }
 }
+
+

@@ -1,7 +1,7 @@
 # better-blog
 
-[![CI](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml/badge.svg)](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml)
-[![E2E Tests](https://github.com/olliethedev/better-blog/actions/workflows/e2e.yml/badge.svg)](https://github.com/olliethedev/better-blog/actions/workflows/e2e.yml)
+[![CI](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml)
+[![E2E Tests](https://github.com/olliethedev/better-blog/actions/workflows/e2e.yml/badge.svg?branch=main)](https://github.com/olliethedev/better-blog/actions/workflows/e2e.yml)
 [![npm version](https://img.shields.io/npm/v/better-blog)](https://www.npmjs.com/package/better-blog)
 [![npm downloads](https://img.shields.io/npm/dm/better-blog)](https://www.npmjs.com/package/better-blog)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
