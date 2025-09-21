@@ -92,9 +92,7 @@ export function createBlogServerAdapter(
             )
         },
 
-        prefetch: async function prefetch({
-            path
-        }) {
+        prefetch: async function prefetch({ path }) {
             const routeMatch = matchRoute(path?.split("/").filter(Boolean))
             await prefetchBlogData({
                 match: routeMatch,

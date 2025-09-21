@@ -1,15 +1,16 @@
+import { Provider } from "@/providers";
+import type { MyRouterContext } from "@/router";
+import {
+  HeadContent,
+  Outlet,
+  Scripts,
+  createRootRouteWithContext,
+} from "@tanstack/react-router";
 // src/routes/__root.tsx
 /// <reference types="vite/client" />
 import type { ReactNode } from "react";
-import {
-  Outlet,
-  createRootRouteWithContext,
-  HeadContent,
-  Scripts,
-} from "@tanstack/react-router";
-import type { MyRouterContext } from "@/router";
-import { Provider } from "@/providers";
 
+// @ts-ignore
 import appCss from "@/styles/app.css?url";
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
@@ -72,7 +73,7 @@ export function RootComponent() {
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html>
+    <html lang="en">
       <head>
         <meta
           name="viewport"

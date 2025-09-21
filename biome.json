@@ -13,7 +13,8 @@
             "./src/providers/sql/bun-sqlite-dialect.ts",
             "./src/providers/sql/node-sqlite-dialect.ts",
             "./src/providers/prisma/prisma-provider.ts",
-            "./src/providers/dirzzle/drizzle-provider.ts"
+            "./src/providers/dirzzle/drizzle-provider.ts",
+            "./apps/examples/tanstack/src/routeTree.gen.ts"
         ]
     },
     "formatter": {

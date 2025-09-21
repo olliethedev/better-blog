@@ -1,8 +1,6 @@
-import { ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router"
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { type BlogUIComponents, BlogProvider } from "better-blog/context";
-import { getOrCreateQueryClient } from "better-blog/queries";
+import { BlogProvider, type BlogUIComponents } from "better-blog/context";
+import type { ReactNode } from "react";
 
 const components: BlogUIComponents = {
   Link: ({ href, children, className }) => (

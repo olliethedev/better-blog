@@ -15,9 +15,7 @@ export interface BlogServerAdapter {
      * for post routes to produce rich metadata, and otherwise falls back to
      * route-based defaults.
      */
-    generateMetadata: (
-        path?: string
-    ) => Promise<BlogPageMetadata>
+    generateMetadata: (path?: string) => Promise<BlogPageMetadata>
     /**
      * Server entry component that prefetches data and renders the routed page
      * within a React Query hydration boundary.
