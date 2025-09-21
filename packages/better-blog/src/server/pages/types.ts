@@ -15,9 +15,7 @@ export interface BlogServerAdapter {
      * for post routes to produce rich metadata, and otherwise falls back to
      * route-based defaults.
      */
-    generateMetadata: (
-        path?: string
-    ) => Promise<{ title: string; description?: string }>
+    generateMetadata: (path?: string) => Promise<BlogPageMetadata>
     /**
      * Server entry component that prefetches data and renders the routed page
      * within a React Query hydration boundary.
@@ -39,6 +37,9 @@ export interface BlogServerAdapter {
             | "EditPostLoadingComponent"
         >
     }>
+    prefetch: (options: {
+        path?: string
+    }) => Promise<void>
 }
 
 export interface CreateBlogServerAdapterOptions {
@@ -49,4 +50,20 @@ export interface BlogPostMetadata {
     title: string
     description?: string
     image?: string
+}
+
+export interface BlogPageMetadata {
+    title: string
+    description?: string
+    openGraph?: {
+        title?: string
+        description?: string
+        images?: Array<{ url: string } | string>
+    }
+    twitter?: {
+        card?: "summary" | "summary_large_image"
+        title?: string
+        description?: string
+        images?: Array<string>
+    }
 } // Component override interface

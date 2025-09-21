@@ -28,6 +28,16 @@ jobs:
         with:
           version: 10.12.1
 
+      - name: Restore Playwright and Turbo caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            .turbo
+          key: ${{ runner.os }}-e2e-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('turbo.json') }}
+          restore-keys: |
+            ${{ runner.os }}-e2e-
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -35,22 +45,48 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install -r --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         
       - name: Start Docker Containers
         run: |
+          docker compose pull
           docker compose up -d
-          # Wait for services to be ready
-          sleep 20
+          # Actively wait for services instead of sleeping
+          wait_for_port() {
+            local host=$1
+            local port=$2
+            local name=$3
+            local timeout=${4:-60}
+            echo "Waiting for $name on ${host}:${port} (timeout: ${timeout}s)";
+            for i in $(seq 1 ${timeout}); do
+              if nc -z ${host} ${port}; then
+                echo "$name is up";
+                return 0
+              fi
+              sleep 1
+            done
+            echo "Timeout waiting for $name on ${host}:${port}";
+            return 1
+          }
+          wait_for_port 127.0.0.1 27017 mongodb || true
+          wait_for_port 127.0.0.1 5432 postgres || true
+          wait_for_port 127.0.0.1 3306 mysql || true
+          wait_for_port 127.0.0.1 1433 mssql || true
 
-      - name: Install Playwright browsers
-        run: pnpm e2e:install
+      - name: Install Playwright browsers (Chromium only)
+        run: npx playwright install --with-deps chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
 
       - name: Build workspace
         run: pnpm -w build
 
       - name: Run Playwright tests
         run: pnpm e2e
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
 
       - name: Upload Playwright report
         if: always()

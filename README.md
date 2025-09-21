@@ -56,15 +56,14 @@ You could help continuing its development by:
 
 
 ## TODO
-- e2e tests
-- add example projects
 - internationalization unit tests for blog data providers
 - localizations support in sitemap generation
 - finalize page designs + admin ui
 - core component overrides (Card, Heading, MarkdownEditor, MarkdownRenderer, etc.)
 - blog ui translations
+- use a router lib instead of the custom one
 - add auth hooks to createBlogApiRouter config (canCreate, canUpdate, canDelete)
-- richer metadata helpers (og:image, canonical url, etc.)
+- treamline metadata format for all providers
 - lighthouse score improvements
 - remix docs
 - export page components via shadcn registry

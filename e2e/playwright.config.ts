@@ -84,6 +84,20 @@ export default defineConfig({
         BETTER_BLOG_PROVIDER: "memory",
       },
     },
+    // TanStack Start SPA with memory provider
+    {
+      command: "pnpm -F better-blog-tanstack-start-example run start:e2e",
+      port: 3005,
+      reuseExistingServer: !process.env["CI"],
+      timeout: 120_000,
+      stdout: "pipe",
+      stderr: "pipe",
+      env: {
+        ...process.env,
+        PORT: "3005",
+        HOST: "127.0.0.1",
+      },
+    },
   ],
   projects: [
     {
@@ -104,6 +118,11 @@ export default defineConfig({
     {
       name: "react:api",
       use: { baseURL: "http://localhost:3004" },
+      testMatch: ["**/*.spec.ts"],
+    },
+    {
+      name: "tanstack:memory",
+      use: { baseURL: "http://localhost:3005" },
       testMatch: ["**/*.spec.ts"],
     },
   ],

@@ -25,6 +25,15 @@ jobs:
         with:
           version: 10.12.1
 
+      - name: Restore Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('turbo.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -32,13 +41,34 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install -r --no-frozen-lockfile
+        run: pnpm install -r --frozen-lockfile
 
       - name: Start Docker Containers
         run: |
+          docker compose pull
           docker compose up -d
-          # Wait for services to be ready
-          sleep 20
+          # Actively wait for services instead of sleeping
+          wait_for_port() {
+            local host=$1
+            local port=$2
+            local name=$3
+            local timeout=${4:-60}
+            echo "Waiting for $name on ${host}:${port} (timeout: ${timeout}s)";
+            for i in $(seq 1 ${timeout}); do
+              if nc -z ${host} ${port}; then
+                echo "$name is up";
+                return 0
+              fi
+              sleep 1
+            done
+            echo "Timeout waiting for $name on ${host}:${port}";
+            return 1
+          }
+          # Known services from docker-compose.yml
+          wait_for_port 127.0.0.1 27017 mongodb || true
+          wait_for_port 127.0.0.1 5432 postgres || true
+          wait_for_port 127.0.0.1 3306 mysql || true
+          wait_for_port 127.0.0.1 1433 mssql || true
 
       - name: Lint
         run: pnpm -w lint

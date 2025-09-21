@@ -12,6 +12,7 @@
         "e2e:ui": "playwright test -c e2e/playwright.config.ts --ui"
     },
     "devDependencies": {
+        "@biomejs/biome": "1.9.4",
         "@playwright/test": "^1.48.2",
         "@types/dockerode": "^3.3.26",
         "@types/pg": "^8.12.0",
@@ -26,7 +27,9 @@
     "pnpm": {
         "overrides": {
             "fumadocs-core": "15.7.11",
-            "better-call": "1.0.19"
+            "better-call": "1.0.19",
+            "react": "19.1.1",
+            "react-dom": "19.1.1"
         },
         "onlyBuiltDependencies": [
             "@biomejs/biome",
