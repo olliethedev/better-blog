@@ -26,7 +26,9 @@
     "pnpm": {
         "overrides": {
             "fumadocs-core": "15.7.11",
-            "better-call": "1.0.19"
+            "better-call": "1.0.19",
+            "react": "19.1.1",
+            "react-dom": "19.1.1"
         },
         "onlyBuiltDependencies": [
             "@biomejs/biome",

@@ -6,43 +6,83 @@ description: SSR/SSG with server prefetch and client hydration
 This renders all blog routes under `/posts/...` with server prefetch + client hydration. Provide separate data providers for server and client.
 
 #### 1) `src/routes/posts/$.tsx` (server)
-Create the Better Blog server adapter, then render via `BlogServerRouter` with server prefetch + client hydration.
+Create the Better Blog server adapter, prefetch data in the loader, return metadata, and render via `BlogPageRouter`.
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router"
-
-import { BlogDataProvider } from "better-blog";
-import { getOrCreateQueryClient } from "better-blog/queries";
 import { createBlogServerAdapter } from "better-blog/server/pages";
+import { BlogPageRouter } from "better-blog/client"
 
-// Implement your data provider here
-const serverBlogConfig: BlogDataProvider = {
-  ...
-};
-
-const queryClient = getOrCreateQueryClient();
-
-// Create the server adapter
-const serverAdapter = createBlogServerAdapter({
-  provider: serverBlogConfig,
-  queryClient,
-});
+import { blogDataProvider } from "../../lib/blog-data-provider";
 
 export const Route = createFileRoute("/posts/$")({
-    component: RouteComponent
+  ssr: true,
+  head: ({ loaderData }) => {
+    const meta = (loaderData ?? null) as
+      | {
+          title?: string
+          description?: string
+          openGraph?: { title?: string; description?: string; images?: Array<{ url: string } | string> }
+          twitter?: { card?: string; title?: string; description?: string; images?: Array<string> }
+        }
+      | null
+
+    const ogImage = meta?.openGraph?.images?.[0]
+    const ogImageUrl = typeof ogImage === "string" ? ogImage : ogImage?.url
+
+    return {
+      meta: [
+        meta?.title ? { title: meta.title } : undefined,
+        meta?.description ? { name: "description", content: meta.description } : undefined,
+        { property: "og:type", content: "article" },
+        meta?.openGraph?.title
+          ? { property: "og:title", content: meta.openGraph.title }
+          : meta?.title
+          ? { property: "og:title", content: meta.title }
+          : undefined,
+        meta?.openGraph?.description
+          ? { property: "og:description", content: meta.openGraph.description }
+          : meta?.description
+          ? { property: "og:description", content: meta.description }
+          : undefined,
+        ogImageUrl ? { property: "og:image", content: ogImageUrl } : undefined,
+        meta?.twitter?.card
+          ? { name: "twitter:card", content: meta.twitter.card }
+          : { name: "twitter:card", content: ogImageUrl ? "summary_large_image" : "summary" },
+        meta?.twitter?.title
+          ? { name: "twitter:title", content: meta.twitter.title }
+          : meta?.title
+          ? { name: "twitter:title", content: meta.title }
+          : undefined,
+        meta?.twitter?.description
+          ? { name: "twitter:description", content: meta.twitter.description }
+          : meta?.description
+          ? { name: "twitter:description", content: meta.description }
+          : undefined,
+        ogImageUrl ? { name: "twitter:image", content: ogImageUrl } : undefined,
+      ].filter(Boolean) as Array<{ name?: string; property?: string; content?: string; title?: string }>,
+    }
+  },
+  component: RouteComponent,
+  loader: async ({ params, context }) => {
+    const serverAdapter = createBlogServerAdapter({
+      provider: blogDataProvider,
+      queryClient: context.queryClient,
+    })
+    await serverAdapter.prefetch({ path: params._splat })
+    const meta = await serverAdapter.generateMetadata(params._splat)
+    return meta
+  }
 })
 
 function RouteComponent() {
-    const { _splat } = Route.useParams()
-
-    const { BlogServerRouter } = serverAdapter;
-
-  return <BlogServerRouter path={_splat} queryClient={queryClient} />;
+  const { _splat } = Route.useParams();
+  return <BlogPageRouter path={_splat} />
 }
 ```
 
 #### 2) `src/routes/__root.tsx`
-Define the root document and wrap your app with `Provider` to supply context.
+Define the root document and wrap your app with `Provider` to supply context. Uses `createRootRouteWithContext`.
 
 ```tsx
 // src/routes/__root.tsx
@@ -50,15 +90,16 @@ Define the root document and wrap your app with `Provider` to supply context.
 import type { ReactNode } from 'react'
 import {
   Outlet,
-  createRootRoute,
+  createRootRouteWithContext,
   HeadContent,
   Scripts,
 } from '@tanstack/react-router'
+import type { MyRouterContext } from '@/router'
 import { Provider } from '@/providers'
 
 import appCss from "@/styles/app.css?url"
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
       {
@@ -71,6 +112,12 @@ export const Route = createRootRoute({
       {
         title: 'TanStack Start Starter',
       },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:title', content: 'Better Blog' },
+      { property: 'og:description', content: 'A modern blog powered by Better Blog + TanStack.' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'Better Blog' },
+      { name: 'twitter:description', content: 'A modern blog powered by Better Blog + TanStack.' },
     ],
     links: [
         {
@@ -94,6 +141,9 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html>
       <head>
+        <meta name="viewport" content="initial-scale=1, viewport-fit=cover, width=device-width" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="oklch(1 0 0)" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="oklch(0.145 0 0)" />
         <HeadContent />
       </head>
       <body>
@@ -108,17 +158,14 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
 ```
 
 #### 3) `src/providers.tsx` (client)
-Client-side provider wiring TanStack Router `Link`, React Query, navigation helpers, and optional admin UI.
+Client-side provider wiring TanStack Router `Link`, navigation helpers, and optional admin UI.
 
 ```tsx
 "use client";
 
 import { ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router"
-import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { type BlogUIComponents, BlogProvider } from "better-blog/context";
-import { getOrCreateQueryClient } from "better-blog/queries";
 
 const components: BlogUIComponents = {
   Link: ({ href, children, className }) => (
@@ -139,35 +186,30 @@ const components: BlogUIComponents = {
 
 
 export function Provider({ children }: { children: ReactNode }) {
-  const queryClient = getOrCreateQueryClient();
   const router = useRouter();
 
   return (
-
-    <QueryClientProvider client={queryClient}>
-      <BlogProvider
-        localization={{
-          BLOG_LIST_TITLE: "Blog Posts",
-        }}
-        components={components}
-        adminPermissions={{
-          // implement your own admin ui logic here
-          canCreate:true,
-          canUpdate:true,
-          canDelete:true
-        }}
-        navigate={(href) => router.navigate({ href })}
-        replace={(href) => router.navigate({ href, replace: true })}
-        uploadImage={async (file) => {
-          console.log("uploadImage", file);
-          // implement your own image upload logic here
-          return "https://placehold.co/400/png";
-        }}
-      >
-        {children}
-      </BlogProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <BlogProvider
+      localization={{
+        BLOG_LIST_TITLE: "Blog Posts",
+      }}
+      components={components}
+      adminPermissions={{
+        canCreate:true,
+        canUpdate:true,
+        canDelete:true
+      }}
+      navigate={(href) => router.navigate({ href })}
+      replace={(href) => router.navigate({ href, replace: true })}
+      uploadImage={async (file) => {
+        console.log("uploadImage", file);
+        //fake wait
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return "https://placehold.co/400";
+      }}
+    >
+      {children}
+    </BlogProvider>
   );
 }
 ```

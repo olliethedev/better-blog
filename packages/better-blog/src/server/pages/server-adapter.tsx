@@ -8,7 +8,7 @@ import { Suspense } from "react"
 import { BlogPageRouter } from "../../components/better-blog/blog-router-page"
 import { matchRoute } from "../../router"
 import { prefetchBlogData } from "./prefetch"
-import type { BlogPostMetadata } from "./types"
+import type { BlogPageMetadata, BlogPostMetadata } from "./types"
 
 import { resolveLoadingComponent } from "@/router/loading-resolver"
 import { routeSchema } from "@/router/routes"
@@ -34,7 +34,7 @@ export function createBlogServerAdapter(
             return staticRoutes.map((route) => ({ all: route.slug }))
         },
 
-        async generateMetadata(path?: string) {
+        async generateMetadata(path?: string): Promise<BlogPageMetadata> {
             const match = matchRoute(path?.split("/").filter(Boolean))
 
             // For post routes, fetch the actual post data to generate dynamic metadata
@@ -48,7 +48,7 @@ export function createBlogServerAdapter(
                         )
 
                     if (post) {
-                        return generatePostMetadata(post)
+                        return buildPageMetadata(generatePostMetadata(post))
                     }
                 } catch (error) {
                     console.error("Error fetching post metadata:", error)
@@ -57,11 +57,11 @@ export function createBlogServerAdapter(
             }
 
             // Use fallback metadata from route match
-            return {
+            return buildPageMetadata({
                 title: match.metadata.title,
                 description: match.metadata.description,
                 image: match.metadata.image
-            }
+            })
         },
 
         BlogServerRouter: async function BlogServerRouter({
@@ -90,6 +90,17 @@ export function createBlogServerAdapter(
                     />
                 </Suspense>
             )
+        },
+
+        prefetch: async function prefetch({
+            path
+        }) {
+            const routeMatch = matchRoute(path?.split("/").filter(Boolean))
+            await prefetchBlogData({
+                match: routeMatch,
+                provider: serverConfig,
+                queryClient
+            })
         }
     }
 }
@@ -127,6 +138,26 @@ function generatePostMetadata(post: Post): BlogPostMetadata {
         title: post.title,
         description: post.excerpt,
         image: post.image
+    }
+}
+
+function buildPageMetadata(meta: BlogPostMetadata): BlogPageMetadata {
+    const { title, description, image } = meta
+    const images = image ? [image] : undefined
+    return {
+        title,
+        description,
+        openGraph: {
+            title,
+            description,
+            images: images
+        },
+        twitter: {
+            card: image ? "summary_large_image" : "summary",
+            title,
+            description,
+            images
+        }
     }
 }
 
