@@ -46,6 +46,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install -r --frozen-lockfile
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
         
       - name: Start Docker Containers
         run: |
@@ -73,8 +75,8 @@ jobs:
           wait_for_port 127.0.0.1 3306 mysql || true
           wait_for_port 127.0.0.1 1433 mssql || true
 
-      - name: Install Playwright browsers
-        run: pnpm e2e:install
+      - name: Install Playwright browsers (Chromium only)
+        run: npx playwright install --with-deps chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
 
