@@ -6,7 +6,7 @@
         "dev": "next dev --turbopack",
         "build": "next build --turbopack",
         "start": "next start",
-        "start:e2e": "pnpm build && NODE_ENV=test next start",
+        "start:e2e": "rm -rf .next && pnpm build && NODE_ENV=test next start",
         "lint": "eslint",
         "db:init": " pnpm -w exec dotenv -e apps/examples/nextjs/.env.local -- tsx apps/examples/nextjs/scripts/seed/kysley/init.ts"
     },

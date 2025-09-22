@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test"
 
 const contentSelector = '[data-testid="blog-page-root"]'
+const emptySelector = '[data-testid="empty-state"]'
+const errorSelector = '[data-testid="error-placeholder"]'
 
 test("posts page renders", async ({ page }) => {
     const errors: string[] = []
@@ -10,6 +12,11 @@ test("posts page renders", async ({ page }) => {
 
     await page.goto("/posts", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // Either posts list renders or empty state shows when no posts
+    const emptyVisible = await page.locator(emptySelector).isVisible().catch(() => false)
+    if (!emptyVisible) {
+        await expect(page.getByTestId("page-header")).toBeVisible()
+    }
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -21,6 +28,11 @@ test("post page renders", async ({ page }) => {
 
     await page.goto("/posts/hello-world", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // Shows post content or empty placeholder when slug not found
+    const notFound = await page.locator(emptySelector).isVisible().catch(() => false)
+    if (!notFound) {
+        await expect(page.getByTestId("page-title")).toBeVisible()
+    }
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -31,6 +43,11 @@ test("edit post page renders", async ({ page }) => {
     })
     await page.goto("/posts/hello-world/edit", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // Edit form should render or empty state if post is missing
+    const maybeEmpty = await page.locator(emptySelector).isVisible().catch(() => false)
+    if (!maybeEmpty) {
+        await expect(page.getByTestId("page-header")).toBeVisible()
+    }
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -41,6 +58,8 @@ test("new post page renders", async ({ page }) => {
     })
     await page.goto("/posts/new", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // New page should not be an error; header should be present
+    await expect(page.getByTestId("page-header")).toBeVisible()
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -52,6 +71,11 @@ test("drafts page renders", async ({ page }) => {
     })
     await page.goto("/posts/drafts", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // Either drafts render or empty state appears when none exist
+    const maybeEmpty = await page.locator(emptySelector).isVisible().catch(() => false)
+    if (!maybeEmpty) {
+        await expect(page.getByTestId("page-header")).toBeVisible()
+    }
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -63,6 +87,11 @@ test("tag page renders", async ({ page }) => {
     })
     await page.goto("/posts/tag/react", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // Tag page shows list or empty state when no posts with tag
+    const maybeEmpty = await page.locator(emptySelector).isVisible().catch(() => false)
+    if (!maybeEmpty) {
+        await expect(page.getByTestId("page-header")).toBeVisible()
+    }
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -74,6 +103,10 @@ test("unknown page state renders", async ({ page }) => {
     })
     await page.goto("/posts/unknown", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // Unknown slug should render empty-state (not found post) or error placeholder if error bubbles
+    const hasEmpty = await page.locator(emptySelector).isVisible().catch(() => false)
+    const hasError = await page.locator(errorSelector).isVisible().catch(() => false)
+    expect(hasEmpty || hasError).toBeTruthy()
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -84,6 +117,10 @@ test("unknown edit page state renders", async ({ page }) => {
     })
     await page.goto("/posts/unknown/edit", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // Unknown edit page should render empty-state (not found post) or error placeholder
+    const hasEmpty = await page.locator(emptySelector).isVisible().catch(() => false)
+    const hasError = await page.locator(errorSelector).isVisible().catch(() => false)
+    expect(hasEmpty || hasError).toBeTruthy()
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -95,6 +132,8 @@ test("unknown tag page state renders", async ({ page }) => {
     })
     await page.goto("/posts/tag/unknown", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
+    // Unknown tag should render an empty-state
+    await expect(page.locator(emptySelector)).toBeVisible()
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
