@@ -14,8 +14,8 @@ import { PageWrapper } from "./page-wrapper"
 
 export function PostPageComponent() {
     const { routeMatch } = useRoute()
-    const slug = routeMatch.params?.slug
-    const { post } = slug ? useSuspensePost(slug) : { post: null }
+    const slug = routeMatch.params!.slug
+    const { post } = useSuspensePost(slug!)
     const { localization } = useBlogContext()
     const { Link, Image } = useComponents()
     const blogPath = useBlogPath
@@ -25,7 +25,7 @@ export function PostPageComponent() {
     }
 
     return (
-        <PageWrapper className="gap-6">
+        <PageWrapper className="gap-6" testId="post-page">
             <PageHeader title={post.title} description={post.excerpt} />
 
             <div className="flex flex-col gap-2">

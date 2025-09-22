@@ -12,7 +12,7 @@ export function DraftsPageComponent() {
     const { localization } = useBlogContext()
 
     return (
-        <PageWrapper>
+        <PageWrapper testId="drafts-page">
             <div className="flex flex-col items-center gap-3">
                 <PageHeader
                     title={localization.BLOG_LIST_DRAFTS_TITLE}

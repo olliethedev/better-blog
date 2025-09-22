@@ -1,5 +1,7 @@
 "use client"
 
+import { ErrorPlaceholder } from "@/components/better-blog/error-placeholder"
+import { BlogContext } from "@/context/better-blog-context"
 import { useBlogContext } from "@/hooks/context-hooks"
 import { usePageOverrides } from "@/hooks/context-hooks"
 import type { RouteMatch } from "@/types"
@@ -12,13 +14,12 @@ import { resolveErrorComponent } from "@/router/error-resolver"
 import { resolveLoadingComponent } from "@/router/loading-resolver"
 import { resolvePageComponent } from "@/router/page-resolver"
 
+// Not Found route placeholder using localized strings
 function NotFoundPage({ message }: { message: string }) {
-    return (
-        <div>
-            <h1>Not Found</h1>
-            <p>{message}</p>
-        </div>
-    )
+    const { localization } = useBlogContext()
+    const title = localization.BLOG_PAGE_NOT_FOUND_TITLE
+    const desc = message || localization.BLOG_PAGE_NOT_FOUND_DESCRIPTION
+    return <ErrorPlaceholder title={title} message={desc} />
 }
 
 // Internal component that renders based on routeMatch
@@ -63,6 +64,7 @@ class RouteErrorBoundary extends React.Component<
     },
     { error?: Error }
 > {
+    static contextType = BlogContext
     state: { error?: Error } = {}
     static getDerivedStateFromError(error: Error) {
         return { error }
@@ -74,12 +76,15 @@ class RouteErrorBoundary extends React.Component<
             if (ErrorComponent) {
                 return <ErrorComponent message={this.state.error.message} />
             }
-            return (
-                <div role="alert">
-                    <h2>Something went wrong</h2>
-                    <p>{this.state.error.message}</p>
-                </div>
-            )
+            const ctx = this.context as ReturnType<typeof useBlogContext> | null
+            const title =
+                ctx?.localization?.BLOG_GENERIC_ERROR_TITLE ??
+                "Something went wrong"
+            const desc =
+                this.state.error.message ||
+                ctx?.localization?.BLOG_GENERIC_ERROR_MESSAGE ||
+                "An unexpected error occurred."
+            return <ErrorPlaceholder title={title} message={desc} />
         }
         return children as React.ReactElement
     }
@@ -99,11 +104,13 @@ export function BlogPageRouter({
     const NotFoundComponent = pageOverrides?.NotFoundComponent
 
     return (
-        <RouteProvider routeMatch={routeMatch}>
-            <BlogPageRouterContent
-                routeMatch={routeMatch}
-                NotFoundComponent={NotFoundComponent}
-            />
-        </RouteProvider>
+        <div data-testid="blog-page-root">
+            <RouteProvider routeMatch={routeMatch}>
+                <BlogPageRouterContent
+                    routeMatch={routeMatch}
+                    NotFoundComponent={NotFoundComponent}
+                />
+            </RouteProvider>
+        </div>
     )
 }

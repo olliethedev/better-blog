@@ -6,7 +6,10 @@ export function ErrorPlaceholder({
     message
 }: { title: string; message: string }) {
     return (
-        <div className="flex min-h-[600px] flex-col items-center justify-center gap-10">
+        <div
+            className="flex min-h-[600px] flex-col items-center justify-center gap-10"
+            data-testid="error-placeholder"
+        >
             <PageHeader title={title} description={message} />
             <CloudAlert className="size-[100px]" />
         </div>

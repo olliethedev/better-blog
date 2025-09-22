@@ -17,7 +17,7 @@ export function TagPageComponent() {
     const { localization } = useBlogContext()
 
     return (
-        <PageWrapper>
+        <PageWrapper testId="tag-page">
             <div className="flex flex-col items-center gap-3">
                 <PageHeader
                     title={localization.BLOG_LIST_TAG_TITLE.replace(

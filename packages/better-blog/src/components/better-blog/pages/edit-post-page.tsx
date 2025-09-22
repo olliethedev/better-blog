@@ -10,8 +10,8 @@ import { PageWrapper } from "./page-wrapper"
 
 export function EditPostPageComponent() {
     const { routeMatch } = useRoute()
-    const slug = routeMatch.params?.slug
-    const { post } = slug ? useSuspensePost(slug) : { post: null }
+    const slug = routeMatch.params!.slug
+    const { post } = useSuspensePost(slug!)
     const { localization } = useBlogContext()
 
     if (!post) {
@@ -19,7 +19,7 @@ export function EditPostPageComponent() {
     }
 
     return (
-        <PageWrapper className="gap-6">
+        <PageWrapper className="gap-6" testId="edit-post-page">
             <PageHeader
                 title={localization.BLOG_POST_EDIT_TITLE}
                 description={localization.BLOG_POST_EDIT_DESCRIPTION}

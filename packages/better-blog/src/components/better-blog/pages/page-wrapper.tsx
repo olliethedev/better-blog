@@ -6,12 +6,15 @@ import { PageLayout } from "./page-layout"
 
 export function PageWrapper({
     children,
-    className
-}: { children: React.ReactNode; className?: string }) {
+    className,
+    testId
+}: { children: React.ReactNode; className?: string; testId?: string }) {
     const { showAttribution } = useBlogContext()
     return (
         <>
-            <PageLayout className={className}>{children}</PageLayout>
+            <PageLayout className={className} data-testid={testId}>
+                {children}
+            </PageLayout>
 
             {showAttribution && <BetterBlogAttribution />}
         </>
