@@ -1,29 +1,15 @@
 "use client"
 
-import { PostsLoading } from "@/components/better-blog/loading"
 import { PageHeader } from "@/components/better-blog/page-header"
 import { PageWrapper } from "@/components/better-blog/pages/page-wrapper"
 import { PostsList } from "@/components/better-blog/posts-list"
 
-import { usePosts } from "@/hooks"
+import { useSuspensePosts } from "@/hooks"
 import { useBlogContext } from "@/hooks/context-hooks"
-import { ErrorPlaceholder } from "../error-placeholder"
 
 export function HomePageComponent() {
-    const { posts, isLoading, error, loadMore, hasMore, isLoadingMore } =
-        usePosts({})
+    const { posts, loadMore, hasMore, isLoadingMore } = useSuspensePosts({})
     const { localization } = useBlogContext()
-
-    if (isLoading) return <PostsLoading />
-
-    if (error) {
-        return (
-            <ErrorPlaceholder
-                title={localization.BLOG_LIST_ERROR_TITLE}
-                message={localization.BLOG_LIST_ERROR}
-            />
-        )
-    }
 
     return (
         <PageWrapper>

@@ -1,29 +1,15 @@
 "use client"
 
 import { useBlogContext } from "@/hooks/context-hooks"
-import { useDrafts } from "../../../hooks"
-import { ErrorPlaceholder } from "../error-placeholder"
-import { PostsLoading } from "../loading"
+import { useSuspenseDrafts } from "../../../hooks"
 import { PageHeader } from "../page-header"
 import { PostsList } from "../posts-list"
 import { PageWrapper } from "./page-wrapper"
 
 export function DraftsPageComponent() {
-    const { drafts, isLoading, error, loadMore, hasMore, isLoadingMore } =
-        useDrafts()
+    const { drafts, loadMore, hasMore, isLoadingMore } = useSuspenseDrafts()
 
     const { localization } = useBlogContext()
-
-    if (isLoading) return <PostsLoading />
-
-    if (error) {
-        return (
-            <ErrorPlaceholder
-                title={localization.BLOG_LIST_ERROR_TITLE}
-                message={localization.BLOG_LIST_ERROR}
-            />
-        )
-    }
 
     return (
         <PageWrapper>

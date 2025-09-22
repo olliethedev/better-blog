@@ -2,11 +2,14 @@
 "use client"
 
 import type { Post } from "@/types"
+import type { Tag } from "@/types"
 import {
     useInfiniteQuery,
     useMutation,
     useQuery,
-    useQueryClient
+    useQueryClient,
+    useSuspenseInfiniteQuery,
+    useSuspenseQuery
 } from "@tanstack/react-query"
 import type { InfiniteData } from "@tanstack/react-query"
 import { useEffect, useRef } from "react"
@@ -86,6 +89,47 @@ export function usePosts(options: UsePostsOptions = {}): UsePostsResult {
     }
 }
 
+/** Suspense variant of usePosts */
+export function useSuspensePosts(options: UsePostsOptions = {}): {
+    posts: Post[]
+    loadMore: () => Promise<unknown>
+    hasMore: boolean
+    isLoadingMore: boolean
+    refetch: () => Promise<unknown>
+} {
+    const { dataProvider } = useBlogContext()
+    const { tag, limit = 10, enabled = true, query } = options
+    const queries = createBlogQueryKeys(dataProvider)
+
+    const queryParams = { tag, limit, query }
+    const basePosts = queries.posts.list(queryParams)
+
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
+        useSuspenseInfiniteQuery({
+            ...basePosts,
+            initialPageParam: 0,
+            getNextPageParam: (lastPage, allPages) => {
+                const posts = lastPage as Post[]
+                if (posts.length < limit) return undefined
+                return allPages.length * limit
+            },
+            retry: false,
+            refetchOnWindowFocus: false,
+            staleTime: 1000 * 60 * 5,
+            gcTime: 1000 * 60 * 10
+        })
+
+    const posts = (data.pages?.flat() ?? []) as Post[]
+
+    return {
+        posts,
+        loadMore: fetchNextPage,
+        hasMore: !!hasNextPage,
+        isLoadingMore: isFetchingNextPage,
+        refetch
+    }
+}
+
 /**
  * Hook for fetching a single post by slug
  */
@@ -114,6 +158,29 @@ export function usePost(slug?: string): UsePostResult {
         error,
         refetch
     }
+}
+
+/** Suspense variant of usePost */
+export function useSuspensePost(slug: string): {
+    post: Post | null
+    refetch: () => Promise<unknown>
+} {
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
+    const basePost = queries.posts.detail(slug)
+    const { data, refetch } = useSuspenseQuery<
+        Post | null,
+        Error,
+        Post | null,
+        typeof basePost.queryKey
+    >({
+        ...basePost,
+        retry: false,
+        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 10
+    })
+    return { post: data || null, refetch }
 }
 
 /**
@@ -146,6 +213,24 @@ export function useTags(): UseTagsResult {
         error,
         refetch
     }
+}
+
+/** Suspense variant of useTags */
+export function useSuspenseTags(): {
+    tags: Tag[]
+    refetch: () => Promise<unknown>
+} {
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
+    const baseTags = queries.tags.list
+    const { data, refetch } = useSuspenseQuery({
+        ...baseTags,
+        retry: false,
+        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 10
+    })
+    return { tags: (data as Tag[] | undefined) ?? [], refetch }
 }
 
 /**
@@ -189,6 +274,46 @@ export function useDrafts(): UseDraftsResult {
         drafts,
         isLoading,
         error,
+        loadMore: fetchNextPage,
+        hasMore: !!hasNextPage,
+        isLoadingMore: isFetchingNextPage,
+        refetch
+    }
+}
+
+/** Suspense variant of useDrafts */
+export function useSuspenseDrafts(): {
+    drafts: Post[]
+    loadMore: () => Promise<unknown>
+    hasMore: boolean
+    isLoadingMore: boolean
+    refetch: () => Promise<unknown>
+} {
+    const { dataProvider } = useBlogContext()
+    const queries = createBlogQueryKeys(dataProvider)
+    const baseDrafts = queries.drafts.list({ limit: 10 })
+
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } =
+        useSuspenseInfiniteQuery({
+            ...baseDrafts,
+            initialPageParam: 0,
+            getNextPageParam: (lastPage, allPages) => {
+                const posts = lastPage as Post[]
+                if (posts.length < 10) return undefined
+                return allPages.length * 10
+            },
+            retry: false,
+            refetchOnWindowFocus: false,
+            staleTime: 1000 * 60 * 5,
+            gcTime: 1000 * 60 * 10
+        })
+
+    const drafts = ((data.pages?.flat() ?? []) as Post[]).filter(
+        (p) => !p.published
+    ) as Post[]
+
+    return {
+        drafts,
         loadMore: fetchNextPage,
         hasMore: !!hasNextPage,
         isLoadingMore: isFetchingNextPage,
@@ -251,7 +376,7 @@ export function usePostSearch({
 }
 
 // ============================================================================
-// MUTATION HOOKS (for future extensibility)
+// MUTATION HOOKS
 // ============================================================================
 
 /**

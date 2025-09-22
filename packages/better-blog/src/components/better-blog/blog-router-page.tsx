@@ -2,21 +2,15 @@
 
 import { useBlogContext } from "@/hooks/context-hooks"
 import { usePageOverrides } from "@/hooks/context-hooks"
-import type { PageComponentOverrides } from "@/types"
 import type { RouteMatch } from "@/types"
+import React, { Suspense } from "react"
 import { RouteProvider } from "../../context/route-context"
 
 import { matchRoute } from "../../router/router"
 
+import { resolveErrorComponent } from "@/router/error-resolver"
 import { resolveLoadingComponent } from "@/router/loading-resolver"
-import {
-    DraftsPageComponent,
-    EditPostPageComponent,
-    HomePageComponent,
-    NewPostPageComponent,
-    PostPageComponent,
-    TagPageComponent
-} from "./pages"
+import { resolvePageComponent } from "@/router/page-resolver"
 
 function NotFoundPage({ message }: { message: string }) {
     return (
@@ -40,14 +34,55 @@ function BlogPageRouterContent({
     const pageOverrides = usePageOverrides()
 
     // Resolve the component from the client-side component mappings with overrides
-    const Component = resolveRouteComponent(routeMatch, pageOverrides)
+    const Component = resolvePageComponent(routeMatch.type, pageOverrides)
+    const ErrorComponent = resolveErrorComponent(routeMatch.type, pageOverrides)
+    const LoadingComponent = resolveLoadingComponent(
+        routeMatch.type,
+        pageOverrides
+    )
 
     if (Component) {
-        return <Component />
+        const fallback = LoadingComponent ? <LoadingComponent /> : null
+        return (
+            <Suspense fallback={fallback}>
+                <RouteErrorBoundary ErrorComponent={ErrorComponent}>
+                    <Component />
+                </RouteErrorBoundary>
+            </Suspense>
+        )
     }
 
     // Fallback for unknown routes
     return <NotFoundComponent message={routeMatch.metadata.title} />
+}
+
+class RouteErrorBoundary extends React.Component<
+    {
+        ErrorComponent?: React.ComponentType<{ message?: string }>
+        children: React.ReactNode
+    },
+    { error?: Error }
+> {
+    state: { error?: Error } = {}
+    static getDerivedStateFromError(error: Error) {
+        return { error }
+    }
+    componentDidCatch() {}
+    render() {
+        const { ErrorComponent, children } = this.props
+        if (this.state.error) {
+            if (ErrorComponent) {
+                return <ErrorComponent message={this.state.error.message} />
+            }
+            return (
+                <div role="alert">
+                    <h2>Something went wrong</h2>
+                    <p>{this.state.error.message}</p>
+                </div>
+            )
+        }
+        return children as React.ReactElement
+    }
 }
 
 // Main component that takes slug and handles routing + context internally
@@ -71,78 +106,4 @@ export function BlogPageRouter({
             />
         </RouteProvider>
     )
-}
-
-/**
- * Resolves the component and loading component for a given route match
- * This keeps RouteMatch pure while using client-side component mappings
- */
-function resolveRouteComponents(
-    routeMatch: RouteMatch,
-    overrides?: PageComponentOverrides
-): {
-    Component?: React.ComponentType
-    LoadingComponent?: React.ComponentType
-} {
-    return {
-        Component: resolveComponent(routeMatch.type, overrides),
-        LoadingComponent: resolveLoadingComponent(routeMatch.type, overrides)
-    }
-}
-
-/**
- * Gets just the component for a route match (convenience function)
- */
-export function resolveRouteComponent(
-    routeMatch: RouteMatch,
-    overrides?: PageComponentOverrides
-): React.ComponentType | undefined {
-    const { Component } = resolveRouteComponents(routeMatch, overrides)
-    return Component
-}
-
-// Default component mappings (excluding 'unknown' type)
-export const defaultComponents = {
-    home: HomePageComponent,
-    post: PostPageComponent,
-    tag: TagPageComponent,
-    drafts: DraftsPageComponent,
-    new: NewPostPageComponent,
-    edit: EditPostPageComponent
-} as const
-
-/**
- * Resolves the final component for a route type, applying overrides
- */
-export function resolveComponent(
-    routeType: RouteMatch["type"],
-    overrides?: PageComponentOverrides
-): React.ComponentType | undefined {
-    // Handle unknown route types early
-    if (routeType === "unknown" || !(routeType in defaultComponents)) {
-        return undefined
-    }
-
-    const type = routeType
-
-    // Check for override first
-    if (overrides) {
-        switch (type) {
-            case "home":
-                return overrides.HomeComponent || defaultComponents.home
-            case "post":
-                return overrides.PostComponent || defaultComponents.post
-            case "tag":
-                return overrides.TagComponent || defaultComponents.tag
-            case "drafts":
-                return overrides.DraftsComponent || defaultComponents.drafts
-            case "new":
-                return overrides.NewPostComponent || defaultComponents.new
-            case "edit":
-                return overrides.EditPostComponent || defaultComponents.edit
-        }
-    }
-
-    // Fall back to default
-    return defaultComponents[type]
 }

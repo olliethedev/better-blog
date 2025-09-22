@@ -72,6 +72,13 @@ export interface PageComponentOverrides {
     NewPostLoadingComponent?: React.ComponentType
     EditPostLoadingComponent?: React.ComponentType
 
+    HomeErrorComponent?: React.ComponentType<{ message?: string }>
+    PostErrorComponent?: React.ComponentType<{ message?: string }>
+    TagErrorComponent?: React.ComponentType<{ message?: string }>
+    DraftsErrorComponent?: React.ComponentType<{ message?: string }>
+    NewPostErrorComponent?: React.ComponentType<{ message?: string }>
+    EditPostErrorComponent?: React.ComponentType<{ message?: string }>
+
     NotFoundComponent?: React.ComponentType<{ message: string }>
 }
 export type Author = {

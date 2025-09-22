@@ -1,7 +1,7 @@
 {
     "name": "better-blog",
     "homepage": "https://better-blog.com",
-    "version": "0.0.21",
+    "version": "0.0.22",
     "description": "A drop-in blog framework for your React app",
     "repository": {
         "type": "git",
@@ -205,6 +205,7 @@
         }
     },
     "devDependencies": {
+        "@babel/preset-env": "^7.28.3",
         "@biomejs/biome": "1.9.4",
         "@prisma/client": "^5.22.0",
         "@tailwindcss/typography": "^0.5.16",
@@ -217,6 +218,7 @@
         "@types/pg": "^8.11.10",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
+        "babel-jest": "^30.1.2",
         "better-sqlite3": "^11.10.0",
         "drizzle-orm": "^0.36.0",
         "esbuild-plugin-preserve-directives": "^0.0.11",
@@ -288,6 +290,7 @@
     "dependencies": {
         "@milkdown/crepe": "^7.15.3",
         "@milkdown/kit": "^7.15.3",
-        "better-call": "^1.0.19"
+        "better-call": "^1.0.19",
+        "rou3": "^0.7.5"
     }
 }

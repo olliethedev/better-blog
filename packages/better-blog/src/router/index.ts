@@ -1,4 +1,5 @@
 export * from "./router"
-export * from "./route-schema"
 export * from "./types"
-export { resolveLoadingComponent } from "./loading-resolver"
+// export { resolveLoadingComponent } from "./loading-resolver"
+// export { resolveErrorComponent } from "./error-resolver"
+// export { resolvePageComponent } from "./page-resolver"

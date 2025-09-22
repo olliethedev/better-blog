@@ -1,4 +1,3 @@
-import type { PageComponentOverrides } from "@/types"
 import type { BlogDataProvider } from "@/types"
 import type { QueryClient } from "@tanstack/react-query"
 /**
@@ -23,19 +22,6 @@ export interface BlogServerAdapter {
     BlogServerRouter: React.ComponentType<{
         /** Optional path string like "posts/my-post" (no leading slash). */
         path?: string
-        /**
-         * Optional overrides for server-side loading components rendered while
-         * the page is being prepared.
-         */
-        loadingComponentOverrides?: Pick<
-            PageComponentOverrides,
-            | "HomeLoadingComponent"
-            | "PostLoadingComponent"
-            | "TagLoadingComponent"
-            | "DraftsLoadingComponent"
-            | "NewPostLoadingComponent"
-            | "EditPostLoadingComponent"
-        >
     }>
     prefetch: (options: {
         path?: string
@@ -66,4 +52,4 @@ export interface BlogPageMetadata {
         description?: string
         images?: Array<string>
     }
-} // Component override interface
+}

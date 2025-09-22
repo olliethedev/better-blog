@@ -1,17 +1,13 @@
-import { PostsLoading } from "@/router/loading-resolver"
+import { routeSchema } from "@/router/routes"
 import type { Post } from "@/types"
 import type { BlogDataProvider } from "@/types"
 import type { RouteMatch } from "@/types"
 import type { QueryClient } from "@tanstack/react-query"
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
-import { Suspense } from "react"
 import { BlogPageRouter } from "../../components/better-blog/blog-router-page"
 import { matchRoute } from "../../router"
 import { prefetchBlogData } from "./prefetch"
 import type { BlogPageMetadata, BlogPostMetadata } from "./types"
-
-import { resolveLoadingComponent } from "@/router/loading-resolver"
-import { routeSchema } from "@/router/routes"
 import type { BlogServerAdapter, CreateBlogServerAdapterOptions } from "./types"
 
 /**
@@ -64,31 +60,15 @@ export function createBlogServerAdapter(
             })
         },
 
-        BlogServerRouter: async function BlogServerRouter({
-            path,
-            loadingComponentOverrides
-        }) {
+        BlogServerRouter: async function BlogServerRouter({ path }) {
             const routeMatch = matchRoute(path?.split("/").filter(Boolean))
-            const LoadingComponent = resolveLoadingComponent(
-                routeMatch.type,
-                loadingComponentOverrides
-            )
-
-            const fallbackComponent = LoadingComponent ? (
-                <LoadingComponent />
-            ) : (
-                <PostsLoading />
-            )
-
             return (
-                <Suspense fallback={fallbackComponent}>
-                    <BlogServerRouterContent
-                        routeMatch={routeMatch}
-                        path={path}
-                        serverConfig={serverConfig}
-                        queryClient={queryClient}
-                    />
-                </Suspense>
+                <BlogServerRouterContent
+                    routeMatch={routeMatch}
+                    path={path}
+                    serverConfig={serverConfig}
+                    queryClient={queryClient}
+                />
             )
         },
 

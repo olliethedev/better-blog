@@ -5,16 +5,16 @@ export {
     FormLoading,
     PostsLoading,
     PostLoading
-} from "@/router/loading-resolver"
+} from "../../router/loading-resolver"
 
+// For backward compatibility, we'll keep the defaultLoadingComponents export
+// but import it from the loading resolver
+import type { RouteMatch } from "@/types"
 import {
     FormLoading,
     PostLoading,
     PostsLoading
-} from "@/router/loading-resolver"
-// For backward compatibility, we'll keep the defaultLoadingComponents export
-// but import it from the loading resolver
-import type { RouteMatch } from "@/types"
+} from "../../router/loading-resolver"
 
 export const defaultLoadingComponents: Record<
     RouteMatch["type"],

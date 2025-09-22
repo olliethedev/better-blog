@@ -2,8 +2,9 @@ import type { Post } from "@/types"
 import type { BlogDataProvider } from "@/types"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
-import type React from "react"
+import React from "react"
 import { BlogProvider } from "../../../context/better-blog-context"
+import { PostsLoading } from "../loading"
 import { HomePageComponent } from "../pages/home-page"
 
 // Mock API handler to track calls
@@ -54,7 +55,9 @@ const createTestWrapper = (
                 basePath="/blog"
                 navigate={navigate}
             >
-                {children}
+                <React.Suspense fallback={<PostsLoading />}>
+                    {children}
+                </React.Suspense>
             </BlogProvider>
         </QueryClientProvider>
     )

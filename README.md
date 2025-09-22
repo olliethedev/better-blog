@@ -61,9 +61,7 @@ You could help continuing its development by:
 - finalize page designs + admin ui
 - core component overrides (Card, Heading, MarkdownEditor, MarkdownRenderer, etc.)
 - blog ui translations
-- use a router lib instead of the custom one
 - add auth hooks to createBlogApiRouter config (canCreate, canUpdate, canDelete)
-- treamline metadata format for all providers
 - lighthouse score improvements
 - remix docs
 - export page components via shadcn registry
