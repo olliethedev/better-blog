@@ -103,10 +103,10 @@ test("unknown page state renders", async ({ page }) => {
     })
     await page.goto("/posts/unknown", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
-    // Unknown slug should render empty-state (not found post) or error placeholder if error bubbles
-    const hasEmpty = await page.locator(emptySelector).isVisible().catch(() => false)
-    const hasError = await page.locator(errorSelector).isVisible().catch(() => false)
-    expect(hasEmpty || hasError).toBeTruthy()
+    // Unknown slug should render empty-state or error placeholder; wait for either to appear
+    await expect(
+        page.locator(`${emptySelector}, ${errorSelector}`)
+    ).toBeVisible()
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 
@@ -117,10 +117,10 @@ test("unknown edit page state renders", async ({ page }) => {
     })
     await page.goto("/posts/unknown/edit", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
-    // Unknown edit page should render empty-state (not found post) or error placeholder
-    const hasEmpty = await page.locator(emptySelector).isVisible().catch(() => false)
-    const hasError = await page.locator(errorSelector).isVisible().catch(() => false)
-    expect(hasEmpty || hasError).toBeTruthy()
+    // Unknown edit page should render empty-state or error placeholder; wait for either to appear
+    await expect(
+        page.locator(`${emptySelector}, ${errorSelector}`)
+    ).toBeVisible()
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 

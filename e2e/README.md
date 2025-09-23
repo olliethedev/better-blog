@@ -50,7 +50,7 @@ pnpm e2e:ui
 
 - Memory: load seeded data at app boot when `E2E=1`.
 - SQL (Kysely):
-  - Use `testcontainers` to provision Postgres (or connect to SQLite via file).
+  - Use docker to provision Postgres (or connect to SQLite via file).
   - Reuse migrations from `packages/better-blog/src/providers/__tests__/migrations/postgres` or add new migrations.
   - Run migrations in setup before starting the app.
 - Prisma/Drizzle:
@@ -61,11 +61,8 @@ pnpm e2e:ui
 
 - SQLite:
   - Use a unique file per project under `.e2e/sqlite/<name>.db`.
-- Postgres:
-  - Start a per-project container via `testcontainers`.
-  - Poll the connection before running schema ops.
-- MySQL or others:
-  - Mirror the Postgres approach with the respective Testcontainers image and dialect setup.
+- Postgres, MySQL or others:
+  - Start the containers via `docker compose up -d`
 
 ## Client-only providers (3rd-party APIs)
 
