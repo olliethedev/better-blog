@@ -16,7 +16,7 @@ jobs:
     permissions:
       contents: read
     env:
-      PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+      PLAYWRIGHT_BROWSERS_PATH: ${{ env.HOME }}/.cache/ms-playwright
       DOCKER_BUILDKIT: 1
 
     steps:
@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/ms-playwright
+            ${{ env.HOME }}/.cache/ms-playwright
             .turbo
           key: ${{ runner.os }}-e2e-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('turbo.json') }}
           restore-keys: |
@@ -78,7 +78,7 @@ jobs:
       - name: Install Playwright browsers (Chromium only)
         run: pnpm -F better-blog-e2e exec playwright install --with-deps chromium
         env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_BROWSERS_PATH: ${{ env.HOME }}/.cache/ms-playwright
 
       - name: Build workspace
         run: pnpm -w build
@@ -86,7 +86,7 @@ jobs:
       - name: Run Playwright tests
         run: pnpm e2e
         env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_BROWSERS_PATH: ${{ env.HOME }}/.cache/ms-playwright
 
       - name: Upload Playwright report
         if: always()
