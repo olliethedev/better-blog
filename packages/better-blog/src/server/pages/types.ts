@@ -1,4 +1,4 @@
-import type { BlogDataProvider } from "@/types"
+import type { BlogDataProvider, BlogPageMetadata, SeoSiteConfig } from "@/types"
 import type { QueryClient } from "@tanstack/react-query"
 /**
  * The server adapter returned by `createBlogServerAdapter` for SSR/SSG frameworks.
@@ -16,6 +16,10 @@ export interface BlogServerAdapter {
      */
     generateMetadata: (path?: string) => Promise<BlogPageMetadata>
     /**
+     * Generate Next.js-compatible Metadata object (shape-only, no Next peer dep).
+     */
+    generateNextMetadata: (path?: string) => Promise<Record<string, unknown>>
+    /**
      * Server entry component that prefetches data and renders the routed page
      * within a React Query hydration boundary.
      */
@@ -31,25 +35,5 @@ export interface BlogServerAdapter {
 export interface CreateBlogServerAdapterOptions {
     provider: BlogDataProvider
     queryClient: QueryClient
-}
-export interface BlogPostMetadata {
-    title: string
-    description?: string
-    image?: string
-}
-
-export interface BlogPageMetadata {
-    title: string
-    description?: string
-    openGraph?: {
-        title?: string
-        description?: string
-        images?: Array<{ url: string } | string>
-    }
-    twitter?: {
-        card?: "summary" | "summary_large_image"
-        title?: string
-        description?: string
-        images?: Array<string>
-    }
+    site?: SeoSiteConfig
 }

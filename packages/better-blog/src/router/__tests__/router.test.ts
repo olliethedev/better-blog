@@ -1,37 +1,9 @@
-import { matchRoute, resolveMetadata } from "../router"
-import { routeSchema } from "../routes"
-
-describe("resolveMetadata", () => {
-    test("resolves static metadata for home route", () => {
-        const home = routeSchema.routes.find((r) => r.type === "home")
-        expect(home).toBeDefined()
-        const meta = resolveMetadata(home!, {})
-        expect(meta.title).toBe("Blog Posts")
-        expect(meta.description).toBe("Latest blog posts")
-    })
-
-    test("resolves dynamic metadata for post route", () => {
-        const post = routeSchema.routes.find((r) => r.type === "post")
-        expect(post).toBeDefined()
-        const meta = resolveMetadata(post!, { slug: "hello-world" })
-        expect(meta.title).toBe("Post: hello-world")
-        expect(meta.description).toBe("Blog post content")
-    })
-
-    test("resolves dynamic metadata for tag route", () => {
-        const tag = routeSchema.routes.find((r) => r.type === "tag")
-        expect(tag).toBeDefined()
-        const meta = resolveMetadata(tag!, { tag: "react" })
-        expect(meta.title).toBe("Posts tagged: react")
-        expect(meta.description).toBe("All posts tagged with react")
-    })
-})
+import { matchRoute } from "../router"
 
 describe("matchRoute", () => {
     test("matches home /", () => {
         const match = matchRoute([])
         expect(match.type).toBe("home")
-        expect(match.metadata.title).toBeDefined()
     })
 
     test("prioritizes static /new over dynamic /:slug", () => {
@@ -65,9 +37,6 @@ describe("matchRoute", () => {
     test("returns unknown for undefined routes", () => {
         const match = matchRoute(["does-not-exist", "deep"])
         expect(match.type).toBe("unknown")
-        expect(match.metadata.title).toContain(
-            "Unknown route: /does-not-exist/deep"
-        )
     })
 })
 

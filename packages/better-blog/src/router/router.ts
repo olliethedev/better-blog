@@ -56,7 +56,7 @@ export function matchRoute(
  * Resolves metadata from route definition, handling both static and dynamic values
  */
 
-export function resolveMetadata(
+function resolveMetadata(
     routeDef: RouteDefinition,
     params: Record<string, string>
 ): { title: string; description?: string; image?: string } {

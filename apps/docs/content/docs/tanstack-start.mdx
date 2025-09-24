@@ -6,63 +6,17 @@ description: SSR/SSG with server prefetch and client hydration
 This renders all blog routes under `/posts/...` with server prefetch + client hydration. Provide separate data providers for server and client.
 
 #### 1) `src/routes/posts/$.tsx` (server)
-Create the Better Blog server adapter, prefetch data in the loader, return metadata, and render via `BlogPageRouter`.
+Create the Better Blog server adapter, prefetch data in the loader, and render via `BlogPageRouter`. Choose either `<BlogMetaTags />` (simplest) or `buildTanStackHead` (router `head()` style) below.
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router"
 import { createBlogServerAdapter } from "better-blog/server/pages";
-import { BlogPageRouter } from "better-blog/client"
+import { BlogMetaTags, BlogPageRouter } from "better-blog/client"
 
 import { blogDataProvider } from "../../lib/blog-data-provider";
 
 export const Route = createFileRoute("/posts/$")({
   ssr: true,
-  head: ({ loaderData }) => {
-    const meta = (loaderData ?? null) as
-      | {
-          title?: string
-          description?: string
-          openGraph?: { title?: string; description?: string; images?: Array<{ url: string } | string> }
-          twitter?: { card?: string; title?: string; description?: string; images?: Array<string> }
-        }
-      | null
-
-    const ogImage = meta?.openGraph?.images?.[0]
-    const ogImageUrl = typeof ogImage === "string" ? ogImage : ogImage?.url
-
-    return {
-      meta: [
-        meta?.title ? { title: meta.title } : undefined,
-        meta?.description ? { name: "description", content: meta.description } : undefined,
-        { property: "og:type", content: "article" },
-        meta?.openGraph?.title
-          ? { property: "og:title", content: meta.openGraph.title }
-          : meta?.title
-          ? { property: "og:title", content: meta.title }
-          : undefined,
-        meta?.openGraph?.description
-          ? { property: "og:description", content: meta.openGraph.description }
-          : meta?.description
-          ? { property: "og:description", content: meta.description }
-          : undefined,
-        ogImageUrl ? { property: "og:image", content: ogImageUrl } : undefined,
-        meta?.twitter?.card
-          ? { name: "twitter:card", content: meta.twitter.card }
-          : { name: "twitter:card", content: ogImageUrl ? "summary_large_image" : "summary" },
-        meta?.twitter?.title
-          ? { name: "twitter:title", content: meta.twitter.title }
-          : meta?.title
-          ? { name: "twitter:title", content: meta.title }
-          : undefined,
-        meta?.twitter?.description
-          ? { name: "twitter:description", content: meta.twitter.description }
-          : meta?.description
-          ? { name: "twitter:description", content: meta.description }
-          : undefined,
-        ogImageUrl ? { name: "twitter:image", content: ogImageUrl } : undefined,
-      ].filter(Boolean) as Array<{ name?: string; property?: string; content?: string; title?: string }>,
-    }
-  },
   component: RouteComponent,
   loader: async ({ params, context }) => {
     const serverAdapter = createBlogServerAdapter({
@@ -70,8 +24,43 @@ export const Route = createFileRoute("/posts/$")({
       queryClient: context.queryClient,
     })
     await serverAdapter.prefetch({ path: params._splat })
-    const meta = await serverAdapter.generateMetadata(params._splat)
-    return meta
+    return null
+  }
+})
+
+function RouteComponent() {
+  const { _splat } = Route.useParams();
+  return (
+    <>
+      <BlogMetaTags path={_splat} provider={blogDataProvider} />
+      <BlogPageRouter path={_splat} />
+    </>
+  )
+}
+```
+
+##### Alternative: router head() with buildTanStackHead
+
+```tsx
+import { createFileRoute } from "@tanstack/react-router"
+import { createBlogServerAdapter } from "better-blog/server/pages";
+import { buildTanStackHead } from "better-blog/router"
+import { BlogPageRouter } from "better-blog/client"
+import { blogDataProvider } from "../../lib/blog-data-provider";
+
+export const Route = createFileRoute("/posts/$")({
+  ssr: true,
+  head: ({ loaderData }) => loaderData as { meta?: any[]; links?: any[] },
+  component: RouteComponent,
+  loader: async ({ params, context }) => {
+    const serverAdapter = createBlogServerAdapter({
+      provider: blogDataProvider,
+      queryClient: context.queryClient,
+    })
+    await serverAdapter.prefetch({ path: params._splat })
+    // Build head data on server
+    const head = await buildTanStackHead({ path: params._splat, provider: blogDataProvider })
+    return head
   }
 })
 
