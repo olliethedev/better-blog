@@ -6,40 +6,7 @@ description: SSR/SSG with server prefetch and client hydration
 This renders all blog routes under `/posts/...` with server prefetch + client hydration. Provide separate data providers for server and client.
 
 #### 1) `src/routes/posts/$.tsx` (server)
-Create the Better Blog server adapter, prefetch data in the loader, and render via `BlogPageRouter`. Choose either `<BlogMetaTags />` (simplest) or `buildTanStackHead` (router `head()` style) below.
-
-```tsx
-import { createFileRoute } from "@tanstack/react-router"
-import { createBlogServerAdapter } from "better-blog/server/pages";
-import { BlogMetaTags, BlogPageRouter } from "better-blog/client"
-
-import { blogDataProvider } from "../../lib/blog-data-provider";
-
-export const Route = createFileRoute("/posts/$")({
-  ssr: true,
-  component: RouteComponent,
-  loader: async ({ params, context }) => {
-    const serverAdapter = createBlogServerAdapter({
-      provider: blogDataProvider,
-      queryClient: context.queryClient,
-    })
-    await serverAdapter.prefetch({ path: params._splat })
-    return null
-  }
-})
-
-function RouteComponent() {
-  const { _splat } = Route.useParams();
-  return (
-    <>
-      <BlogMetaTags path={_splat} provider={blogDataProvider} />
-      <BlogPageRouter path={_splat} />
-    </>
-  )
-}
-```
-
-##### Alternative: router head() with buildTanStackHead
+Create the Better Blog server adapter, prefetch data in the loader, and render via `BlogPageRouter`. Set the page head with `buildTanStackHead`.
 
 ```tsx
 import { createFileRoute } from "@tanstack/react-router"
@@ -69,6 +36,7 @@ function RouteComponent() {
   return <BlogPageRouter path={_splat} />
 }
 ```
+
 
 #### 2) `src/routes/__root.tsx`
 Define the root document and wrap your app with `Provider` to supply context. Uses `createRootRouteWithContext`.
