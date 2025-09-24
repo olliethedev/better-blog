@@ -6,7 +6,7 @@
         "dev": "next dev --turbopack",
         "build": "next build --turbopack",
         "start": "next start",
-        "start:e2e": "pnpm build && NODE_ENV=test next start",
+        "start:e2e": "rm -rf .next && pnpm build && NODE_ENV=test next start",
         "lint": "eslint",
         "db:init": " pnpm -w exec dotenv -e apps/examples/nextjs/.env.local -- tsx apps/examples/nextjs/scripts/seed/kysley/init.ts"
     },
@@ -28,10 +28,14 @@
         "@eslint/eslintrc": "^3",
         "@tailwindcss/postcss": "^4",
         "@types/node": "^20",
+        "@types/pg": "^8.12.0",
         "@types/react": "^19",
         "@types/react-dom": "^19",
+        "dotenv-cli": "^10.0.0",
         "eslint": "^9",
         "eslint-config-next": "15.5.3",
+        "kysely": "^0.28.5",
+        "pg": "^8.12.0",
         "tailwindcss": "^4",
         "tw-animate-css": "^1.3.8",
         "typescript": "^5"

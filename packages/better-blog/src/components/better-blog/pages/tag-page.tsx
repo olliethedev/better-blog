@@ -2,9 +2,7 @@
 
 import { useBlogContext } from "@/hooks/context-hooks"
 import { useRoute } from "@/hooks/context-hooks"
-import { useTagPosts } from "../../../hooks"
-import { ErrorPlaceholder } from "../error-placeholder"
-import { PostsLoading } from "../loading"
+import { useSuspensePosts } from "../../../hooks"
 import { PageHeader } from "../page-header"
 import { PostsList } from "../posts-list"
 import { PageWrapper } from "./page-wrapper"
@@ -12,24 +10,14 @@ import { PageWrapper } from "./page-wrapper"
 export function TagPageComponent() {
     const { routeMatch } = useRoute()
     const tag = routeMatch.params?.tag || "unknown"
-    const { posts, isLoading, error, loadMore, hasMore, isLoadingMore } =
-        useTagPosts(tag)
+    const { posts, loadMore, hasMore, isLoadingMore } = useSuspensePosts({
+        tag
+    })
 
     const { localization } = useBlogContext()
 
-    if (isLoading) return <PostsLoading />
-
-    if (error) {
-        return (
-            <ErrorPlaceholder
-                title={localization.BLOG_LIST_ERROR_TITLE}
-                message={localization.BLOG_LIST_ERROR}
-            />
-        )
-    }
-
     return (
-        <PageWrapper>
+        <PageWrapper testId="tag-page">
             <div className="flex flex-col items-center gap-3">
                 <PageHeader
                     title={localization.BLOG_LIST_TAG_TITLE.replace(

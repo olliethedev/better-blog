@@ -101,5 +101,4 @@ export function resolveLoadingComponent(
     return defaultLoadingComponents[type]
 }
 
-// Export the loading components for backward compatibility
 export { FormLoading, PostsLoading, PostLoading }

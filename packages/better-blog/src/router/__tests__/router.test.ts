@@ -4,7 +4,6 @@ describe("matchRoute", () => {
     test("matches home /", () => {
         const match = matchRoute([])
         expect(match.type).toBe("home")
-        expect(match.metadata.title).toBeDefined()
     })
 
     test("prioritizes static /new over dynamic /:slug", () => {
@@ -38,9 +37,6 @@ describe("matchRoute", () => {
     test("returns unknown for undefined routes", () => {
         const match = matchRoute(["does-not-exist", "deep"])
         expect(match.type).toBe("unknown")
-        expect(match.metadata.title).toContain(
-            "Unknown route: /does-not-exist/deep"
-        )
     })
 })
 

@@ -19,7 +19,7 @@ export const generateMetadata: (context: {
     params: Promise<{ all: string[] | undefined }>
 }) => Promise<Metadata> = async ({ params }) => {
     const { all } = await params
-    return serverAdapter.generateMetadata(all?.join("/"))
+    return serverAdapter.generateNextMetadata(all?.join("/")) as unknown as Metadata
 }
 
 // Main page component

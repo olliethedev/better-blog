@@ -16,7 +16,7 @@ jobs:
     permissions:
       contents: read
     env:
-      PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.cache/ms-playwright
       DOCKER_BUILDKIT: 1
 
     steps:
@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/ms-playwright
+            ${{ github.workspace }}/.cache/ms-playwright
             .turbo
           key: ${{ runner.os }}-e2e-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('turbo.json') }}
           restore-keys: |
@@ -76,9 +76,9 @@ jobs:
           wait_for_port 127.0.0.1 1433 mssql || true
 
       - name: Install Playwright browsers (Chromium only)
-        run: npx playwright install --with-deps chromium
+        run: pnpm -F better-blog-e2e exec playwright install --with-deps chromium
         env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.cache/ms-playwright
 
       - name: Build workspace
         run: pnpm -w build
@@ -86,14 +86,14 @@ jobs:
       - name: Run Playwright tests
         run: pnpm e2e
         env:
-          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.cache/ms-playwright
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report
+          path: e2e/playwright-report
           if-no-files-found: ignore
 
       - name: Upload traces

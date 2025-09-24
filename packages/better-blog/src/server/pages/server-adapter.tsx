@@ -1,17 +1,16 @@
-import { PostsLoading } from "@/router/loading-resolver"
-import type { Post } from "@/types"
-import type { BlogDataProvider } from "@/types"
-import type { RouteMatch } from "@/types"
+import { resolveMetadata, resolveSEO } from "@/router/meta-resolver"
+import { routeSchema } from "@/router/routes"
+import type {
+    BlogDataProvider,
+    BlogPageMetadata,
+    RouteMatch,
+    SeoSiteConfig
+} from "@/types"
 import type { QueryClient } from "@tanstack/react-query"
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
-import { Suspense } from "react"
 import { BlogPageRouter } from "../../components/better-blog/blog-router-page"
 import { matchRoute } from "../../router"
 import { prefetchBlogData } from "./prefetch"
-import type { BlogPageMetadata, BlogPostMetadata } from "./types"
-
-import { resolveLoadingComponent } from "@/router/loading-resolver"
-import { routeSchema } from "@/router/routes"
 import type { BlogServerAdapter, CreateBlogServerAdapterOptions } from "./types"
 
 /**
@@ -27,7 +26,7 @@ import type { BlogServerAdapter, CreateBlogServerAdapterOptions } from "./types"
 export function createBlogServerAdapter(
     options: CreateBlogServerAdapterOptions
 ): BlogServerAdapter {
-    const { provider: serverConfig, queryClient } = options
+    const { provider: serverConfig, queryClient, site } = options
     return {
         generateStaticParams() {
             const staticRoutes = generateStaticRoutes()
@@ -36,59 +35,26 @@ export function createBlogServerAdapter(
 
         async generateMetadata(path?: string): Promise<BlogPageMetadata> {
             const match = matchRoute(path?.split("/").filter(Boolean))
-
-            // For post routes, fetch the actual post data to generate dynamic metadata
-            if (match.type === "post" && match.params?.slug) {
-                try {
-                    const slug = match.params.slug
-                    const post =
-                        (await serverConfig.getPostBySlug?.(slug)) ??
-                        (await serverConfig.getAllPosts({ slug })).find(
-                            (p) => p.slug === slug
-                        )
-
-                    if (post) {
-                        return buildPageMetadata(generatePostMetadata(post))
-                    }
-                } catch (error) {
-                    console.error("Error fetching post metadata:", error)
-                    // Fall back to route-based metadata
-                }
-            }
-
-            // Use fallback metadata from route match
-            return buildPageMetadata({
-                title: match.metadata.title,
-                description: match.metadata.description,
-                image: match.metadata.image
-            })
+            return resolveMetadata(match, serverConfig, site)
+        },
+        async generateNextMetadata(
+            path?: string
+        ): Promise<Record<string, unknown>> {
+            const match = matchRoute(path?.split("/").filter(Boolean))
+            const seo = await resolveSEO(match, serverConfig, site)
+            return mapSeoToNextMetadata(seo)
         },
 
-        BlogServerRouter: async function BlogServerRouter({
-            path,
-            loadingComponentOverrides
-        }) {
+        BlogServerRouter: async function BlogServerRouter({ path }) {
             const routeMatch = matchRoute(path?.split("/").filter(Boolean))
-            const LoadingComponent = resolveLoadingComponent(
-                routeMatch.type,
-                loadingComponentOverrides
-            )
-
-            const fallbackComponent = LoadingComponent ? (
-                <LoadingComponent />
-            ) : (
-                <PostsLoading />
-            )
-
             return (
-                <Suspense fallback={fallbackComponent}>
-                    <BlogServerRouterContent
-                        routeMatch={routeMatch}
-                        path={path}
-                        serverConfig={serverConfig}
-                        queryClient={queryClient}
-                    />
-                </Suspense>
+                <BlogServerRouterContent
+                    routeMatch={routeMatch}
+                    path={path}
+                    serverConfig={serverConfig}
+                    queryClient={queryClient}
+                    site={site}
+                />
             )
         },
 
@@ -107,12 +73,14 @@ async function BlogServerRouterContent({
     path,
     routeMatch,
     serverConfig,
-    queryClient
+    queryClient,
+    site
 }: {
     path?: string
     routeMatch: RouteMatch
     serverConfig: BlogDataProvider
     queryClient: QueryClient
+    site?: SeoSiteConfig
 }) {
     // Prefetch data on the server
     await prefetchBlogData({
@@ -124,39 +92,54 @@ async function BlogServerRouterContent({
     // Dehydrate the state for hydration on the client
     const dehydratedState = dehydrate(queryClient)
 
+    // Build SEO (metadata + JSON-LD) on the server so frameworks can consume
+    const seo = await resolveSEO(routeMatch, serverConfig, site)
+
     return (
         <HydrationBoundary state={dehydratedState}>
+            {/* Embed JSON-LD on the server for crawlers without JS */}
+            {seo.structuredData.map((obj, idx) => (
+                <script key={idx} type="application/ld+json">
+                    {JSON.stringify(obj)}
+                </script>
+            ))}
             <BlogPageRouter path={path} />
         </HydrationBoundary>
     )
 }
 
-function generatePostMetadata(post: Post): BlogPostMetadata {
-    return {
-        title: post.title,
-        description: post.excerpt,
-        image: post.image
-    }
-}
-
-function buildPageMetadata(meta: BlogPostMetadata): BlogPageMetadata {
-    const { title, description, image } = meta
-    const images = image ? [image] : undefined
-    return {
-        title,
-        description,
-        openGraph: {
-            title,
-            description,
-            images: images
+function mapSeoToNextMetadata(
+    seo: import("@/types").BlogPageSEO
+): Record<string, unknown> {
+    const md: Record<string, unknown> = {
+        title: seo.meta.title,
+        description: seo.meta.description,
+        robots: seo.meta.robots,
+        alternates: seo.meta.canonicalUrl
+            ? { canonical: seo.meta.canonicalUrl }
+            : undefined,
+        openGraph: seo.meta.openGraph && {
+            title: seo.meta.openGraph.title ?? seo.meta.title,
+            description: seo.meta.openGraph.description ?? seo.meta.description,
+            url: seo.meta.openGraph.url,
+            type: seo.meta.openGraph.type,
+            siteName: seo.meta.openGraph.siteName,
+            images: (seo.meta.openGraph.images ?? []).map((img) =>
+                typeof img === "string" ? { url: img } : img
+            )
         },
-        twitter: {
-            card: image ? "summary_large_image" : "summary",
-            title,
-            description,
-            images
+        twitter: seo.meta.twitter && {
+            card: seo.meta.twitter.card,
+            title: seo.meta.twitter.title ?? seo.meta.title,
+            description: seo.meta.twitter.description ?? seo.meta.description,
+            images: seo.meta.twitter.images
+        },
+        other: {
+            // Provide JSON-LD for easy consumption in Next app router
+            __betterBlogJsonLd: seo.structuredData
         }
     }
+    return md
 }
 
 function generateStaticRoutes(): Array<{ slug: string[] }> {

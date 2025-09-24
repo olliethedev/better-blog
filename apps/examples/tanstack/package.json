@@ -11,7 +11,7 @@
     "build": "node --experimental-loader ./css-handler.js node_modules/vite/bin/vite.js build",
     "build:memory": "node --experimental-loader ./css-handler.js node_modules/vite/bin/vite.js build",
     "start": "node .output/server/index.mjs",
-    "start:e2e": "pnpm build:memory && NODE_ENV=test node .output/server/index.mjs"
+    "start:e2e": "rm -rf .tanstack/start/build && pnpm build:memory && NODE_ENV=test node .output/server/index.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.12",

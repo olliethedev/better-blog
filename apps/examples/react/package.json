@@ -10,8 +10,8 @@
     "build:memory": "tsc -b && VITE_BLOG_PROVIDER=memory vite build --outDir dist-memory",
     "build:api": "tsc -b && VITE_BLOG_PROVIDER=api vite build --outDir dist-api",
     "start": "vite preview --strictPort",
-    "start:e2e": "pnpm build:memory && NODE_ENV=test vite preview --strictPort --outDir dist-memory",
-    "start:e2e:api": "pnpm build:api && NODE_ENV=test node server.mjs --dist-dir=dist-api",
+    "start:e2e": "rm -rf dist-memory && pnpm build:memory && NODE_ENV=test vite preview --strictPort --outDir dist-memory",
+    "start:e2e:api": "rm -rf dist-api && pnpm build:api && NODE_ENV=test node server.mjs --dist-dir=dist-api",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -19,8 +19,8 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.84.1",
-    "better-call": "^1.0.19",
     "better-blog": "workspace:*",
+    "better-call": "^1.0.19",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.536.0",

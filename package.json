@@ -7,21 +7,12 @@
         "dev": "turbo run dev --parallel",
         "test": "turbo run test",
         "lint": "turbo run lint",
-        "e2e:install": "playwright install --with-deps",
-        "e2e": "playwright test -c e2e/playwright.config.ts",
-        "e2e:ui": "playwright test -c e2e/playwright.config.ts --ui"
+        "e2e:install": "pnpm -F better-blog-e2e run e2e:install",
+        "e2e": "pnpm -F better-blog-e2e run e2e",
+        "e2e:ui": "pnpm -F better-blog-e2e run e2e:ui"
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
-        "@playwright/test": "^1.48.2",
-        "@types/dockerode": "^3.3.26",
-        "@types/pg": "^8.12.0",
-        "dockerode": "^4.0.8",
-        "dotenv-cli": "^10.0.0",
-        "kysely": "^0.28.5",
-        "pg": "^8.12.0",
-        "testcontainers": "^10.12.0",
-        "tsx": "^4.20.3",
         "turbo": "^2.5.5"
     },
     "pnpm": {

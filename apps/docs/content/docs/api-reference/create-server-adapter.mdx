@@ -10,3 +10,27 @@ Below is the `BlogServerAdapter` returned by `createBlogServerAdapter` for SSR/S
 ### BlogServerAdapter
 <AutoTypeTable path="../../packages/better-blog/src/server/pages/types.ts" name="BlogServerAdapter" />
 
+
+### SEO helpers
+
+The server adapter uses the best-in-class SEO resolver under the hood. You can:
+
+- generate framework-agnostic metadata: `generateMetadata(path)`
+- generate Next.js Metadata shape: `generateNextMetadata(path)`
+- embed JSON-LD automatically on server render
+
+Optionally pass a site config when creating the adapter:
+
+```ts
+createBlogServerAdapter({
+  provider,
+  queryClient,
+  site: {
+    siteUrl: "https://example.com",
+    siteName: "Example Blog",
+    publisherName: "Example Inc",
+    publisherLogoUrl: "https://cdn.example.com/logo.png",
+    defaultImageUrl: "https://cdn.example.com/og-default.jpg",
+  }
+})
+```

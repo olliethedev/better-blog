@@ -1,8 +1,8 @@
+import { type DBSchema, createSQLProvider } from "better-blog/providers/sql"
 import { Kysely, PostgresDialect } from "kysely"
-import { getAuthor } from "../../../../../../packages/better-blog/src/providers/__tests__/test-options"
-import { getTestPosts } from "../../../../../../packages/better-blog/src/lib/data"
-import { createSQLProvider, DBSchema } from "better-blog/providers/sql"
 import { Pool } from "pg"
+import { getTestPosts } from "../../../../../../packages/better-blog/src/lib/data"
+import { getAuthor } from "../../../../../../packages/better-blog/src/providers/__tests__/test-options"
 
 export async function seed() {
     const pool = new Pool({

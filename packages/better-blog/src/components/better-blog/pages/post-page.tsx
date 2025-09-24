@@ -6,28 +6,26 @@ import { useComponents } from "@/hooks/context-hooks"
 import { useBlogPath } from "@/hooks/context-hooks"
 import { useRoute } from "@/hooks/context-hooks"
 import { formatDate } from "date-fns"
-import { usePost } from "../../../hooks"
+import { useSuspensePost } from "../../../hooks"
 import { EmptyList } from "../empty-list"
-import { PostLoading } from "../loading"
 import { MarkdownContent } from "../markdown-content"
 import { PageHeader } from "../page-header"
 import { PageWrapper } from "./page-wrapper"
 
 export function PostPageComponent() {
     const { routeMatch } = useRoute()
-    const { post, isLoading, error } = usePost(routeMatch.params?.slug)
+    const slug = routeMatch.params!.slug
+    const { post } = useSuspensePost(slug!)
     const { localization } = useBlogContext()
     const { Link, Image } = useComponents()
     const blogPath = useBlogPath
 
-    if (isLoading) return <PostLoading />
-
-    if (error || !post) {
+    if (!post) {
         return <EmptyList message={localization.POST_NOT_FOUND_DESCRIPTION} />
     }
 
     return (
-        <PageWrapper className="gap-6">
+        <PageWrapper className="gap-6" testId="post-page">
             <PageHeader title={post.title} description={post.excerpt} />
 
             <div className="flex flex-col gap-2">

@@ -72,6 +72,13 @@ export interface PageComponentOverrides {
     NewPostLoadingComponent?: React.ComponentType
     EditPostLoadingComponent?: React.ComponentType
 
+    HomeErrorComponent?: React.ComponentType<{ message?: string }>
+    PostErrorComponent?: React.ComponentType<{ message?: string }>
+    TagErrorComponent?: React.ComponentType<{ message?: string }>
+    DraftsErrorComponent?: React.ComponentType<{ message?: string }>
+    NewPostErrorComponent?: React.ComponentType<{ message?: string }>
+    EditPostErrorComponent?: React.ComponentType<{ message?: string }>
+
     NotFoundComponent?: React.ComponentType<{ message: string }>
 }
 export type Author = {
@@ -83,4 +90,66 @@ export type Tag = {
     id: string
     slug: string
     name: string
+}
+
+export interface BlogPageMetadata {
+    title: string
+    description?: string
+    openGraph?: {
+        title?: string
+        description?: string
+        url?: string
+        type?: string
+        siteName?: string
+        images?: Array<{ url: string } | string>
+    }
+    twitter?: {
+        card?: "summary" | "summary_large_image"
+        title?: string
+        description?: string
+        images?: Array<string>
+    }
+    /** Canonical URL of the page */
+    canonicalUrl?: string
+    /** Robots directive, e.g., "index,follow" or "noindex,nofollow" */
+    robots?: string
+}
+
+export interface BlogPostMetadata {
+    title: string
+    description?: string
+    image?: string
+}
+
+/**
+ * Site-wide SEO configuration used to enrich per-page metadata
+ * and generate structured data.
+ */
+export interface SeoSiteConfig {
+    /** Absolute origin like https://example.com (no trailing slash) */
+    siteUrl?: string
+    /** Site/Blog name for OpenGraph and JSON-LD publisher */
+    siteName?: string
+    /** Organization/Publisher name */
+    publisherName?: string
+    /** Absolute URL to publisher logo */
+    publisherLogoUrl?: string
+    /** Default locale like en_US */
+    defaultLocale?: string
+    /** Twitter handle for site, e.g., @acme */
+    twitterSite?: string
+    /** Default twitter creator handle if not derivable from post author */
+    twitterCreator?: string
+    /** Default image used when a page/post has none */
+    defaultImageUrl?: string
+}
+
+/**
+ * The full SEO payload returned by the resolver.
+ */
+export interface BlogPageSEO {
+    /** Clean, framework-agnostic metadata */
+    meta: BlogPageMetadata
+    /** Structured data objects to be serialized as JSON-LD */
+    structuredData: Array<Record<string, unknown>>
 }

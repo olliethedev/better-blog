@@ -26,6 +26,7 @@ export default defineConfig({
     {
       command: "pnpm -F nextjs run start:e2e",
       port: 3001,
+      // biome-ignore lint/complexity/useLiteralKeys: <explanation>
       reuseExistingServer: !process.env["CI"],
       timeout: 120_000,
       stdout: "pipe",
@@ -40,8 +41,9 @@ export default defineConfig({
     // Next.js with SQL provider
     {
       command:
-        "tsx ../apps/examples/nextjs/scripts/seed/kysley/init.ts && pnpm -F nextjs run start:e2e",
+        "pnpm exec tsx ../apps/examples/nextjs/scripts/seed/kysley/init.ts && pnpm exec tsx ../apps/examples/nextjs/scripts/seed/kysley/seed.ts && pnpm -F nextjs run start:e2e",
       port: 3002,
+      // biome-ignore lint/complexity/useLiteralKeys: <explanation>
       reuseExistingServer: !process.env["CI"],
       timeout: 120_000,
       stdout: "pipe",
@@ -58,6 +60,7 @@ export default defineConfig({
     {
       command: "pnpm -F better-blog-react-router-dom run start:e2e",
       port: 3003,
+      // biome-ignore lint/complexity/useLiteralKeys: <explanation>
       reuseExistingServer: !process.env["CI"],
       timeout: 120_000,
       stdout: "pipe",
@@ -72,6 +75,7 @@ export default defineConfig({
     {
       command: "pnpm -F better-blog-react-router-dom run start:e2e:api",
       port: 3004,
+      // biome-ignore lint/complexity/useLiteralKeys: <explanation>
       reuseExistingServer: !process.env["CI"],
       timeout: 120_000,
       stdout: "pipe",
@@ -88,6 +92,7 @@ export default defineConfig({
     {
       command: "pnpm -F better-blog-tanstack-start-example run start:e2e",
       port: 3005,
+      // biome-ignore lint/complexity/useLiteralKeys: <explanation>
       reuseExistingServer: !process.env["CI"],
       timeout: 120_000,
       stdout: "pipe",

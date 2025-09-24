@@ -1,5 +1,4 @@
-import type { PageComponentOverrides } from "@/types"
-import type { BlogDataProvider } from "@/types"
+import type { BlogDataProvider, BlogPageMetadata, SeoSiteConfig } from "@/types"
 import type { QueryClient } from "@tanstack/react-query"
 /**
  * The server adapter returned by `createBlogServerAdapter` for SSR/SSG frameworks.
@@ -17,25 +16,16 @@ export interface BlogServerAdapter {
      */
     generateMetadata: (path?: string) => Promise<BlogPageMetadata>
     /**
+     * Generate Next.js-compatible Metadata object (shape-only, no Next peer dep).
+     */
+    generateNextMetadata: (path?: string) => Promise<Record<string, unknown>>
+    /**
      * Server entry component that prefetches data and renders the routed page
      * within a React Query hydration boundary.
      */
     BlogServerRouter: React.ComponentType<{
         /** Optional path string like "posts/my-post" (no leading slash). */
         path?: string
-        /**
-         * Optional overrides for server-side loading components rendered while
-         * the page is being prepared.
-         */
-        loadingComponentOverrides?: Pick<
-            PageComponentOverrides,
-            | "HomeLoadingComponent"
-            | "PostLoadingComponent"
-            | "TagLoadingComponent"
-            | "DraftsLoadingComponent"
-            | "NewPostLoadingComponent"
-            | "EditPostLoadingComponent"
-        >
     }>
     prefetch: (options: {
         path?: string
@@ -45,25 +35,5 @@ export interface BlogServerAdapter {
 export interface CreateBlogServerAdapterOptions {
     provider: BlogDataProvider
     queryClient: QueryClient
+    site?: SeoSiteConfig
 }
-export interface BlogPostMetadata {
-    title: string
-    description?: string
-    image?: string
-}
-
-export interface BlogPageMetadata {
-    title: string
-    description?: string
-    openGraph?: {
-        title?: string
-        description?: string
-        images?: Array<{ url: string } | string>
-    }
-    twitter?: {
-        card?: "summary" | "summary_large_image"
-        title?: string
-        description?: string
-        images?: Array<string>
-    }
-} // Component override interface

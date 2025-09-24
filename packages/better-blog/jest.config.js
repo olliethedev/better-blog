@@ -3,6 +3,8 @@ export default {
     preset: "ts-jest/presets/default-esm",
     testEnvironment: "jsdom",
     setupFilesAfterEnv: ["<rootDir>/src/test/setup.ts"],
+    // Ensure Jest treats our TS files as ESM
+    extensionsToTreatAsEsm: [".ts", ".tsx"],
     moduleNameMapper: {
         "^@/components/better-blog/forms/markdown-editor$":
             "<rootDir>/src/test/shims/markdown-editor-mock.tsx",
@@ -15,6 +17,9 @@ export default {
         "^remark-gfm$": "<rootDir>/src/test/shims/remark-gfm-shim.ts",
         "^.+\\.(css|less|scss)$": "<rootDir>/src/test/shims/style-shim.ts"
     },
+    // Allow transforming specific ESM node_modules (rou3) so Jest can execute them
+    // pnpm hoists packages into nested paths like node_modules/.pnpm/rou3@.../node_modules/rou3
+    transformIgnorePatterns: ["/node_modules/(?!.*rou3/)"],
     transform: {
         "^.+\\.(ts|tsx)$": [
             "ts-jest",
@@ -24,10 +29,17 @@ export default {
                     jsx: "react-jsx"
                 }
             }
+        ],
+        "^.+\\.m?js$": [
+            "babel-jest",
+            {
+                presets: [
+                    ["@babel/preset-env", { targets: { node: "current" } }]
+                ]
+            }
         ]
     },
-    extensionsToTreatAsEsm: [".ts", ".tsx"],
-    moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+    moduleFileExtensions: ["ts", "tsx", "js", "jsx", "mjs"],
     testPathIgnorePatterns: [
         "<rootDir>/docs/",
         // Helper shared test definitions, not a runnable test suite
