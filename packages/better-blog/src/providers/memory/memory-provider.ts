@@ -4,115 +4,13 @@ import type {
     Post,
     Tag
 } from "@/types"
+import { getTestPosts } from "../../lib/data"
 import { slugify } from "../../lib/format-utils"
 import type {
     PostCreateExtendedInput,
     PostUpdateExtendedInput
 } from "../../schema/post"
 import type { CreateMemoryProviderOptions } from "./types"
-
-const FULL_MARKDOWN = `
-
-# Markdown Showcase  
-
-This document shows different **Markdown features**, including **unterminated blocks**, GitHub Flavored Markdown (GFM), math rendering, links, images, annotations, blockquotes, code blocks, and nested lists.
-
----
-
-
-- **Bold text**
-- *Italic text*
-- \`Inline code\`
-- [Link](https://github.com)
-- # Heading
-
----
-
-## GitHub Flavored Markdown  
-
-### Tables  
-
-| Name    | Role         | Active |
-|---------|-------------|--------|
-| Ollie   | Developer   | ✅     |
-| Alice   | Designer    | ❌     |
-| Bob     | PM          | ✅     |
-
-### Task Lists  
-
-- [x] Write docs  
-- [ ] Fix bugs  
-- [ ] Add more tests  
-
-### Strikethrough  
-
-This feature was ~~removed~~ replaced.
-
----
-
-## Links and Images  
-
-Here’s a proper link: [Visit GitHub](https://github.com)  
-
-Here’s an image:  
-
-![Placeholder Image](https://placehold.co/600x400/png)  
-
----
-
-## Blockquotes  
-
-> This is a blockquote.  
->> This is a nested blockquote.  
-
----
-
-## Code Block (JavaScript)  
-
-\`\`\`js
-function greet(name) {
-  return \`Hello, USER!\`;
-}
-
-console.log(greet("Ollie"));
-\`\`\`
-
----
-
-## Nested Lists
-
-1. First item
-
-   * Sub-item 1
-   * Sub-item 2
-
-     * Deeper sub-item
-2. Second item
-
----
-
-## Math Rendering (KaTeX)
-
-Inline math: \$E = mc^2\$
-
-Block math:
-
-$$
-\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}
-$$
-
----
-
-## Annotations Example
-
-Here’s some text with an annotation.[^1]
-We can also add multiple annotations like this.[^2]
-
-[^1]: This is the first annotation explaining a detail.
-
-[^2]: Another annotation, often used for references or notes.
-
-`
 
 function generateId(prefix = "p"): string {
     return `${prefix}_${Math.random().toString(36).slice(2, 10)}`
@@ -337,69 +235,15 @@ export async function createMemoryProvider(
 export async function createSeededMemoryProvider(
     options?: BlogDataProviderConfig
 ): Promise<BlogDataProvider> {
-    const tagNames = [
-        "Intro",
-        "React",
-        "CSS",
-        "JavaScript",
-        "Git",
-        "Node",
-        "Database",
-        "TypeScript",
-        "Testing",
-        "Deployment",
-        "Docker",
-        "GraphQL",
-        "Performance",
-        "Security",
-        "Tooling"
-    ]
-
+    const rawPosts = getTestPosts()
     const authorId = "1"
-
-    const author = (await options?.getAuthor?.(authorId)) ?? null
-
-    const posts: Post[] = Array.from({ length: 15 }, (_, i) => {
-        const idx = i + 1
-        const date = new Date(`2024-01-${String(idx).padStart(2, "0")}`)
-        const name = tagNames[i % tagNames.length]
-        const tag = { id: String(i + 1), name, slug: slugify(name) }
-        const isDraft = idx % 5 === 0 // every 5th post is a draft
-        const titles = [
-            "Hello World",
-            "React Tips",
-            "CSS Basics",
-            "JS Arrays",
-            "Git Basics",
-            "Node Express",
-            "Database Tips",
-            "TypeScript Intro",
-            "Testing Basics",
-            "Deployment",
-            "Docker Basics",
-            "GraphQL Intro",
-            "Performance Tuning",
-            "Security Checklist",
-            "Dev Tooling"
-        ]
-        return {
-            id: String(idx),
-            slug: slugify(titles[i]),
-            title: titles[i],
-            content:
-                i === 0
-                    ? FULL_MARKDOWN
-                    : "This is a sample post for demo purposes. It contains enough text to be searchable.",
-            excerpt: "Sample excerpt for demo post.",
-            published: !isDraft,
-            publishedAt: isDraft ? undefined : date,
-            tags: [tag],
-            createdAt: date,
-            updatedAt: date,
-            authorId: authorId,
-            author: author ?? { id: authorId, name: "Author" }
-        }
-    })
+    const author = (await options?.getAuthor?.(authorId)) ??
+        rawPosts[0]?.author ?? { id: authorId, name: "John Doe" }
+    const posts = rawPosts.map((post) => ({
+        ...post,
+        authorId,
+        author
+    }))
 
     return createMemoryProvider({ seedPosts: posts, ...options })
 }
