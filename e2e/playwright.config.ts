@@ -41,7 +41,7 @@ export default defineConfig({
     // Next.js with SQL provider
     {
       command:
-        "pnpm exec tsx ../apps/examples/nextjs/scripts/seed/kysley/init.ts && pnpm -F nextjs run start:e2e",
+        "pnpm exec tsx ../apps/examples/nextjs/scripts/seed/kysley/init.ts && pnpm exec tsx ../apps/examples/nextjs/scripts/seed/kysley/seed.ts && pnpm -F nextjs run start:e2e",
       port: 3002,
       // biome-ignore lint/complexity/useLiteralKeys: <explanation>
       reuseExistingServer: !process.env["CI"],
