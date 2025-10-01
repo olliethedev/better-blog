@@ -11,6 +11,7 @@ export default defineConfig((env) => {
             queries: "./src/queries/index.ts",
             hooks: "./src/hooks/index.ts",
             router: "./src/router/index.ts",
+            "router/client": "./src/router/pluggable-routes.tsx",
             context: "./src/context/index.ts",
             api: "./src/api/index.ts",
             "server/pages": "./src/server/pages/index.tsx",

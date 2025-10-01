@@ -1,5 +1,4 @@
 import { resolveMetadata, resolveSEO } from "@/router/meta-resolver"
-import { routeSchema } from "@/router/routes"
 import type {
     BlogDataProvider,
     BlogPageMetadata,
@@ -143,14 +142,13 @@ function mapSeoToNextMetadata(
 }
 
 function generateStaticRoutes(): Array<{ slug: string[] }> {
-    const staticRoutes: Array<{ slug: string[] }> = []
-
-    // Collect static routes from all route definitions
-    for (const routeDef of routeSchema.routes) {
-        if (routeDef.staticRoutes) {
-            staticRoutes.push(...routeDef.staticRoutes)
-        }
-    }
+    // Static routes for SSG generation
+    // These are the routes that don't require dynamic parameters
+    const staticRoutes: Array<{ slug: string[] }> = [
+        { slug: [] }, // home route
+        { slug: ["new"] }, // new post route
+        { slug: ["drafts"] } // drafts route
+    ]
 
     return staticRoutes
 }

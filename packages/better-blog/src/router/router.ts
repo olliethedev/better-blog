@@ -1,26 +1,10 @@
 import type { RouteMatch } from "@/types"
-import {
-    addRoute as addRou3Route,
-    createRouter as createRou3Router,
-    findRoute as rou3FindRoute
-} from "rou3"
-import { routeSchema } from "./routes"
-import type { RouteDefinition } from "./types"
+import { blogRouter } from "./blog-router"
 
-// Build a singleton rou3 router from our route schema
-const __rou3Router = (() => {
-    const router = createRou3Router<RouteDefinition>()
-    for (let index = 0; index < routeSchema.routes.length; index++) {
-        const routeDef = routeSchema.routes[index]
-        const path = routeDef.pattern.length
-            ? `/${routeDef.pattern.join("/")}`
-            : "/"
-        // Store routeDef in payload for selection
-        addRou3Route(router, "GET", path, routeDef)
-    }
-    return router
-})()
-
+/**
+ * Match a route based on path segments and return route information
+ * Uses yar's synchronous getRoute (v1.0.3+) for route matching
+ */
 export function matchRoute(
     pathSegments?: string[],
     basePath?: string
@@ -36,42 +20,86 @@ export function matchRoute(
 
     const path = normalizedSlug.length ? `/${normalizedSlug.join("/")}` : "/"
 
-    // Find all potential matches via rou3, then pick the most specific
-    const match = rou3FindRoute<RouteDefinition>(__rou3Router, "GET", path)
-    if (match) {
+    // Use yar's synchronous getRoute to match the route
+    const route = blogRouter.getRoute(path)
+
+    if (route) {
+        const { meta, params } = route
+        const metaTags = meta ? meta() : []
+
+        // Extract title and description from meta tags
+        const titleTag = metaTags.find(
+            (
+                tag: React.JSX.IntrinsicElements["meta"] | undefined
+            ): tag is React.JSX.IntrinsicElements["meta"] =>
+                tag !== undefined && "name" in tag && tag.name === "title"
+        )
+        const descriptionTag = metaTags.find(
+            (
+                tag: React.JSX.IntrinsicElements["meta"] | undefined
+            ): tag is React.JSX.IntrinsicElements["meta"] =>
+                tag !== undefined && "name" in tag && tag.name === "description"
+        )
+
+        const title =
+            (titleTag && "content" in titleTag ? titleTag.content : undefined) ||
+            "Untitled"
+        const description =
+            descriptionTag && "content" in descriptionTag
+                ? descriptionTag.content
+                : undefined
+
+        // Determine route type from path and params
+        const type = determineRouteType(path, params)
+
         return {
-            type: match.data.type,
-            params: match.params,
-            metadata: resolveMetadata(match.data, match.params ?? {})
+            type,
+            params,
+            metadata: {
+                title,
+                description
+            }
         }
     }
 
+    // Return unknown route if no match
     return {
         type: "unknown",
         metadata: {
             title: `Unknown route: ${path}`
         }
     }
-} /**
- * Resolves metadata from route definition, handling both static and dynamic values
- */
-
-function resolveMetadata(
-    routeDef: RouteDefinition,
-    params: Record<string, string>
-): { title: string; description?: string; image?: string } {
-    const resolveValue = (
-        value: string | ((params: Record<string, string>) => string) | undefined
-    ): string | undefined => {
-        if (typeof value === "function") {
-            return value(params)
-        }
-        return value
-    }
-
-    return {
-        title: resolveValue(routeDef.metadata.title) || "Untitled",
-        description: resolveValue(routeDef.metadata.description),
-        image: resolveValue(routeDef.metadata.image)
-    }
 }
+
+/**
+ * Determine the route type based on path and params
+ */
+function determineRouteType(
+    path: string,
+    params?: Record<string, string>
+): RouteMatch["type"] {
+    if (path === "/") {
+        return "home"
+    }
+    if (path === "/new") {
+        return "new"
+    }
+    if (path === "/drafts") {
+        return "drafts"
+    }
+    if (path.startsWith("/tag/")) {
+        return "tag"
+    }
+    if (path.endsWith("/edit") && params?.slug) {
+        return "edit"
+    }
+    if (params?.slug) {
+        return "post"
+    }
+    return "unknown"
+}
+
+/**
+ * Export the blog router for advanced use cases
+ */
+export { blogRouter } from "./blog-router"

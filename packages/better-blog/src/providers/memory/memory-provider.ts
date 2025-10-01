@@ -237,13 +237,18 @@ export async function createSeededMemoryProvider(
 ): Promise<BlogDataProvider> {
     const rawPosts = getTestPosts()
     const authorId = "1"
-    const author = (await options?.getAuthor?.(authorId)) ??
-        rawPosts[0]?.author ?? { id: authorId, name: "John Doe" }
-    const posts = rawPosts.map((post) => ({
-        ...post,
-        authorId,
-        author
-    }))
+    const baseAuthor =
+        (await options?.getAuthor?.(authorId)) ??
+        { id: authorId, name: "John Doe" }
+    const posts = rawPosts.map((post) => {
+        const effectiveAuthor = post.author ?? baseAuthor
+        return {
+            ...post,
+            authorId,
+            // Clone to avoid shared object references that some serializers encode as circular refs
+            author: effectiveAuthor ? { ...effectiveAuthor } : null
+        }
+    })
 
     return createMemoryProvider({ seedPosts: posts, ...options })
 }

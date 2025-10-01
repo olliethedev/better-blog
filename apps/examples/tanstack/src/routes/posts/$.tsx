@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { BlogMetaTags, BlogPageRouter } from "better-blog/client"
-import { createBlogServerAdapter } from "better-blog/server/pages";
+import { matchRoute } from "better-blog/router"
+import { prefetchBlogData } from "better-blog/server/pages"
 
-import { blogDataProvider } from "../../lib/blog-data-provider";
+import { blogDataProvider } from "../../lib/blog-data-provider"
 
 
 export const Route = createFileRoute("/posts/$")({
@@ -10,11 +11,12 @@ export const Route = createFileRoute("/posts/$")({
     // Head is now handled via <BlogMetaTags> in the component for better DX
     component: RouteComponent,
     loader: async ({ params, context }) => {
-      const serverAdapter = createBlogServerAdapter({
+      const routeMatch = matchRoute(params._splat?.split("/").filter(Boolean))
+      await prefetchBlogData({
+        match: routeMatch,
         provider: blogDataProvider,
         queryClient: context.queryClient,
       })
-      await serverAdapter.prefetch({ path: params._splat })
       return null
     }
 })

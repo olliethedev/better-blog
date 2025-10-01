@@ -13,6 +13,11 @@ This folder contains the Playwright-based E2E suite for validating Better Blog a
 - Teardown projects clean up (delete SQLite files, stop/remove containers, kill servers).
 - Tests are framework-agnostic where possible and run against the example apps.
 
+## Prerequisites
+
+- Node.js 20.19+ or 22.12+ (required by Vite used in TanStack Start example)
+- If using nvm, run `nvm use` in the tanstack example directory
+
 ## Quick start
 
 ```bash

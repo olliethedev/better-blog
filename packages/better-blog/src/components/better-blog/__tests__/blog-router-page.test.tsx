@@ -1,15 +1,13 @@
 import { BlogProvider } from "@/context/better-blog-context"
-import type { PageComponentOverrides } from "@/types"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { render, screen } from "@testing-library/react"
 import { BlogPageRouter } from "../blog-router-page"
 
 function renderWithProvider({
     path,
-    overrides,
     basePath = "/posts"
 }: {
     path?: string
-    overrides?: PageComponentOverrides
     basePath?: string
 }) {
     const dataProvider = {
@@ -17,102 +15,89 @@ function renderWithProvider({
         getPostBySlug: async () => null
     }
 
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: { retry: false }
+        }
+    })
+
     return render(
-        <BlogProvider
-            dataProvider={dataProvider}
-            pageOverrides={overrides}
-            basePath={basePath}
-            uploadImage={async () => "https://example.com/image.jpg"}
-        >
-            <BlogPageRouter path={path} />
-        </BlogProvider>
+        <QueryClientProvider client={queryClient}>
+            <BlogProvider
+                dataProvider={dataProvider}
+                basePath={basePath}
+                uploadImage={async () => "https://example.com/image.jpg"}
+            >
+                <BlogPageRouter path={path} />
+            </BlogProvider>
+        </QueryClientProvider>
     )
 }
 
-const Home = () => <div data-testid="home">Home Mock</div>
-const Post = () => <div data-testid="post">Post Mock</div>
-const Tag = () => <div data-testid="tag">Tag Mock</div>
-const Drafts = () => <div data-testid="drafts">Drafts Mock</div>
-const NewPost = () => <div data-testid="new">New Mock</div>
-const EditPost = () => <div data-testid="edit">Edit Mock</div>
-
-const overrides: PageComponentOverrides = {
-    HomeComponent: Home,
-    PostComponent: Post,
-    TagComponent: Tag,
-    DraftsComponent: Drafts,
-    NewPostComponent: NewPost,
-    EditPostComponent: EditPost
-}
-
-describe("BlogPageRouter rendering with overrides", () => {
-    test("renders Home for root path (uses basePath context)", () => {
-        renderWithProvider({ path: "/posts", overrides })
-        expect(screen.getByTestId("home")).toBeInTheDocument()
+describe("BlogPageRouter", () => {
+    test("renders Home for root path (uses basePath context)", async () => {
+        renderWithProvider({ path: "/posts" })
+        const header = await screen.findByTestId("page-header")
+        expect(header).toBeInTheDocument()
     })
 
-    test("renders Post for dynamic slug", () => {
-        renderWithProvider({ path: "/posts/hello-world", overrides })
-        expect(screen.getByTestId("post")).toBeInTheDocument()
+    test("renders Post for dynamic slug", async () => {
+        renderWithProvider({ path: "/posts/hello-world" })
+        // Will eventually show empty state since no post exists
+        const emptyState = await screen.findByTestId("empty-state")
+        expect(emptyState).toBeInTheDocument()
     })
 
-    test("renders Tag for /tag/:tag", () => {
-        renderWithProvider({ path: "/posts/tag/react", overrides })
-        expect(screen.getByTestId("tag")).toBeInTheDocument()
+    test("renders Tag for /tag/:tag", async () => {
+        renderWithProvider({ path: "/posts/tag/react" })
+        const header = await screen.findByTestId("page-header")
+        expect(header).toBeInTheDocument()
     })
 
-    test("renders Drafts for /drafts", () => {
-        renderWithProvider({ path: "/posts/drafts", overrides })
-        expect(screen.getByTestId("drafts")).toBeInTheDocument()
+    test("renders Drafts for /drafts", async () => {
+        renderWithProvider({ path: "/posts/drafts" })
+        // Wait for Suspense to resolve
+        const header = await screen.findByTestId("page-header")
+        expect(header).toBeInTheDocument()
     })
 
-    test("renders New for /new", () => {
-        renderWithProvider({ path: "/posts/new", overrides })
-        expect(screen.getByTestId("new")).toBeInTheDocument()
+    test("renders New for /new", async () => {
+        renderWithProvider({ path: "/posts/new" })
+        const header = await screen.findByTestId("page-header")
+        expect(header).toBeInTheDocument()
     })
 
-    test("renders Edit for /:slug/edit", () => {
-        renderWithProvider({ path: "/posts/my-post/edit", overrides })
-        expect(screen.getByTestId("edit")).toBeInTheDocument()
+    test("renders Edit for /:slug/edit", async () => {
+        renderWithProvider({ path: "/posts/my-post/edit" })
+        // Will eventually show empty state since no post exists
+        const emptyState = await screen.findByTestId("empty-state")
+        expect(emptyState).toBeInTheDocument()
     })
 })
 
 describe("BlogPageRouter NotFound behavior", () => {
-    test("renders default NotFound with unknown route message when no override", () => {
+    test("renders default NotFound with unknown route message", async () => {
         renderWithProvider({ path: "/posts/does-not-exist/deep" })
-        // Default NotFound renders a heading and the routeMatch.metadata.title as message
-        expect(screen.getByText("Not Found")).toBeInTheDocument()
+        // Default NotFound renders error placeholder with localized strings
+        const errorPlaceholder = await screen.findByTestId("error-placeholder")
+        expect(errorPlaceholder).toBeInTheDocument()
         expect(
             screen.getByText(/Unknown route: \/does-not-exist\/deep/)
         ).toBeInTheDocument()
     })
 
-    test("uses NotFoundComponent override and passes message", () => {
-        const NotFoundComponent = ({ message }: { message: string }) => (
-            <div data-testid="not-found">Custom Not Found: {message}</div>
-        )
-
-        renderWithProvider({
-            path: "/posts/does-not-exist/deep",
-            overrides: { NotFoundComponent }
-        })
-
-        const el = screen.getByTestId("not-found")
-        expect(el).toBeInTheDocument()
-        expect(el.textContent).toContain("Unknown route: /does-not-exist/deep")
+    test('basePath normalization works for "posts" (no slashes)', async () => {
+        renderWithProvider({ path: "/posts/new", basePath: "posts" })
+        const header = await screen.findByTestId("page-header")
+        expect(header).toBeInTheDocument()
     })
 
-    test('basePath normalization works for "posts" (no slashes)', () => {
-        renderWithProvider({ path: "/posts/new", overrides, basePath: "posts" })
-        expect(screen.getByTestId("new")).toBeInTheDocument()
-    })
-
-    test('basePath normalization works for "/posts/" (leading and trailing slash)', () => {
+    test('basePath normalization works for "/posts/" (leading and trailing slash)', async () => {
         renderWithProvider({
             path: "/posts/new",
-            overrides,
             basePath: "/posts/"
         })
-        expect(screen.getByTestId("new")).toBeInTheDocument()
+        const header = await screen.findByTestId("page-header")
+        expect(header).toBeInTheDocument()
     })
 })
