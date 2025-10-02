@@ -13,6 +13,7 @@ import {
 import { PostPageSkeleton } from "@/components/better-blog/post-page-skeleton"
 
 import { DefaultError } from "@/components/better-blog/default-error"
+import type { RouteMatch } from "@/types"
 // Pluggable route definitions with components for client-side use
 import { createRoute } from "@olliethedev/yar"
 
@@ -52,7 +53,10 @@ export const homeRoute = createRoute("/", () => ({
     meta: () => [
         { name: "title", content: "Blog Posts" },
         { name: "description", content: "Latest blog posts" }
-    ]
+    ],
+    extra: {
+        type: "home" as RouteMatch["type"]
+    }
 }))
 
 /**
@@ -66,7 +70,10 @@ export const postRoute = createRoute("/:slug", ({ params }) => ({
     meta: () => [
         { name: "title", content: `Post: ${params.slug || ""}` },
         { name: "description", content: "Blog post content" }
-    ]
+    ],
+    extra: {
+        type: "post" as RouteMatch["type"]
+    }
 }))
 
 /**
@@ -83,7 +90,10 @@ export const tagRoute = createRoute("/tag/:tag", ({ params }) => ({
             name: "description",
             content: `All posts tagged with ${params.tag || ""}`
         }
-    ]
+    ],
+    extra: {
+        type: "tag" as RouteMatch["type"]
+    }
 }))
 
 /**
@@ -97,7 +107,10 @@ export const draftsRoute = createRoute("/drafts", () => ({
     meta: () => [
         { name: "title", content: "My Drafts" },
         { name: "description", content: "Draft posts" }
-    ]
+    ],
+    extra: {
+        type: "drafts" as RouteMatch["type"]
+    }
 }))
 
 /**
@@ -111,7 +124,10 @@ export const newPostRoute = createRoute("/new", () => ({
     meta: () => [
         { name: "title", content: "Create New Post" },
         { name: "description", content: "Create a new blog post" }
-    ]
+    ],
+    extra: {
+        type: "new" as RouteMatch["type"]
+    }
 }))
 
 /**
@@ -125,5 +141,8 @@ export const editPostRoute = createRoute("/:slug/edit", ({ params }) => ({
     meta: () => [
         { name: "title", content: `Editing: ${params.slug || ""}` },
         { name: "description", content: "Edit blog post" }
-    ]
+    ],
+    extra: {
+        type: "edit" as RouteMatch["type"]
+    }
 }))

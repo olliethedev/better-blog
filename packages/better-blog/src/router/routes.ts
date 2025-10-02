@@ -1,5 +1,6 @@
 // Server-safe route definitions (no component imports)
 // This file can be imported in both server and client contexts
+import type { RouteMatch } from "@/types"
 import { createRoute } from "@olliethedev/yar"
 
 /**
@@ -12,7 +13,7 @@ export const homeRoute = createRoute("/", () => ({
         { name: "description", content: "Latest blog posts" }
     ],
     extra: {
-        type: "home"
+        type: "home" as RouteMatch["type"]
     }
 }))
 
@@ -26,7 +27,7 @@ export const postRoute = createRoute("/:slug", ({ params }) => ({
         { name: "description", content: "Blog post content" }
     ],
     extra: {
-        type: "post"
+        type: "post" as RouteMatch["type"]
     }
 }))
 
@@ -43,7 +44,7 @@ export const tagRoute = createRoute("/tag/:tag", ({ params }) => ({
         }
     ],
     extra: {
-        type: "tag"
+        type: "tag" as RouteMatch["type"]
     }
 }))
 
@@ -57,7 +58,7 @@ export const draftsRoute = createRoute("/drafts", () => ({
         { name: "description", content: "Draft posts" }
     ],
     extra: {
-        type: "drafts"
+        type: "drafts" as RouteMatch["type"]
     }
 }))
 
@@ -71,7 +72,7 @@ export const newPostRoute = createRoute("/new", () => ({
         { name: "description", content: "Create a new blog post" }
     ],
     extra: {
-        type: "new"
+        type: "new" as RouteMatch["type"]
     }
 }))
 
@@ -85,6 +86,6 @@ export const editPostRoute = createRoute("/:slug/edit", ({ params }) => ({
         { name: "description", content: "Edit blog post" }
     ],
     extra: {
-        type: "edit"
+        type: "edit" as RouteMatch["type"]
     }
 }))

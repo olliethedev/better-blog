@@ -90,7 +90,7 @@ export function matchRouteClient(
         const type = extra?.type || "unknown"
 
         return {
-            type,
+            type: type as RouteMatch["type"],
             params,
             metadata: {
                 title,

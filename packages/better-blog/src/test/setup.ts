@@ -1,5 +1,10 @@
 // Jest setup for the project
-import "@testing-library/jest-dom"
+// Only import @testing-library/jest-dom in jsdom environment
+// Some tests use @jest-environment node and don't have DOM globals
+if (typeof window !== "undefined") {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require("@testing-library/jest-dom")
+}
 
 import { webcrypto as crypto } from "node:crypto"
 // Polyfills for Node test environment used by pg
