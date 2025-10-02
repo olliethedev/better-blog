@@ -2,6 +2,8 @@
 
 // Client-side blog router with components
 import { createRouter } from "@olliethedev/yar"
+
+import type { RouteMatch } from "@/types"
 import {
     draftsRoute,
     editPostRoute,
@@ -34,9 +36,6 @@ export const blogRouterClient = createRouter(clientRoutes)
  */
 export type BlogRoutesClient = typeof clientRoutes
 
-import type { RouteMatch } from "@/types"
-import { blogRouter } from "./blog-router"
-
 /**
  * Match a route based on path segments and return route information
  * Uses yar's synchronous getRoute (v1.0.3+) for route matching
@@ -57,7 +56,7 @@ export function matchRouteClient(
     const path = normalizedSlug.length ? `/${normalizedSlug.join("/")}` : "/"
 
     // Use yar's synchronous getRoute to match the route
-    const route = blogRouter.getRoute(path)
+    const route = blogRouterClient.getRoute(path)
 
     if (route) {
         const { meta, params, extra } = route
@@ -90,7 +89,7 @@ export function matchRouteClient(
         const type = extra?.type || "unknown"
 
         return {
-            type: type as RouteMatch["type"],
+            type: type,
             params,
             metadata: {
                 title,

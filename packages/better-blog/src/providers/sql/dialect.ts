@@ -1,3 +1,4 @@
+// @ts-expect-error - bun:sqlite is only available in Bun runtime, not in Node/test environments
 import type { Database as BunDatabase } from "bun:sqlite"
 // import type { DatabaseSync } from "node:sqlite";
 import type { Database } from "better-sqlite3"

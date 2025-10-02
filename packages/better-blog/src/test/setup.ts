@@ -1,5 +1,7 @@
 // Jest setup for the project
-// Only import @testing-library/jest-dom in jsdom environment
+/// <reference types="@testing-library/jest-dom" />
+
+// Conditionally load the matchers only in jsdom environment
 // Some tests use @jest-environment node and don't have DOM globals
 if (typeof window !== "undefined") {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
