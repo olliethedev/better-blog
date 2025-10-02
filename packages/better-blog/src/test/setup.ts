@@ -1,6 +1,5 @@
 // Jest setup for the project
-import '@testing-library/jest-dom';
-
+import "@testing-library/jest-dom"
 
 import { webcrypto as crypto } from "node:crypto"
 // Polyfills for Node test environment used by pg
@@ -25,5 +24,5 @@ if (!(global as unknown as { crypto?: Crypto }).crypto) {
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
     observe: jest.fn(),
     unobserve: jest.fn(),
-    disconnect: jest.fn(),
+    disconnect: jest.fn()
 }))
