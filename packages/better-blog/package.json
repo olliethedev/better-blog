@@ -24,25 +24,15 @@
     "type": "module",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
-    "files": [
-        "dist"
-    ],
-    "keywords": [
-        "typescript",
-        "react",
-        "blog",
-        "shadcn",
-        "nextjs"
-    ],
+    "files": ["dist"],
+    "keywords": ["typescript", "react", "blog", "shadcn", "nextjs"],
     "author": "olliethedev",
     "license": "MIT",
     "publishConfig": {
         "access": "public",
         "provenance": true
     },
-    "sideEffects": [
-        "./dist/style.css"
-    ],
+    "sideEffects": ["./dist/style.css"],
     "exports": {
         "./css": "./dist/style.css",
         ".": {
@@ -208,51 +198,21 @@
     },
     "typesVersions": {
         "*": {
-            "types": [
-                "dist/types.d.ts"
-            ],
-            "queries": [
-                "dist/queries.d.ts"
-            ],
-            "hooks": [
-                "dist/hooks.d.ts"
-            ],
-            "router": [
-                "dist/router.d.ts"
-            ],
-            "router/client": [
-                "dist/router/client.d.ts"
-            ],
-            "context": [
-                "dist/context.d.ts"
-            ],
-            "client": [
-                "dist/client.d.ts"
-            ],
-            "api": [
-                "dist/api.d.ts"
-            ],
-            "server/pages": [
-                "dist/server/pages.d.ts"
-            ],
-            "sitemap": [
-                "dist/sitemap.d.ts"
-            ],
-            "providers/api": [
-                "dist/providers/api.d.ts"
-            ],
-            "providers/drizzle": [
-                "dist/providers/drizzle.d.ts"
-            ],
-            "providers/memory": [
-                "dist/providers/memory.d.ts"
-            ],
-            "providers/prisma": [
-                "dist/providers/prisma.d.ts"
-            ],
-            "providers/sql": [
-                "dist/providers/sql.d.ts"
-            ]
+            "types": ["dist/types.d.ts"],
+            "queries": ["dist/queries.d.ts"],
+            "hooks": ["dist/hooks.d.ts"],
+            "router": ["dist/router.d.ts"],
+            "router/client": ["dist/router/client.d.ts"],
+            "context": ["dist/context.d.ts"],
+            "client": ["dist/client.d.ts"],
+            "api": ["dist/api.d.ts"],
+            "server/pages": ["dist/server/pages.d.ts"],
+            "sitemap": ["dist/sitemap.d.ts"],
+            "providers/api": ["dist/providers/api.d.ts"],
+            "providers/drizzle": ["dist/providers/drizzle.d.ts"],
+            "providers/memory": ["dist/providers/memory.d.ts"],
+            "providers/prisma": ["dist/providers/prisma.d.ts"],
+            "providers/sql": ["dist/providers/sql.d.ts"]
         }
     },
     "devDependencies": {
