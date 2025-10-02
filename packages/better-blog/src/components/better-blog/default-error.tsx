@@ -2,7 +2,6 @@
 import { useBlogContext } from "@/hooks/context-hooks"
 import { ErrorPlaceholder } from "./error-placeholder"
 
-
 // Default error component
 export function DefaultError({ message }: { message?: string }) {
     const { localization } = useBlogContext()

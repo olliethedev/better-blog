@@ -24,7 +24,7 @@ export function matchRoute(
     const route = blogRouter.getRoute(path)
 
     if (route) {
-        const { meta, params } = route
+        const { meta, params, extra } = route
         const metaTags = meta ? meta() : []
 
         // Extract title and description from meta tags
@@ -42,15 +42,16 @@ export function matchRoute(
         )
 
         const title =
-            (titleTag && "content" in titleTag ? titleTag.content : undefined) ||
-            "Untitled"
+            (titleTag && "content" in titleTag
+                ? titleTag.content
+                : undefined) || "Untitled"
         const description =
             descriptionTag && "content" in descriptionTag
                 ? descriptionTag.content
                 : undefined
 
         // Determine route type from path and params
-        const type = determineRouteType(path, params)
+        const type = extra?.type || "unknown"
 
         return {
             type,
@@ -69,34 +70,6 @@ export function matchRoute(
             title: `Unknown route: ${path}`
         }
     }
-}
-
-/**
- * Determine the route type based on path and params
- */
-function determineRouteType(
-    path: string,
-    params?: Record<string, string>
-): RouteMatch["type"] {
-    if (path === "/") {
-        return "home"
-    }
-    if (path === "/new") {
-        return "new"
-    }
-    if (path === "/drafts") {
-        return "drafts"
-    }
-    if (path.startsWith("/tag/")) {
-        return "tag"
-    }
-    if (path.endsWith("/edit") && params?.slug) {
-        return "edit"
-    }
-    if (params?.slug) {
-        return "post"
-    }
-    return "unknown"
 }
 
 /**

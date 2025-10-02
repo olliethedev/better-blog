@@ -8,7 +8,7 @@ import type {
 import type { QueryClient } from "@tanstack/react-query"
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
 import { BlogPageRouter } from "../../components/better-blog/blog-router-page"
-import { matchRoute } from "../../router"
+import { matchRoute } from "../../router/router"
 import { prefetchBlogData } from "./prefetch"
 import type { BlogServerAdapter, CreateBlogServerAdapterOptions } from "./types"
 

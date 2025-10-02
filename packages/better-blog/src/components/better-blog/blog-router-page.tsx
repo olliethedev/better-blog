@@ -8,10 +8,10 @@ import { useBlogContext } from "@/hooks/context-hooks"
 import type { RouteMatch } from "@/types"
 import React, { Suspense } from "react"
 import { RouteProvider } from "../../context/route-context"
-import { blogRouterClient } from "../../router/blog-router-client"
-import { matchRoute } from "../../router/router"
-
-
+import {
+    blogRouterClient,
+    matchRouteClient
+} from "../../router/blog-router-client"
 
 // Default loading component
 function PostsLoading() {
@@ -106,7 +106,7 @@ export function BlogPageRouter({
 }) {
     const { basePath } = useBlogContext()
     const pathSegments = path?.split("/").filter(Boolean) || []
-    
+
     // Strip basePath if present
     let normalizedPath = pathSegments
     if (
@@ -115,14 +115,19 @@ export function BlogPageRouter({
     ) {
         normalizedPath = pathSegments.slice(1)
     }
-    
-    const fullPath = normalizedPath.length ? `/${normalizedPath.join("/")}` : "/"
-    const routeMatch = matchRoute(pathSegments, basePath)
+
+    const fullPath = normalizedPath.length
+        ? `/${normalizedPath.join("/")}`
+        : "/"
+    const routeMatch = matchRouteClient(pathSegments, basePath)
 
     return (
         <div data-testid="blog-page-root">
             <RouteProvider routeMatch={routeMatch}>
-                <BlogPageRouterContent routeMatch={routeMatch} path={fullPath} />
+                <BlogPageRouterContent
+                    routeMatch={routeMatch}
+                    path={fullPath}
+                />
             </RouteProvider>
         </div>
     )

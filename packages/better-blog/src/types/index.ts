@@ -61,7 +61,7 @@ export interface RouteMatch {
  * @deprecated PageComponentOverrides is deprecated in favor of creating custom routes with yar.
  * Instead of using pageOverrides, create custom routes using createRoute from @olliethedev/yar
  * and combine them with Better Blog's routes.
- * 
+ *
  * This interface is kept for backward compatibility but will be removed in a future version.
  */
 export interface PageComponentOverrides {

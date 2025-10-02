@@ -1,7 +1,7 @@
 "use client"
 
 import { BlogContext } from "@/context/better-blog-context"
-import { matchRoute } from "@/router"
+import { matchRouteClient } from "@/router/blog-router-client"
 import { resolveSEO } from "@/router/meta-resolver"
 import type { BlogDataProvider, RouteMatch, SeoSiteConfig } from "@/types"
 import React from "react"
@@ -50,7 +50,7 @@ export function BlogMetaTags({
         if (!routeMatch && !blog?.basePath) return
         const match =
             routeMatch ??
-            matchRoute(path?.split("/").filter(Boolean), blog?.basePath)
+            matchRouteClient(path?.split("/").filter(Boolean), blog?.basePath)
         resolveSEO(match, effectiveProvider, site)
             .then((seo) => {
                 if (!mounted) return

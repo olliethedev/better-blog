@@ -237,9 +237,10 @@ export async function createSeededMemoryProvider(
 ): Promise<BlogDataProvider> {
     const rawPosts = getTestPosts()
     const authorId = "1"
-    const baseAuthor =
-        (await options?.getAuthor?.(authorId)) ??
-        { id: authorId, name: "John Doe" }
+    const baseAuthor = (await options?.getAuthor?.(authorId)) ?? {
+        id: authorId,
+        name: "John Doe"
+    }
     const posts = rawPosts.map((post) => {
         const effectiveAuthor = post.author ?? baseAuthor
         return {

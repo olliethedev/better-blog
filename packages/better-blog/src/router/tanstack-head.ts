@@ -28,7 +28,7 @@ export async function buildTanStackHead(options: {
 }): Promise<TanStackHead> {
     const match =
         options.match ??
-        (await import("./router")).matchRoute(
+        (await import("./blog-router-client")).matchRouteClient(
             options.path?.split("/").filter(Boolean)
         )
     const seo: BlogPageSEO = await resolveSEO(

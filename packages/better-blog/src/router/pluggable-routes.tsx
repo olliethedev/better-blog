@@ -45,103 +45,85 @@ function PostLoading() {
  * Home route with components - displays list of all published posts
  * Path: /
  */
-export const homeRoute = createRoute(
-    "/",
-    () => ({
-        PageComponent: HomePageComponent,
-        LoadingComponent: PostsLoading,
-        ErrorComponent: DefaultError,
-        meta: () => [
-            { name: "title", content: "Blog Posts" },
-            { name: "description", content: "Latest blog posts" }
-        ]
-    })
-)
+export const homeRoute = createRoute("/", () => ({
+    PageComponent: HomePageComponent,
+    LoadingComponent: PostsLoading,
+    ErrorComponent: DefaultError,
+    meta: () => [
+        { name: "title", content: "Blog Posts" },
+        { name: "description", content: "Latest blog posts" }
+    ]
+}))
 
 /**
  * Post route with components - displays a single post by slug
  * Path: /:slug
  */
-export const postRoute = createRoute(
-    "/:slug",
-    ({ params }) => ({
-        PageComponent: PostPageComponent,
-        LoadingComponent: PostLoading,
-        ErrorComponent: DefaultError,
-        meta: () => [
-            { name: "title", content: `Post: ${params.slug || ""}` },
-            { name: "description", content: "Blog post content" }
-        ]
-    })
-)
+export const postRoute = createRoute("/:slug", ({ params }) => ({
+    PageComponent: PostPageComponent,
+    LoadingComponent: PostLoading,
+    ErrorComponent: DefaultError,
+    meta: () => [
+        { name: "title", content: `Post: ${params.slug || ""}` },
+        { name: "description", content: "Blog post content" }
+    ]
+}))
 
 /**
  * Tag route with components - displays posts filtered by tag
  * Path: /tag/:tag
  */
-export const tagRoute = createRoute(
-    "/tag/:tag",
-    ({ params }) => ({
-        PageComponent: TagPageComponent,
-        LoadingComponent: PostsLoading,
-        ErrorComponent: DefaultError,
-        meta: () => [
-            { name: "title", content: `Posts tagged: ${params.tag || ""}` },
-            {
-                name: "description",
-                content: `All posts tagged with ${params.tag || ""}`
-            }
-        ]
-    })
-)
+export const tagRoute = createRoute("/tag/:tag", ({ params }) => ({
+    PageComponent: TagPageComponent,
+    LoadingComponent: PostsLoading,
+    ErrorComponent: DefaultError,
+    meta: () => [
+        { name: "title", content: `Posts tagged: ${params.tag || ""}` },
+        {
+            name: "description",
+            content: `All posts tagged with ${params.tag || ""}`
+        }
+    ]
+}))
 
 /**
  * Drafts route with components - displays all draft posts
  * Path: /drafts
  */
-export const draftsRoute = createRoute(
-    "/drafts",
-    () => ({
-        PageComponent: DraftsPageComponent,
-        LoadingComponent: PostsLoading,
-        ErrorComponent: DefaultError,
-        meta: () => [
-            { name: "title", content: "My Drafts" },
-            { name: "description", content: "Draft posts" }
-        ]
-    })
-)
+export const draftsRoute = createRoute("/drafts", () => ({
+    PageComponent: DraftsPageComponent,
+    LoadingComponent: PostsLoading,
+    ErrorComponent: DefaultError,
+    meta: () => [
+        { name: "title", content: "My Drafts" },
+        { name: "description", content: "Draft posts" }
+    ]
+}))
 
 /**
  * New post route with components - form to create a new post
  * Path: /new
  */
-export const newPostRoute = createRoute(
-    "/new",
-    () => ({
-        PageComponent: NewPostPageComponent,
-        LoadingComponent: FormLoading,
-        ErrorComponent: DefaultError,
-        meta: () => [
-            { name: "title", content: "Create New Post" },
-            { name: "description", content: "Create a new blog post" }
-        ]
-    })
-)
+export const newPostRoute = createRoute("/new", () => ({
+    PageComponent: NewPostPageComponent,
+    LoadingComponent: FormLoading,
+    ErrorComponent: DefaultError,
+    meta: () => [
+        { name: "title", content: "Create New Post" },
+        { name: "description", content: "Create a new blog post" }
+    ]
+}))
 
 /**
  * Edit post route with components - form to edit an existing post
  * Path: /:slug/edit
  */
-export const editPostRoute = createRoute(
-    "/:slug/edit",
-    ({ params }) => ({
-        PageComponent: EditPostPageComponent,
-        LoadingComponent: FormLoading,
-        ErrorComponent: DefaultError,
-        meta: () => [
-            { name: "title", content: `Editing: ${params.slug || ""}` },
-            { name: "description", content: "Edit blog post" }
-        ]
-    })
-)
+export const editPostRoute = createRoute("/:slug/edit", ({ params }) => ({
+    PageComponent: EditPostPageComponent,
+    LoadingComponent: FormLoading,
+    ErrorComponent: DefaultError,
+    meta: () => [
+        { name: "title", content: `Editing: ${params.slug || ""}` },
+        { name: "description", content: "Edit blog post" }
+    ]
+}))

@@ -24,6 +24,7 @@ This folder contains the Playwright-based E2E suite for validating Better Blog a
 pnpm install
 pnpm e2e:install
 pnpm -w build
+pnpm -F better-blog-e2e exec playwright install --with-deps chromium
 pnpm e2e
 ```
 

@@ -8,9 +8,14 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createServerRootRoute } from '@tanstack/react-start/server'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostsSplatRouteImport } from './routes/posts/$'
+import { ServerRoute as ApiPostsSplatServerRouteImport } from './routes/api/posts/$'
+
+const rootServerRouteImport = createServerRootRoute()
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -21,6 +26,11 @@ const PostsSplatRoute = PostsSplatRouteImport.update({
   id: '/posts/$',
   path: '/posts/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPostsSplatServerRoute = ApiPostsSplatServerRouteImport.update({
+  id: '/api/posts/$',
+  path: '/api/posts/$',
+  getParentRoute: () => rootServerRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -48,6 +58,27 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PostsSplatRoute: typeof PostsSplatRoute
 }
+export interface FileServerRoutesByFullPath {
+  '/api/posts/$': typeof ApiPostsSplatServerRoute
+}
+export interface FileServerRoutesByTo {
+  '/api/posts/$': typeof ApiPostsSplatServerRoute
+}
+export interface FileServerRoutesById {
+  __root__: typeof rootServerRouteImport
+  '/api/posts/$': typeof ApiPostsSplatServerRoute
+}
+export interface FileServerRouteTypes {
+  fileServerRoutesByFullPath: FileServerRoutesByFullPath
+  fullPaths: '/api/posts/$'
+  fileServerRoutesByTo: FileServerRoutesByTo
+  to: '/api/posts/$'
+  id: '__root__' | '/api/posts/$'
+  fileServerRoutesById: FileServerRoutesById
+}
+export interface RootServerRouteChildren {
+  ApiPostsSplatServerRoute: typeof ApiPostsSplatServerRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
@@ -67,6 +98,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+declare module '@tanstack/react-start/server' {
+  interface ServerFileRoutesByPath {
+    '/api/posts/$': {
+      id: '/api/posts/$'
+      path: '/api/posts/$'
+      fullPath: '/api/posts/$'
+      preLoaderRoute: typeof ApiPostsSplatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
+  }
+}
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -75,12 +117,9 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.ts'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
+const rootServerRouteChildren: RootServerRouteChildren = {
+  ApiPostsSplatServerRoute: ApiPostsSplatServerRoute,
 }
+export const serverRouteTree = rootServerRouteImport
+  ._addFileChildren(rootServerRouteChildren)
+  ._addFileTypes<FileServerRouteTypes>()
