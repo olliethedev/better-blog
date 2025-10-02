@@ -1,12 +1,6 @@
 // Jest setup for the project
-/// <reference types="@testing-library/jest-dom" />
+import '@testing-library/jest-dom';
 
-// Conditionally load the matchers only in jsdom environment
-// Some tests use @jest-environment node and don't have DOM globals
-if (typeof window !== "undefined") {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require("@testing-library/jest-dom")
-}
 
 import { webcrypto as crypto } from "node:crypto"
 // Polyfills for Node test environment used by pg
@@ -27,3 +21,9 @@ if (!(global as unknown as { crypto?: Crypto }).crypto) {
     // @ts-ignore
     global.crypto = crypto as unknown as Crypto
 }
+
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+}))
