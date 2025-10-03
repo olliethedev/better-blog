@@ -1,4 +1,4 @@
-import type { BlogDataProvider, Post, RouteMatch, SeoSiteConfig } from "@/types"
+import type { BlogDataProvider, Post, RouteInfo, SeoSiteConfig } from "@/types"
 import { resolveSEO } from "../meta-resolver"
 
 function createProvider(posts: Post[]): BlogDataProvider {
@@ -47,13 +47,12 @@ const site: SeoSiteConfig = {
 describe("resolveSEO", () => {
     test("uses post data for post route and builds JSON-LD", async () => {
         const provider = createProvider([basePost])
-        const match: RouteMatch = {
+        const routeInfo: RouteInfo = {
             type: "post",
-            params: { slug: "hello-world" },
-            metadata: { title: "Fallback Title", description: "Fallback Desc" }
+            params: { slug: "hello-world" }
         }
 
-        const seo = await resolveSEO(match, provider, site)
+        const seo = await resolveSEO(routeInfo, provider, site)
         expect(seo.meta.title).toBe("Hello World")
         expect(seo.meta.description).toBe("An intro post")
         expect(seo.meta.openGraph?.images?.length).toBe(1)
@@ -65,20 +64,18 @@ describe("resolveSEO", () => {
         ).toBe(true)
     })
 
-    test("falls back to route metadata when post not found", async () => {
+    test("falls back to route defaults when post not found", async () => {
         const provider = createProvider([])
-        const match: RouteMatch = {
+        const routeInfo: RouteInfo = {
             type: "post",
-            params: { slug: "missing" },
-            metadata: {
-                title: "Route Title",
-                description: "Route Desc",
-                image: "https://img/route.png"
-            }
+            params: { slug: "missing" }
         }
-        const seo = await resolveSEO(match, provider, site)
-        expect(seo.meta.title).toBe("Route Title")
-        expect(seo.meta.description).toBe("Route Desc")
+        const seo = await resolveSEO(routeInfo, provider, site)
+        // Should use default title from getDefaultTitle()
+        expect(seo.meta.title).toBe("Post: missing")
+        // Should use default description from getDefaultDescription()
+        expect(seo.meta.description).toBe("Blog post content")
+        // Should still have default image from site config
         expect(seo.meta.twitter?.card).toBe("summary_large_image")
     })
 
@@ -91,12 +88,11 @@ describe("resolveSEO", () => {
             publishedAt: undefined
         }
         const provider = createProvider([draft])
-        const match: RouteMatch = {
+        const routeInfo: RouteInfo = {
             type: "post",
-            params: { slug: "draft" },
-            metadata: { title: "Draft" }
+            params: { slug: "draft" }
         }
-        const seo = await resolveSEO(match, provider, site)
+        const seo = await resolveSEO(routeInfo, provider, site)
         expect(seo.meta.robots).toBe("noindex,nofollow")
     })
 })

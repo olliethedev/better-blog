@@ -44,19 +44,32 @@ export interface BlogDataProviderConfig {
     getAuthor?: (id: string) => Promise<Author | null>
     defaultLocale?: string
 }
-export interface RouteMatch {
-    type: "home" | "post" | "tag" | "drafts" | "new" | "edit" | "unknown"
-    params?: {
-        slug?: string
-        tag?: string
-        postSlug?: string
-    }
-    metadata: {
-        title: string
-        description?: string
-        image?: string
-    }
+/**
+ * Route type union for all blog routes
+ */
+export type RouteType =
+    | "home"
+    | "post"
+    | "tag"
+    | "drafts"
+    | "new"
+    | "edit"
+    | "unknown"
+
+/**
+ * Simple route info extracted from yar router
+ */
+export interface RouteInfo {
+    type: RouteType
+    params?: Record<string, string>
 }
+/**
+ * @deprecated PageComponentOverrides is deprecated in favor of creating custom routes with yar.
+ * Instead of using pageOverrides, create custom routes using createRoute from @olliethedev/yar
+ * and combine them with Better Blog's routes.
+ *
+ * This interface is kept for backward compatibility but will be removed in a future version.
+ */
 export interface PageComponentOverrides {
     HomeComponent?: React.ComponentType
     PostComponent?: React.ComponentType

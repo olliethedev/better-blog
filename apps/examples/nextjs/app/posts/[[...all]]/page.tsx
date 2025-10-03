@@ -19,7 +19,7 @@ export const generateMetadata: (context: {
     params: Promise<{ all: string[] | undefined }>
 }) => Promise<Metadata> = async ({ params }) => {
     const { all } = await params
-    return serverAdapter.generateNextMetadata(all?.join("/")) as unknown as Metadata
+    return serverAdapter.generateNextMetadata(all?.join("/")) as Metadata
 }
 
 // Main page component
@@ -29,7 +29,8 @@ export default async function BlogPage({
     params: Promise<{ all: string[] | undefined }>
 }) {
     const { all } = await params
-    const { BlogServerRouter } = serverAdapter
-
-    return <BlogServerRouter path={all?.join("/")} />
+    const path = all?.join("/")
+    
+    // Use the server adapter's BlogServerRouter for SSR with hydration and prefetch
+    return <serverAdapter.BlogServerRouter path={path} />
 }

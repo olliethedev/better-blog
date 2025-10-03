@@ -4,7 +4,7 @@ import type {
     BlogPageMetadata,
     BlogPageSEO,
     Post,
-    RouteMatch,
+    RouteInfo,
     SeoSiteConfig
 } from "@/types"
 
@@ -13,11 +13,11 @@ import type {
  * Prefer using {@link resolveSEO} for structured data as well.
  */
 export async function resolveMetadata(
-    match: RouteMatch,
+    routeInfo: RouteInfo,
     provider: BlogDataProvider,
     site?: SeoSiteConfig
 ): Promise<BlogPageMetadata> {
-    const seo = await resolveSEO(match, provider, site)
+    const seo = await resolveSEO(routeInfo, provider, site)
     return seo.meta
 }
 
@@ -26,22 +26,22 @@ export async function resolveMetadata(
  * Builds rich metadata and JSON-LD for blog pages and posts.
  */
 export async function resolveSEO(
-    match: RouteMatch,
+    routeInfo: RouteInfo,
     provider: BlogDataProvider,
     site?: SeoSiteConfig
 ): Promise<BlogPageSEO> {
-    const post = await fetchPostIfNeeded(match, provider)
-    const baseMeta = buildBasePageMetadata(match, post, site)
-    const structuredData = buildStructuredData(match, post, baseMeta, site)
+    const post = await fetchPostIfNeeded(routeInfo, provider)
+    const baseMeta = buildBasePageMetadata(routeInfo, post, site)
+    const structuredData = buildStructuredData(routeInfo, post, baseMeta, site)
     return { meta: baseMeta, structuredData }
 }
 
 async function fetchPostIfNeeded(
-    match: RouteMatch,
+    routeInfo: RouteInfo,
     provider: BlogDataProvider
 ): Promise<Post | null> {
-    if (match.type !== "post" || !match.params?.slug) return null
-    const slug = match.params.slug
+    if (routeInfo.type !== "post" || !routeInfo.params?.slug) return null
+    const slug = routeInfo.params.slug
     try {
         const direct = await provider.getPostBySlug?.(slug)
         if (direct) return direct
@@ -53,19 +53,64 @@ async function fetchPostIfNeeded(
     }
 }
 
+function getDefaultTitle(routeInfo: RouteInfo): string {
+    switch (routeInfo.type) {
+        case "home":
+            return "Blog Posts"
+        case "post":
+            return routeInfo.params?.slug
+                ? `Post: ${routeInfo.params.slug}`
+                : "Post"
+        case "tag":
+            return routeInfo.params?.tag
+                ? `Posts tagged: ${routeInfo.params.tag}`
+                : "Tag"
+        case "drafts":
+            return "My Drafts"
+        case "new":
+            return "Create New Post"
+        case "edit":
+            return routeInfo.params?.slug
+                ? `Editing: ${routeInfo.params.slug}`
+                : "Edit Post"
+        default:
+            return "Unknown"
+    }
+}
+
+function getDefaultDescription(routeInfo: RouteInfo): string | undefined {
+    switch (routeInfo.type) {
+        case "home":
+            return "Latest blog posts"
+        case "post":
+            return "Blog post content"
+        case "tag":
+            return routeInfo.params?.tag
+                ? `All posts tagged with ${routeInfo.params.tag}`
+                : undefined
+        case "drafts":
+            return "Draft posts"
+        case "new":
+            return "Create a new blog post"
+        case "edit":
+            return "Edit blog post"
+        default:
+            return undefined
+    }
+}
+
 function buildBasePageMetadata(
-    match: RouteMatch,
+    routeInfo: RouteInfo,
     post: Post | null,
     site?: SeoSiteConfig
 ): BlogPageMetadata {
     const isPost = Boolean(post)
-    const title = post?.title ?? match.metadata.title
-    const description = post?.excerpt ?? match.metadata.description
-    const chosenImage =
-        post?.image ?? match.metadata.image ?? site?.defaultImageUrl
+    const title = post?.title ?? getDefaultTitle(routeInfo)
+    const description = post?.excerpt ?? getDefaultDescription(routeInfo)
+    const chosenImage = post?.image ?? site?.defaultImageUrl
 
     // Build canonical URL if siteUrl can be inferred
-    const slugPath = derivePathFromMatch(match)
+    const slugPath = derivePathFromRoute(routeInfo)
     const canonicalUrl =
         site?.siteUrl && slugPath
             ? normalizeUrl(`${site.siteUrl}/${slugPath}`)
@@ -77,7 +122,7 @@ function buildBasePageMetadata(
         title,
         description,
         canonicalUrl,
-        robots: deriveRobotsTag(match, post),
+        robots: deriveRobotsTag(routeInfo, post),
         openGraph: {
             title,
             description,
@@ -96,7 +141,7 @@ function buildBasePageMetadata(
 }
 
 function buildStructuredData(
-    match: RouteMatch,
+    routeInfo: RouteInfo,
     post: Post | null,
     meta: BlogPageMetadata,
     site?: SeoSiteConfig
@@ -108,13 +153,13 @@ function buildStructuredData(
     }
 
     // Breadcrumbs for all pages with a path
-    const path = derivePathFromMatch(match)
+    const path = derivePathFromRoute(routeInfo)
     if (site?.siteUrl && path) {
         data.push(
             buildBreadcrumbJsonLd(
                 site.siteUrl,
                 path,
-                post?.title ?? match.metadata.title
+                post?.title ?? getDefaultTitle(routeInfo)
             )
         )
     }
@@ -220,16 +265,17 @@ function buildAuthorJsonLd(
     }
 }
 
-function derivePathFromMatch(match: RouteMatch): string | undefined {
-    if (match.type === "home") return undefined
-    if (match.type === "post" && match.params?.slug) return match.params.slug
-    if (match.type === "tag" && match.params?.tag)
-        return `tag/${match.params.tag}`
+function derivePathFromRoute(routeInfo: RouteInfo): string | undefined {
+    if (routeInfo.type === "home") return undefined
+    if (routeInfo.type === "post" && routeInfo.params?.slug)
+        return routeInfo.params.slug
+    if (routeInfo.type === "tag" && routeInfo.params?.tag)
+        return `tag/${routeInfo.params.tag}`
     // drafts/new/edit treated as-is for canonical construction
-    if (match.type === "drafts") return "drafts"
-    if (match.type === "new") return "new"
-    if (match.type === "edit" && match.params?.slug)
-        return `${match.params.slug}/edit`
+    if (routeInfo.type === "drafts") return "drafts"
+    if (routeInfo.type === "new") return "new"
+    if (routeInfo.type === "edit" && routeInfo.params?.slug)
+        return `${routeInfo.params.slug}/edit`
     return undefined
 }
 
@@ -242,7 +288,7 @@ function capitalize(input: string): string {
 }
 
 function deriveRobotsTag(
-    match: RouteMatch,
+    routeInfo: RouteInfo,
     post: Post | null
 ): string | undefined {
     // Default: index all non-unknown routes
@@ -253,12 +299,12 @@ function deriveRobotsTag(
         return isPublished ? "index,follow" : "noindex,nofollow"
     }
     if (
-        match.type === "drafts" ||
-        match.type === "new" ||
-        match.type === "edit"
+        routeInfo.type === "drafts" ||
+        routeInfo.type === "new" ||
+        routeInfo.type === "edit"
     ) {
         return "noindex,nofollow"
     }
-    if (match.type === "unknown") return "noindex,nofollow"
+    if (routeInfo.type === "unknown") return "noindex,nofollow"
     return "index,follow"
 }

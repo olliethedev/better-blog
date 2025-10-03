@@ -10,7 +10,7 @@ description: How Better Blog is structured and key APIs
 - `better-blog/hooks`: React hooks (client)
 - `better-blog/client`: `BlogPageRouter` and page components (client-only)
 - `better-blog/context`: `BlogProvider`, context and UI types
-- `better-blog/router`: route helpers (`matchRoute`, `resolveLoadingComponent`)
+- `better-blog/router`: pluggable routes powered by [@olliethedev/yar](https://github.com/olliethedev/yar)
 - `better-blog/server/pages`: SSR/SSG adapter (`createBlogServerAdapter`)
 - `better-blog/api`: API router (`createBlogApiRouter`)
 - `better-blog/sitemap`: sitemap generation (`createBlogSitemap`)
@@ -41,9 +41,22 @@ export interface BlogDataProvider {
 }
 ```
 
+### Router
+
+Better Blog uses [@olliethedev/yar](https://github.com/olliethedev/yar) for its routing layer.
+
+Better Blog ships with pre-configured routes:
+- `/` - Home (list of posts)
+- `/new` - Create new post
+- `/drafts` - Draft posts
+- `/:slug` - View post by slug
+- `/:slug/edit` - Edit post
+- `/tag/:tag` - Posts by tag
+
 ### Architecture
 
-- Schema-driven routes and data; minimal state in components
+- Pluggable, composable routes powered by yar
+- Schema-driven data with minimal state in components
 - Strict client/server separation via dedicated entry points
 
 ### TanStack Query

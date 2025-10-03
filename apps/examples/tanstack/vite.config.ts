@@ -1,11 +1,11 @@
-// vite.config.ts
-import { defineConfig } from 'vite'
-import { fileURLToPath } from 'url'
-import { dirname, resolve } from 'path'
-import tsConfigPaths from 'vite-tsconfig-paths'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+// vite.config.ts
+import { defineConfig } from 'vite'
+import tsConfigPaths from 'vite-tsconfig-paths'
 
 // Get __dirname equivalent in ESM
 const __filename = fileURLToPath(import.meta.url)

@@ -5,9 +5,10 @@ import type { RouteContextValue, RouteProviderProps } from "./types"
 
 export const RouteContext = React.createContext<RouteContextValue | null>(null)
 
-export function RouteProvider({ routeMatch, children }: RouteProviderProps) {
+export function RouteProvider({ type, params, children }: RouteProviderProps) {
     const contextValue: RouteContextValue = {
-        routeMatch
+        type,
+        params
     }
 
     return (

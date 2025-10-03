@@ -1,30 +1,33 @@
-// Re-export loading components from the server-safe loading resolver
-// This maintains backward compatibility while ensuring the components
-// can be used on both client and server in Next.js
-export {
-    FormLoading,
-    PostsLoading,
-    PostLoading
-} from "../../router/loading-resolver"
+// Loading components are now defined in individual routes via yar
+// Users can create custom routes with their own loading states
 
-// For backward compatibility, we'll keep the defaultLoadingComponents export
-// but import it from the loading resolver
-import type { RouteMatch } from "@/types"
-import {
-    FormLoading,
-    PostLoading,
-    PostsLoading
-} from "../../router/loading-resolver"
+import { FormPageSkeleton } from "./form-page-skeleton"
+import { ListPageSkeleton } from "./list-page-skeleton"
+import { PostPageSkeleton } from "./post-page-skeleton"
 
-export const defaultLoadingComponents: Record<
-    RouteMatch["type"],
-    React.ComponentType
-> = {
-    home: PostsLoading,
-    post: PostLoading,
-    tag: PostsLoading,
-    drafts: PostsLoading,
-    new: FormLoading,
-    edit: FormLoading,
-    unknown: PostLoading
-} as const
+export { FormPageSkeleton, ListPageSkeleton, PostPageSkeleton }
+
+// Export default loading components for backward compatibility
+export function FormLoading() {
+    return (
+        <div data-testid="form-skeleton">
+            <FormPageSkeleton />
+        </div>
+    )
+}
+
+export function PostsLoading() {
+    return (
+        <div data-testid="posts-skeleton">
+            <ListPageSkeleton />
+        </div>
+    )
+}
+
+export function PostLoading() {
+    return (
+        <div data-testid="post-skeleton">
+            <PostPageSkeleton />
+        </div>
+    )
+}
