@@ -13,8 +13,8 @@ import { PageHeader } from "../page-header"
 import { PageWrapper } from "./page-wrapper"
 
 export function PostPageComponent() {
-    const { routeMatch } = useRoute()
-    const slug = routeMatch.params!.slug
+    const { params } = useRoute()
+    const slug = params!.slug
     const { post } = useSuspensePost(slug!)
     const { localization } = useBlogContext()
     const { Link, Image } = useComponents()

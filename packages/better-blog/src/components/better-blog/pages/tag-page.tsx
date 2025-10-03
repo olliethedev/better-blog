@@ -8,8 +8,8 @@ import { PostsList } from "../posts-list"
 import { PageWrapper } from "./page-wrapper"
 
 export function TagPageComponent() {
-    const { routeMatch } = useRoute()
-    const tag = routeMatch.params?.tag || "unknown"
+    const { params } = useRoute()
+    const tag = params?.tag || "unknown"
     const { posts, loadMore, hasMore, isLoadingMore } = useSuspensePosts({
         tag
     })

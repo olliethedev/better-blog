@@ -1,12 +1,6 @@
 import { getProvider } from "@/lib/providers"
 import { getOrCreateQueryClient } from "@/lib/query-client"
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
-import { BlogPageRouter } from "better-blog/client"
-import { matchRoute } from "better-blog/router"
-import {
-    createBlogServerAdapter,
-    prefetchBlogData
-} from "better-blog/server/pages"
+import { createBlogServerAdapter } from "better-blog/server/pages"
 import type { Metadata } from "next"
 
 // Create query client for React Query
@@ -25,9 +19,7 @@ export const generateMetadata: (context: {
     params: Promise<{ all: string[] | undefined }>
 }) => Promise<Metadata> = async ({ params }) => {
     const { all } = await params
-    return serverAdapter.generateNextMetadata(
-        all?.join("/")
-    ) as Metadata
+    return serverAdapter.generateNextMetadata(all?.join("/")) as Metadata
 }
 
 // Main page component
@@ -37,16 +29,8 @@ export default async function BlogPage({
     params: Promise<{ all: string[] | undefined }>
 }) {
     const { all } = await params
-    const routeMatch = matchRoute(all?.join("/").split("/").filter(Boolean))
-    await prefetchBlogData({
-        match: routeMatch,
-        provider: await getProvider(),
-        queryClient
-    })
-    const dehydratedState = dehydrate(queryClient)
-    return (
-        <HydrationBoundary state={dehydratedState}>
-            <BlogPageRouter path={all?.join("/")} />
-        </HydrationBoundary>
-    )
+    const path = all?.join("/")
+    
+    // Use the server adapter's BlogServerRouter for SSR with hydration and prefetch
+    return <serverAdapter.BlogServerRouter path={path} />
 }

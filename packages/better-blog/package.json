@@ -301,7 +301,7 @@
     "dependencies": {
         "@milkdown/crepe": "^7.15.3",
         "@milkdown/kit": "^7.15.3",
-        "@olliethedev/yar": "^1.0.6",
+        "@olliethedev/yar": "^1.1.0",
         "better-call": "^1.0.19"
     }
 }

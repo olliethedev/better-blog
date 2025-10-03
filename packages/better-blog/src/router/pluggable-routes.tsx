@@ -1,5 +1,15 @@
 "use client"
 
+/**
+ * Client-side routes with React components
+ *
+ * NOTE: These routes mirror the server-safe routes in routes.ts but add client components.
+ * The server routes (routes.ts) provide: meta, loader, seo (for SSR/SSG)
+ * These client routes provide: PageComponent, LoadingComponent, ErrorComponent (for CSR)
+ *
+ * Both define the same paths and route types to work seamlessly in hybrid SSR/CSR scenarios.
+ */
+
 import { FormPageSkeleton } from "@/components/better-blog/form-page-skeleton"
 import { ListPageSkeleton } from "@/components/better-blog/list-page-skeleton"
 import {
@@ -13,8 +23,7 @@ import {
 import { PostPageSkeleton } from "@/components/better-blog/post-page-skeleton"
 
 import { DefaultError } from "@/components/better-blog/default-error"
-import type { RouteMatch } from "@/types"
-// Pluggable route definitions with components for client-side use
+import type { RouteType } from "@/types"
 import { createRoute } from "@olliethedev/yar"
 
 // Default loading components
@@ -43,106 +52,67 @@ function PostLoading() {
 }
 
 /**
- * Home route with components - displays list of all published posts
+ * Home route with components - mirrors server route but adds UI components
  * Path: /
  */
 export const homeRoute = createRoute("/", () => ({
     PageComponent: HomePageComponent,
     LoadingComponent: PostsLoading,
     ErrorComponent: DefaultError,
-    meta: () => [
-        { name: "title", content: "Blog Posts" },
-        { name: "description", content: "Latest blog posts" }
-    ],
-    extra: {
-        type: "home" as RouteMatch["type"]
-    }
+    extra: () => ({ type: "home" as RouteType })
 }))
 
 /**
- * Post route with components - displays a single post by slug
+ * Post route with components - mirrors server route but adds UI components
  * Path: /:slug
  */
-export const postRoute = createRoute("/:slug", ({ params }) => ({
+export const postRoute = createRoute("/:slug", () => ({
     PageComponent: PostPageComponent,
     LoadingComponent: PostLoading,
     ErrorComponent: DefaultError,
-    meta: () => [
-        { name: "title", content: `Post: ${params.slug || ""}` },
-        { name: "description", content: "Blog post content" }
-    ],
-    extra: {
-        type: "post" as RouteMatch["type"]
-    }
+    extra: () => ({ type: "post" as RouteType })
 }))
 
 /**
- * Tag route with components - displays posts filtered by tag
+ * Tag route with components - mirrors server route but adds UI components
  * Path: /tag/:tag
  */
-export const tagRoute = createRoute("/tag/:tag", ({ params }) => ({
+export const tagRoute = createRoute("/tag/:tag", () => ({
     PageComponent: TagPageComponent,
     LoadingComponent: PostsLoading,
     ErrorComponent: DefaultError,
-    meta: () => [
-        { name: "title", content: `Posts tagged: ${params.tag || ""}` },
-        {
-            name: "description",
-            content: `All posts tagged with ${params.tag || ""}`
-        }
-    ],
-    extra: {
-        type: "tag" as RouteMatch["type"]
-    }
+    extra: () => ({ type: "tag" as RouteType })
 }))
 
 /**
- * Drafts route with components - displays all draft posts
+ * Drafts route with components - mirrors server route but adds UI components
  * Path: /drafts
  */
 export const draftsRoute = createRoute("/drafts", () => ({
     PageComponent: DraftsPageComponent,
     LoadingComponent: PostsLoading,
     ErrorComponent: DefaultError,
-    meta: () => [
-        { name: "title", content: "My Drafts" },
-        { name: "description", content: "Draft posts" }
-    ],
-    extra: {
-        type: "drafts" as RouteMatch["type"]
-    }
+    extra: () => ({ type: "drafts" as RouteType })
 }))
 
 /**
- * New post route with components - form to create a new post
+ * New post route with components - mirrors server route but adds UI components
  * Path: /new
  */
 export const newPostRoute = createRoute("/new", () => ({
     PageComponent: NewPostPageComponent,
     LoadingComponent: FormLoading,
     ErrorComponent: DefaultError,
-    meta: () => [
-        { name: "title", content: "Create New Post" },
-        { name: "description", content: "Create a new blog post" }
-    ],
-    extra: {
-        type: "new" as RouteMatch["type"]
-    }
+    extra: () => ({ type: "new" as RouteType })
 }))
 
 /**
- * Edit post route with components - form to edit an existing post
+ * Edit post route with components - mirrors server route but adds UI components
  * Path: /:slug/edit
  */
-export const editPostRoute = createRoute("/:slug/edit", ({ params }) => ({
+export const editPostRoute = createRoute("/:slug/edit", () => ({
     PageComponent: EditPostPageComponent,
     LoadingComponent: FormLoading,
     ErrorComponent: DefaultError,
-    meta: () => [
-        { name: "title", content: `Editing: ${params.slug || ""}` },
-        { name: "description", content: "Edit blog post" }
-    ],
-    extra: {
-        type: "edit" as RouteMatch["type"]
-    }
+    extra: () => ({ type: "edit" as RouteType })
 }))

@@ -9,8 +9,8 @@ import { PageHeader } from "../page-header"
 import { PageWrapper } from "./page-wrapper"
 
 export function EditPostPageComponent() {
-    const { routeMatch } = useRoute()
-    const slug = routeMatch.params!.slug
+    const { params } = useRoute()
+    const slug = params!.slug
     const { post } = useSuspensePost(slug!)
     const { localization } = useBlogContext()
 

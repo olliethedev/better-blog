@@ -1,17 +1,12 @@
-"use client"
-
 import { DefaultError } from "@/components/better-blog/default-error"
 import { ErrorPlaceholder } from "@/components/better-blog/error-placeholder"
 import { ListPageSkeleton } from "@/components/better-blog/list-page-skeleton"
 import { BlogContext } from "@/context/better-blog-context"
-import { useBlogContext } from "@/hooks/context-hooks"
-import type { RouteMatch } from "@/types"
+import { RouteProvider } from "@/context/route-context"
+import type { useBlogContext } from "@/hooks/context-hooks"
 import React, { Suspense } from "react"
-import { RouteProvider } from "../../context/route-context"
-import {
-    blogRouterClient,
-    matchRouteClient
-} from "../../router/blog-router-client"
+import { blogClientRouter } from "../../router/blog-client-router"
+import { NotFoundPage } from "./pages/404-page"
 
 // Default loading component
 function PostsLoading() {
@@ -22,27 +17,16 @@ function PostsLoading() {
     )
 }
 
-// Not Found route placeholder using localized strings
-function NotFoundPage({ message }: { message: string }) {
-    const { localization } = useBlogContext()
-    const title = localization.BLOG_PAGE_NOT_FOUND_TITLE
-    const desc = message || localization.BLOG_PAGE_NOT_FOUND_DESCRIPTION
-    return <ErrorPlaceholder title={title} message={desc} />
-}
-
-// Internal component that renders based on routeMatch
+// Internal component that renders based on route
 function BlogPageRouterContent({
-    routeMatch,
+    route,
     NotFoundComponent = NotFoundPage,
     path
 }: {
-    routeMatch: RouteMatch
+    route: ReturnType<typeof blogClientRouter.getRoute>
     NotFoundComponent?: React.ComponentType<{ message: string }>
     path: string
 }) {
-    // Use yar router to get the route with all components
-    const route = blogRouterClient.getRoute(path)
-
     if (route) {
         // Get components from the route, with simple fallbacks
         const PageComponent = route.PageComponent
@@ -62,7 +46,7 @@ function BlogPageRouterContent({
     }
 
     // Fallback for unknown routes
-    return <NotFoundComponent message={routeMatch.metadata.title} />
+    return <NotFoundComponent message={`Unknown route: ${path}`} />
 }
 
 class RouteErrorBoundary extends React.Component<
@@ -100,11 +84,12 @@ class RouteErrorBoundary extends React.Component<
 
 // Main component that handles routing using yar
 export function BlogPageRouter({
-    path
+    path,
+    basePath
 }: {
     path?: string
+    basePath?: string
 }) {
-    const { basePath } = useBlogContext()
     const pathSegments = path?.split("/").filter(Boolean) || []
 
     // Strip basePath if present
@@ -119,15 +104,18 @@ export function BlogPageRouter({
     const fullPath = normalizedPath.length
         ? `/${normalizedPath.join("/")}`
         : "/"
-    const routeMatch = matchRouteClient(pathSegments, basePath)
+
+    // Use yar router directly to get the route
+    const route = blogClientRouter.getRoute(fullPath)
+
+    // Extract type from extra and params from route
+    const type = route?.extra?.()?.type || "unknown"
+    const params = route?.params
 
     return (
         <div data-testid="blog-page-root">
-            <RouteProvider routeMatch={routeMatch}>
-                <BlogPageRouterContent
-                    routeMatch={routeMatch}
-                    path={fullPath}
-                />
+            <RouteProvider type={type} params={params}>
+                <BlogPageRouterContent route={route} path={fullPath} />
             </RouteProvider>
         </div>
     )

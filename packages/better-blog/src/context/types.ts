@@ -1,10 +1,5 @@
 import type { BlogLocalization } from "@/localization/blog-localization"
-import type {
-    BlogDataProvider,
-    PageComponentOverrides,
-    Post,
-    RouteMatch
-} from "@/types"
+import type { BlogDataProvider, PageComponentOverrides, Post } from "@/types"
 import type React from "react"
 import type { defaultNavigate, defaultReplace } from "./defaults"
 
@@ -161,9 +156,17 @@ export interface BlogComponents {
 
 export type BlogUIComponents = Partial<BlogComponents>
 export interface RouteContextValue {
-    routeMatch: RouteMatch
+    /**
+     * Current route type for conditional rendering
+     */
+    type: import("@/types").RouteType
+    /**
+     * Route parameters extracted from the path
+     */
+    params?: Record<string, string>
 }
 export interface RouteProviderProps {
-    routeMatch: RouteMatch
+    type: import("@/types").RouteType
+    params?: Record<string, string>
     children: React.ReactNode
 }

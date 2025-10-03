@@ -27,9 +27,6 @@ export interface BlogServerAdapter {
         /** Optional path string like "posts/my-post" (no leading slash). */
         path?: string
     }>
-    prefetch: (options: {
-        path?: string
-    }) => Promise<void>
 }
 
 export interface CreateBlogServerAdapterOptions {
