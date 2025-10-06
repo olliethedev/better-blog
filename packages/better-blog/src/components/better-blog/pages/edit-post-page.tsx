@@ -9,12 +9,14 @@ import { PageHeader } from "../page-header"
 import { PageWrapper } from "./page-wrapper"
 
 export function EditPostPageComponent() {
-    const { routeMatch } = useRoute()
-    const slug = routeMatch.params!.slug
-    const { post } = useSuspensePost(slug!)
+    const { params } = useRoute()
     const { localization } = useBlogContext()
 
-    if (!post) {
+    // Call hook unconditionally to comply with Rules of Hooks
+    const { post } = useSuspensePost(params?.slug ?? "")
+
+    // Check for missing slug or post after hook call
+    if (!params?.slug || !post) {
         return <EmptyList message={localization.POST_NOT_FOUND_DESCRIPTION} />
     }
 

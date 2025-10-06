@@ -8,7 +8,6 @@ import {
 import { BlogContext } from "@/context/better-blog-context"
 import { RouteContext } from "@/context/route-context"
 import { buildPath } from "@/lib/utils"
-import type { PageComponentOverrides } from "@/types"
 import React from "react"
 
 export interface Foo {
@@ -26,10 +25,6 @@ export function useComponents(): BlogComponents {
     return components
 }
 
-export function usePageOverrides(): PageComponentOverrides | undefined {
-    const { pageOverrides } = useBlogContext()
-    return pageOverrides
-}
 export function useBasePath(): string {
     const { basePath } = useBlogContext()
     return basePath

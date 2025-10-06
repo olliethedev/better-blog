@@ -1,60 +1,55 @@
-"use client"
-
+import { DefaultError } from "@/components/better-blog/default-error"
 import { ErrorPlaceholder } from "@/components/better-blog/error-placeholder"
+import { ListPageSkeleton } from "@/components/better-blog/list-page-skeleton"
 import { BlogContext } from "@/context/better-blog-context"
-import { useBlogContext } from "@/hooks/context-hooks"
-import { usePageOverrides } from "@/hooks/context-hooks"
-import type { RouteMatch } from "@/types"
+import { RouteProvider } from "@/context/route-context"
+import type { useBlogContext } from "@/hooks/context-hooks"
+import { DEFAULT_PAGES_BASE_PATH } from "@/lib/constants"
+import { stripBasePath } from "@/lib/utils"
+import type { RouteType } from "@/types"
 import React, { Suspense } from "react"
-import { RouteProvider } from "../../context/route-context"
+import { blogClientRouter } from "../../router/blog-client-router"
+import { NotFoundPage } from "./pages/404-page"
 
-import { matchRoute } from "../../router/router"
-
-import { resolveErrorComponent } from "@/router/error-resolver"
-import { resolveLoadingComponent } from "@/router/loading-resolver"
-import { resolvePageComponent } from "@/router/page-resolver"
-
-// Not Found route placeholder using localized strings
-function NotFoundPage({ message }: { message: string }) {
-    const { localization } = useBlogContext()
-    const title = localization.BLOG_PAGE_NOT_FOUND_TITLE
-    const desc = message || localization.BLOG_PAGE_NOT_FOUND_DESCRIPTION
-    return <ErrorPlaceholder title={title} message={desc} />
+// Default loading component
+function PostsLoading() {
+    return (
+        <div data-testid="posts-skeleton">
+            <ListPageSkeleton />
+        </div>
+    )
 }
 
-// Internal component that renders based on routeMatch
+// Internal component that renders based on route
 function BlogPageRouterContent({
-    routeMatch,
-    NotFoundComponent = NotFoundPage
+    route,
+    NotFoundComponent = NotFoundPage,
+    path
 }: {
-    routeMatch: RouteMatch
+    route: ReturnType<typeof blogClientRouter.getRoute>
     NotFoundComponent?: React.ComponentType<{ message: string }>
+    path: string
 }) {
-    // Components get route data via useRoute hook - no prop drilling needed!
-    // Get page overrides from context
-    const pageOverrides = usePageOverrides()
+    if (route) {
+        // Get components from the route, with simple fallbacks
+        const PageComponent = route.PageComponent
+        const ErrorComponent = route.ErrorComponent || DefaultError
+        const LoadingComponent = route.LoadingComponent || PostsLoading
 
-    // Resolve the component from the client-side component mappings with overrides
-    const Component = resolvePageComponent(routeMatch.type, pageOverrides)
-    const ErrorComponent = resolveErrorComponent(routeMatch.type, pageOverrides)
-    const LoadingComponent = resolveLoadingComponent(
-        routeMatch.type,
-        pageOverrides
-    )
-
-    if (Component) {
-        const fallback = LoadingComponent ? <LoadingComponent /> : null
-        return (
-            <Suspense fallback={fallback}>
-                <RouteErrorBoundary ErrorComponent={ErrorComponent}>
-                    <Component />
-                </RouteErrorBoundary>
-            </Suspense>
-        )
+        if (PageComponent) {
+            const fallback = LoadingComponent ? <LoadingComponent /> : null
+            return (
+                <Suspense fallback={fallback}>
+                    <RouteErrorBoundary ErrorComponent={ErrorComponent}>
+                        <PageComponent />
+                    </RouteErrorBoundary>
+                </Suspense>
+            )
+        }
     }
 
     // Fallback for unknown routes
-    return <NotFoundComponent message={routeMatch.metadata.title} />
+    return <NotFoundComponent message={`Unknown route: ${path}`} />
 }
 
 class RouteErrorBoundary extends React.Component<
@@ -90,26 +85,53 @@ class RouteErrorBoundary extends React.Component<
     }
 }
 
-// Main component that takes slug and handles routing + context internally
+// Main component that handles routing using yar
+// Note: This is a server component. Pass basePath explicitly from your server pages.
+// Client components within the tree can use useBasePath() hook from context.
 export function BlogPageRouter({
-    path
+    path,
+    basePath = DEFAULT_PAGES_BASE_PATH
 }: {
     path?: string
+    /**
+     * Base path for the blog routes. Should match the basePath in BlogProvider.
+     * Defaults to "/posts" if not provided.
+     *
+     * @example
+     * // Next.js App Router
+     * <BlogPageRouter path={params.all?.join("/") || ""} basePath="/blog" />
+     *
+     * // TanStack Router
+     * <BlogPageRouter path={Route.useParams()["_splat"]} basePath="/posts" />
+     */
+    basePath?: string
 }) {
-    const { basePath } = useBlogContext()
-    const routeMatch = matchRoute(path?.split("/").filter(Boolean), basePath)
+    // Normalize the incoming path
+    const normalizedPath = path?.startsWith("/") ? path : `/${path || ""}`
 
-    // Get page overrides from context to extract NotFoundComponent
-    const pageOverrides = usePageOverrides()
-    const NotFoundComponent = pageOverrides?.NotFoundComponent
+    // Strip basePath if present (handles multi-segment base paths correctly)
+    const fullPath =
+        basePath && basePath !== "/"
+            ? stripBasePath(normalizedPath, basePath)
+            : normalizedPath
+
+    // Use yar router directly to get the route
+    const route = blogClientRouter.getRoute(fullPath)
+
+    // Extract type from extra and params from route - protect against errors
+    let type: RouteType = "unknown"
+    try {
+        type = (route?.extra?.()?.type as RouteType) || "unknown"
+    } catch {
+        // If extra() throws, default to "unknown"
+        type = "unknown"
+    }
+    const params = route?.params
 
     return (
         <div data-testid="blog-page-root">
-            <RouteProvider routeMatch={routeMatch}>
-                <BlogPageRouterContent
-                    routeMatch={routeMatch}
-                    NotFoundComponent={NotFoundComponent}
-                />
+            <RouteProvider type={type} params={params}>
+                <BlogPageRouterContent route={route} path={fullPath} />
             </RouteProvider>
         </div>
     )

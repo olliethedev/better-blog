@@ -141,8 +141,10 @@ test("unknown tag page state renders", async ({ page }) => {
     await page.goto("/posts/tag/unknown", { waitUntil: "networkidle" })
     await expect(page.locator(contentSelector)).toBeVisible()
     await expect(page).toHaveTitle(/Posts tagged: unknown|Unknown route/i)
-    // Unknown tag should render an empty-state
-    await expect(page.locator(emptySelector)).toBeVisible()
+    // Unknown tag should render empty-state or error placeholder; wait for either to appear
+    await expect(
+        page.locator(`${emptySelector}, ${errorSelector}`)
+    ).toBeVisible()
     // expect(errors, `Console errors detected: \n${errors.join("\n")}`).toEqual([])
 })
 

@@ -3,7 +3,6 @@ import type {
     PostCreateExtendedInput,
     PostUpdateExtendedInput
 } from "@/schema/post"
-import type React from "react"
 
 export type Post = {
     id: string
@@ -44,42 +43,24 @@ export interface BlogDataProviderConfig {
     getAuthor?: (id: string) => Promise<Author | null>
     defaultLocale?: string
 }
-export interface RouteMatch {
-    type: "home" | "post" | "tag" | "drafts" | "new" | "edit" | "unknown"
-    params?: {
-        slug?: string
-        tag?: string
-        postSlug?: string
-    }
-    metadata: {
-        title: string
-        description?: string
-        image?: string
-    }
-}
-export interface PageComponentOverrides {
-    HomeComponent?: React.ComponentType
-    PostComponent?: React.ComponentType
-    TagComponent?: React.ComponentType
-    DraftsComponent?: React.ComponentType
-    NewPostComponent?: React.ComponentType
-    EditPostComponent?: React.ComponentType
+/**
+ * Route type union for all blog routes
+ */
+export type RouteType =
+    | "home"
+    | "post"
+    | "tag"
+    | "drafts"
+    | "new"
+    | "edit"
+    | "unknown"
 
-    HomeLoadingComponent?: React.ComponentType
-    PostLoadingComponent?: React.ComponentType
-    TagLoadingComponent?: React.ComponentType
-    DraftsLoadingComponent?: React.ComponentType
-    NewPostLoadingComponent?: React.ComponentType
-    EditPostLoadingComponent?: React.ComponentType
-
-    HomeErrorComponent?: React.ComponentType<{ message?: string }>
-    PostErrorComponent?: React.ComponentType<{ message?: string }>
-    TagErrorComponent?: React.ComponentType<{ message?: string }>
-    DraftsErrorComponent?: React.ComponentType<{ message?: string }>
-    NewPostErrorComponent?: React.ComponentType<{ message?: string }>
-    EditPostErrorComponent?: React.ComponentType<{ message?: string }>
-
-    NotFoundComponent?: React.ComponentType<{ message: string }>
+/**
+ * Simple route info extracted from yar router
+ */
+export interface RouteInfo {
+    type: RouteType
+    params?: Record<string, string>
 }
 export type Author = {
     id: string

@@ -1,21 +1,19 @@
 "use client"
 
 import { BlogContext } from "@/context/better-blog-context"
-import { matchRoute } from "@/router"
+import { stripBasePath } from "@/lib/utils"
+import { blogClientRouter } from "@/router/blog-client-router"
 import { resolveSEO } from "@/router/meta-resolver"
-import type { BlogDataProvider, RouteMatch, SeoSiteConfig } from "@/types"
+import type { BlogDataProvider, SeoSiteConfig } from "@/types"
 import React from "react"
 
 export function BlogMetaTags({
     path,
-    routeMatch,
     provider,
     site
 }: {
-    /** If provided, used to compute the route match */
+    /** Path to compute meta tags for */
     path?: string
-    /** Provide a precomputed match to avoid re-matching */
-    routeMatch?: RouteMatch
     /** Optional provider override, otherwise uses BlogContext */
     provider?: BlogDataProvider
     /** Optional site config for canonical, publisher, etc. */
@@ -46,12 +44,23 @@ export function BlogMetaTags({
         let mounted = true
         const effectiveProvider = provider ?? blog?.dataProvider
         if (!effectiveProvider) return
-        // Wait for basePath from context when computing from path
-        if (!routeMatch && !blog?.basePath) return
-        const match =
-            routeMatch ??
-            matchRoute(path?.split("/").filter(Boolean), blog?.basePath)
-        resolveSEO(match, effectiveProvider, site)
+
+        const normalizedPath = blog?.basePath
+            ? stripBasePath(path ?? "/", blog.basePath)
+            : (path ?? "/")
+        const route = blogClientRouter.getRoute(normalizedPath)
+
+        if (!route) return
+
+        const type = (route.extra?.()?.type || "unknown") as import(
+            "@/types"
+        ).RouteType
+        const routeInfo: import("@/types").RouteInfo = {
+            type,
+            params: route.params
+        }
+
+        resolveSEO(routeInfo, effectiveProvider, site)
             .then((seo) => {
                 if (!mounted) return
                 setState({ ...seo.meta, structuredData: seo.structuredData })
@@ -60,7 +69,7 @@ export function BlogMetaTags({
         return () => {
             mounted = false
         }
-    }, [path, routeMatch, provider, blog?.dataProvider, site, blog?.basePath])
+    }, [path, provider, blog?.dataProvider, site, blog?.basePath])
 
     React.useEffect(() => {
         if (state.title) {

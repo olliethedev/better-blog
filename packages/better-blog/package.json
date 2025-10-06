@@ -85,6 +85,16 @@
                 "default": "./dist/router.cjs"
             }
         },
+        "./router/client": {
+            "import": {
+                "types": "./dist/router/client.d.ts",
+                "default": "./dist/router/client.js"
+            },
+            "require": {
+                "types": "./dist/router/client.d.cts",
+                "default": "./dist/router/client.cjs"
+            }
+        },
         "./context": {
             "import": {
                 "types": "./dist/context.d.ts",
@@ -192,6 +202,7 @@
             "queries": ["dist/queries.d.ts"],
             "hooks": ["dist/hooks.d.ts"],
             "router": ["dist/router.d.ts"],
+            "router/client": ["dist/router/client.d.ts"],
             "context": ["dist/context.d.ts"],
             "client": ["dist/client.d.ts"],
             "api": ["dist/api.d.ts"],
@@ -290,7 +301,7 @@
     "dependencies": {
         "@milkdown/crepe": "^7.15.3",
         "@milkdown/kit": "^7.15.3",
-        "better-call": "^1.0.19",
-        "rou3": "^0.7.5"
+        "@olliethedev/yar": "^1.1.0",
+        "better-call": "^1.0.19"
     }
 }

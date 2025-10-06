@@ -21,7 +21,6 @@ export const BlogContext = React.createContext<BlogContextType | null>(null)
 export function BlogProvider({
     dataProvider,
     components = defaultUIComponents,
-    pageOverrides,
     basePath = DEFAULT_PAGES_BASE_PATH,
     localization: localizationProp,
     adminPermissions,
@@ -48,7 +47,6 @@ export function BlogProvider({
             ...defaultUIComponents,
             ...components
         },
-        pageOverrides,
         basePath: normalizeBasePath(basePath),
         localization,
         adminPermissions: adminPermissions

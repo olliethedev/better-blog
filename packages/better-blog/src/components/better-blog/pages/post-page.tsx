@@ -1,10 +1,10 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import { useBlogContext } from "@/hooks/context-hooks"
+import { useBasePath, useBlogContext } from "@/hooks/context-hooks"
 import { useComponents } from "@/hooks/context-hooks"
-import { useBlogPath } from "@/hooks/context-hooks"
 import { useRoute } from "@/hooks/context-hooks"
+import { buildPath } from "@/lib/utils"
 import { formatDate } from "date-fns"
 import { useSuspensePost } from "../../../hooks"
 import { EmptyList } from "../empty-list"
@@ -13,14 +13,16 @@ import { PageHeader } from "../page-header"
 import { PageWrapper } from "./page-wrapper"
 
 export function PostPageComponent() {
-    const { routeMatch } = useRoute()
-    const slug = routeMatch.params!.slug
-    const { post } = useSuspensePost(slug!)
+    const { params } = useRoute()
     const { localization } = useBlogContext()
     const { Link, Image } = useComponents()
-    const blogPath = useBlogPath
+    const basePath = useBasePath()
 
-    if (!post) {
+    // Call hook unconditionally to comply with Rules of Hooks
+    const { post } = useSuspensePost(params?.slug ?? "")
+
+    // Check for missing slug or post after hook call
+    if (!params?.slug || !post) {
         return <EmptyList message={localization.POST_NOT_FOUND_DESCRIPTION} />
     }
 
@@ -48,7 +50,7 @@ export function PostPageComponent() {
                             className="tag"
                             variant="secondary"
                         >
-                            <Link href={blogPath("tag", tag.slug)}>
+                            <Link href={buildPath(basePath, "tag", tag.slug)}>
                                 {tag.name}
                             </Link>
                         </Badge>

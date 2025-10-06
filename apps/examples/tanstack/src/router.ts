@@ -1,7 +1,7 @@
+import { QueryClient } from '@tanstack/react-query'
 // src/router.tsx
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
-import { QueryClient } from '@tanstack/react-query'
 import { routeTree } from './routeTree.gen'
 // The root route is defined in `routes/__root.tsx`
 
@@ -30,6 +30,11 @@ export function createRouter() {
   })
 
   return router
+}
+
+// TanStack Start requires getRouter to be exported
+export function getRouter() {
+  return createRouter()
 }
 
 declare module '@tanstack/react-router' {
