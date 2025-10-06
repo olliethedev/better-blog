@@ -10,8 +10,8 @@ import { PageWrapper } from "./page-wrapper"
 
 export function EditPostPageComponent() {
     const { params } = useRoute()
-    const slug = params!.slug
-    const { post } = useSuspensePost(slug!)
+    const slug = params?.slug || ""
+    const { post } = useSuspensePost(slug)
     const { localization } = useBlogContext()
 
     if (!post) {
