@@ -277,7 +277,11 @@ function generateStaticRoutes(): Array<{ slug: string[] }> {
 
     for (const routeDef of Object.values(blogRouter.routes)) {
         // Check if route-level meta has isStatic property
-        if (routeDef.meta && "isStatic" in routeDef.meta && routeDef.meta.isStatic) {
+        if (
+            routeDef.meta &&
+            "isStatic" in routeDef.meta &&
+            routeDef.meta.isStatic
+        ) {
             // Extract the path from the route definition
             const path = routeDef.path
             staticRoutes.push({
