@@ -1,9 +1,9 @@
 ---
 title: Overriding components
-description: Replace built-in pages and wire your own Link/Image
+description: Wire your own Link/Image and customize UI components
 ---
 
-Use `pageOverrides` to replace any built-in page or loading component, and `components` to wire your router-specific `Link`/`Image`.
+Use the `components` prop to wire your router-specific `Link`/`Image` components and customize the blog's UI building blocks.
 
 ```tsx
 import { BlogProvider } from 'better-blog/client';
@@ -11,25 +11,45 @@ import { BlogProvider } from 'better-blog/client';
 function MyLink({ href, children, className }) {
   return <a href={href} className={className}>{children}</a>;
 }
+
 function MyImage({ src, alt, className, width, height }) {
   return <img src={src} alt={alt} className={className} width={width} height={height} />;
 }
 
-function MyHome() { return <div>Custom Home</div>; }
-function MyHomeLoading() { return <div>Loading home…</div>; }
+function MyPostCard({ post }) {
+  return (
+    <div className="custom-post-card">
+      <h3>{post.title}</h3>
+      <p>{post.excerpt}</p>
+    </div>
+  );
+}
+
+function MyPostCardSkeleton() {
+  return <div className="skeleton">Loading...</div>;
+}
 
 <BlogProvider
   dataProvider={dataProvider}
-  components={{ Link: MyLink, Image: MyImage }}
-  pageOverrides={{ HomeComponent: MyHome, HomeLoadingComponent: MyHomeLoading }}
+  components={{ 
+    Link: MyLink, 
+    Image: MyImage,
+    PostCard: MyPostCard,
+    PostCardSkeleton: MyPostCardSkeleton
+  }}
 >
   {children}
 </BlogProvider>
 ```
 
-Common overrides:
+## Available Component Overrides
 
-- Replace home, post list, tag list, post detail pages
-- Swap loading/skeleton components for each route
-- Inject your design system primitives via `components`
+- **Link**: Component used for navigation (integrate with your router framework)
+- **Image**: Component used for rendering images (e.g., Next.js Image)
+- **PostCard**: Component for rendering individual blog post cards in lists
+- **PostCardSkeleton**: Skeleton component shown while post cards are loading
+
+## Customizing Pages
+
+To customize entire pages, use the yar router to create custom routes. See the [routing documentation](/docs/routing) for more details.
 

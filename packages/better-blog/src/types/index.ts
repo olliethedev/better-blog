@@ -3,7 +3,6 @@ import type {
     PostCreateExtendedInput,
     PostUpdateExtendedInput
 } from "@/schema/post"
-import type React from "react"
 
 export type Post = {
     id: string
@@ -62,37 +61,6 @@ export type RouteType =
 export interface RouteInfo {
     type: RouteType
     params?: Record<string, string>
-}
-/**
- * @deprecated PageComponentOverrides is deprecated in favor of creating custom routes with yar.
- * Instead of using pageOverrides, create custom routes using createRoute from @olliethedev/yar
- * and combine them with Better Blog's routes.
- *
- * This interface is kept for backward compatibility but will be removed in a future version.
- */
-export interface PageComponentOverrides {
-    HomeComponent?: React.ComponentType
-    PostComponent?: React.ComponentType
-    TagComponent?: React.ComponentType
-    DraftsComponent?: React.ComponentType
-    NewPostComponent?: React.ComponentType
-    EditPostComponent?: React.ComponentType
-
-    HomeLoadingComponent?: React.ComponentType
-    PostLoadingComponent?: React.ComponentType
-    TagLoadingComponent?: React.ComponentType
-    DraftsLoadingComponent?: React.ComponentType
-    NewPostLoadingComponent?: React.ComponentType
-    EditPostLoadingComponent?: React.ComponentType
-
-    HomeErrorComponent?: React.ComponentType<{ message?: string }>
-    PostErrorComponent?: React.ComponentType<{ message?: string }>
-    TagErrorComponent?: React.ComponentType<{ message?: string }>
-    DraftsErrorComponent?: React.ComponentType<{ message?: string }>
-    NewPostErrorComponent?: React.ComponentType<{ message?: string }>
-    EditPostErrorComponent?: React.ComponentType<{ message?: string }>
-
-    NotFoundComponent?: React.ComponentType<{ message: string }>
 }
 export type Author = {
     id: string

@@ -1,5 +1,5 @@
 import type { BlogLocalization } from "@/localization/blog-localization"
-import type { BlogDataProvider, PageComponentOverrides, Post } from "@/types"
+import type { BlogDataProvider, Post } from "@/types"
 import type React from "react"
 import type { defaultNavigate, defaultReplace } from "./defaults"
 
@@ -13,10 +13,6 @@ export interface BlogContextType {
      * Set of UI building-block components used throughout the blog UI.
      */
     components: BlogComponents
-    /**
-     * Optional page-level component overrides (e.g., swapping list/detail implementations).
-     */
-    pageOverrides?: PageComponentOverrides
     /**
      * Base path for blog pages (used to build blog URLs).
      * @default {@link DEFAULT_PAGES_BASE_PATH}
@@ -61,10 +57,6 @@ export interface BlogProviderProps {
      * Overrides for internal UI components; falls back to standard HTML elements.
      */
     components?: BlogUIComponents
-    /**
-     * Optional page-level component overrides (swap list/detail page components).
-     */
-    pageOverrides?: PageComponentOverrides
     /**
      * Base path for blog pages (used to build blog URLs)
      * @default {@link DEFAULT_PAGES_BASE_PATH}
