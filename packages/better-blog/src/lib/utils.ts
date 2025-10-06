@@ -121,3 +121,32 @@ export function buildPath(
     }
     return suffix ? `${basePath}/${suffix}` : basePath
 }
+
+/**
+ * Strips basePath from the beginning of path if present.
+ * Handles multi-segment base paths correctly.
+ *
+ * @example
+ * stripBasePath("/blog/posts/my-article", "/blog/posts") // => "/my-article"
+ * stripBasePath("/blog/posts", "/blog/posts") // => "/"
+ * stripBasePath("/other/path", "/blog/posts") // => "/other/path"
+ */
+export function stripBasePath(path: string, basePath: string): string {
+    if (!basePath || basePath === "/" || basePath === "") {
+        return path
+    }
+
+    const normalizedBasePath = normalizeBasePath(basePath)
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`
+
+    // Check if path starts with basePath
+    if (normalizedPath === normalizedBasePath) {
+        return "/"
+    }
+
+    if (normalizedPath.startsWith(`${normalizedBasePath}/`)) {
+        return normalizedPath.slice(normalizedBasePath.length)
+    }
+
+    return normalizedPath
+}

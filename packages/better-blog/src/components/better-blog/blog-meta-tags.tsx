@@ -1,6 +1,7 @@
 "use client"
 
 import { BlogContext } from "@/context/better-blog-context"
+import { stripBasePath } from "@/lib/utils"
 import { blogClientRouter } from "@/router/blog-client-router"
 import { resolveSEO } from "@/router/meta-resolver"
 import type { BlogDataProvider, SeoSiteConfig } from "@/types"
@@ -44,7 +45,9 @@ export function BlogMetaTags({
         const effectiveProvider = provider ?? blog?.dataProvider
         if (!effectiveProvider) return
 
-        const normalizedPath = path?.replace(blog?.basePath ?? "", "") ?? "/"
+        const normalizedPath = blog?.basePath
+            ? stripBasePath(path ?? "/", blog.basePath)
+            : (path ?? "/")
         const route = blogClientRouter.getRoute(normalizedPath)
 
         if (!route) return

@@ -4,6 +4,7 @@ import { ListPageSkeleton } from "@/components/better-blog/list-page-skeleton"
 import { BlogContext } from "@/context/better-blog-context"
 import { RouteProvider } from "@/context/route-context"
 import type { useBlogContext } from "@/hooks/context-hooks"
+import { stripBasePath } from "@/lib/utils"
 import React, { Suspense } from "react"
 import { blogClientRouter } from "../../router/blog-client-router"
 import { NotFoundPage } from "./pages/404-page"
@@ -90,20 +91,13 @@ export function BlogPageRouter({
     path?: string
     basePath?: string
 }) {
-    const pathSegments = path?.split("/").filter(Boolean) || []
+    // Normalize the incoming path
+    const normalizedPath = path?.startsWith("/") ? path : `/${path || ""}`
 
-    // Strip basePath if present
-    let normalizedPath = pathSegments
-    if (
-        basePath &&
-        pathSegments[0] === basePath.split("/").filter(Boolean)[0]
-    ) {
-        normalizedPath = pathSegments.slice(1)
-    }
-
-    const fullPath = normalizedPath.length
-        ? `/${normalizedPath.join("/")}`
-        : "/"
+    // Strip basePath if present (handles multi-segment base paths correctly)
+    const fullPath = basePath
+        ? stripBasePath(normalizedPath, basePath)
+        : normalizedPath
 
     // Use yar router directly to get the route
     const route = blogClientRouter.getRoute(fullPath)
