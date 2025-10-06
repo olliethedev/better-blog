@@ -4,7 +4,9 @@ import { ListPageSkeleton } from "@/components/better-blog/list-page-skeleton"
 import { BlogContext } from "@/context/better-blog-context"
 import { RouteProvider } from "@/context/route-context"
 import type { useBlogContext } from "@/hooks/context-hooks"
+import { DEFAULT_PAGES_BASE_PATH } from "@/lib/constants"
 import { stripBasePath } from "@/lib/utils"
+import type { RouteType } from "@/types"
 import React, { Suspense } from "react"
 import { blogClientRouter } from "../../router/blog-client-router"
 import { NotFoundPage } from "./pages/404-page"
@@ -84,26 +86,46 @@ class RouteErrorBoundary extends React.Component<
 }
 
 // Main component that handles routing using yar
+// Note: This is a server component. Pass basePath explicitly from your server pages.
+// Client components within the tree can use useBasePath() hook from context.
 export function BlogPageRouter({
     path,
-    basePath
+    basePath = DEFAULT_PAGES_BASE_PATH
 }: {
     path?: string
+    /**
+     * Base path for the blog routes. Should match the basePath in BlogProvider.
+     * Defaults to "/posts" if not provided.
+     *
+     * @example
+     * // Next.js App Router
+     * <BlogPageRouter path={params.all?.join("/") || ""} basePath="/blog" />
+     *
+     * // TanStack Router
+     * <BlogPageRouter path={Route.useParams()["_splat"]} basePath="/posts" />
+     */
     basePath?: string
 }) {
     // Normalize the incoming path
     const normalizedPath = path?.startsWith("/") ? path : `/${path || ""}`
 
     // Strip basePath if present (handles multi-segment base paths correctly)
-    const fullPath = basePath
-        ? stripBasePath(normalizedPath, basePath)
-        : normalizedPath
+    const fullPath =
+        basePath && basePath !== "/"
+            ? stripBasePath(normalizedPath, basePath)
+            : normalizedPath
 
     // Use yar router directly to get the route
     const route = blogClientRouter.getRoute(fullPath)
 
-    // Extract type from extra and params from route
-    const type = route?.extra?.()?.type || "unknown"
+    // Extract type from extra and params from route - protect against errors
+    let type: RouteType = "unknown"
+    try {
+        type = (route?.extra?.()?.type as RouteType) || "unknown"
+    } catch {
+        // If extra() throws, default to "unknown"
+        type = "unknown"
+    }
     const params = route?.params
 
     return (

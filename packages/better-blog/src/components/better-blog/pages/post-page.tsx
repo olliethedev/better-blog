@@ -14,11 +14,16 @@ import { PageWrapper } from "./page-wrapper"
 
 export function PostPageComponent() {
     const { params } = useRoute()
-    const slug = params?.slug || ""
-    const { post } = useSuspensePost(slug)
     const { localization } = useBlogContext()
     const { Link, Image } = useComponents()
     const basePath = useBasePath()
+
+    // Early return if slug is missing - prevents invalid API calls
+    if (!params?.slug) {
+        return <EmptyList message={localization.POST_NOT_FOUND_DESCRIPTION} />
+    }
+
+    const { post } = useSuspensePost(params.slug)
 
     if (!post) {
         return <EmptyList message={localization.POST_NOT_FOUND_DESCRIPTION} />
