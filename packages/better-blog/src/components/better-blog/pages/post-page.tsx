@@ -18,14 +18,11 @@ export function PostPageComponent() {
     const { Link, Image } = useComponents()
     const basePath = useBasePath()
 
-    // Early return if slug is missing - prevents invalid API calls
-    if (!params?.slug) {
-        return <EmptyList message={localization.POST_NOT_FOUND_DESCRIPTION} />
-    }
+    // Call hook unconditionally to comply with Rules of Hooks
+    const { post } = useSuspensePost(params?.slug ?? "")
 
-    const { post } = useSuspensePost(params.slug)
-
-    if (!post) {
+    // Check for missing slug or post after hook call
+    if (!params?.slug || !post) {
         return <EmptyList message={localization.POST_NOT_FOUND_DESCRIPTION} />
     }
 

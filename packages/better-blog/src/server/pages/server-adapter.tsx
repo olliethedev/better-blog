@@ -272,21 +272,12 @@ function mapSeoToNextMetadata(
 
 function generateStaticRoutes(): Array<{ slug: string[] }> {
     // Static routes for SSG generation
-    // Filter route definitions that have isStatic in their extra configuration
+    // Filter route definitions that have isStatic in their meta configuration
     const staticRoutes: Array<{ slug: string[] }> = []
 
     for (const routeDef of Object.values(blogRouter.routes)) {
-        // Call the route function to get its configuration
-        // For static routes without params, we can safely call with empty context
-        // biome-ignore lint/suspicious/noExplicitAny: Route definitions require context
-        const config = routeDef({ params: undefined, query: undefined } as any)
-
-        // Check if isStatic property exists and is true
-        if (
-            config.extra &&
-            "isStatic" in config.extra &&
-            config.extra.isStatic
-        ) {
+        // Check if route-level meta has isStatic property
+        if (routeDef.meta && "isStatic" in routeDef.meta && routeDef.meta.isStatic) {
             // Extract the path from the route definition
             const path = routeDef.path
             staticRoutes.push({
