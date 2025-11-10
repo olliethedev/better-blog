@@ -1,3 +1,13 @@
+> ⚠️ **Archived Notice**
+>
+> This repository has been **archived** and is no longer maintained.
+>
+> - **Reason:** Replaced by [better-stack]([https://github.com/olliethedev/better-blog](https://github.com/olliethedev/better-stack)) blog plugin
+> - **Date:** November 2025
+>
+
+
+
 # better-blog
 
 [![CI](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/olliethedev/better-blog/actions/workflows/ci.yml)
